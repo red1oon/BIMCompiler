@@ -1,0 +1,1291 @@
+§FACTS LIVE_EQ_MAIN (erp overlay files are minified on the site: markers {"report_pill":true,"ninja_pdf":true}) ootb=ccbbac3a files=7 differ=[] equal
+§FACTS INPUTS {"picture":"made by ghostscript from the corpus trial balance (a 64x32 stand-in picture added)","pictureExit":0,"longExit":0,"longPages":2400,"longBytes":19636046,"longSource":"the 12-page corpus report joined 200 times (pdfunite)"}
+  PG[pdf] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[pdf] §PDFED-OFFLINE ready=true
+§FACTS shot b1_empty the PDF page before any file clip=0,0,1500,419
+  PG[pdf] §PDFED-LAYOUT pages=1 observedAgainst=window
+  PG[pdf] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=1 releases=0 heapMB=5
+  PG[pdf] §PDFED-FIRST page=1 drawn=true ms=235 pages=1 canvasesAlive=1
+  PG[pdf] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[pdf] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[pdf] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=5 reason="4 totals agree with their rows"
+  PG[pdf] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=25 heapMB=6
+  PG[pdf] §PDFED-OPEN ok=true file="trial_balance_th.pdf" bytes=74945 pages=1 chars=1017 outline=0 ms=274
+§FACTS b1 open: §PDFED-OPEN ok=true file="trial_balance_th.pdf" bytes=74945 pages=1 chars=1017 outline=0 ms=274 | §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=5 reason="4 totals agree with their rows" | §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=25 heapMB=6 | page says "trial_balance_th.pdf: 1 page"
+§FACTS shot b1_open the report opened: trial_balance_th.pdf: 1 page clip=320,63,1100,850
+  PG[pdf] §EDSHEET-EDITOR id=cD10 cell=D10 kind=cell windowScrolled=0
+  PG[pdf] §PDFWR-HISTORY entries=1 ops=144 genesis=true page=1
+  PG[pdf] §PDFHIST-STATE entries=1 verified=true carried=none restarted=false text="History: 1 entry, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[pdf] §PDF_WRITE ok=true edits=1 applied=1 refused=0 bytesIn=74945 bytesOut=74939 ms=6 cells=D10:"498.09"->"499.09"
+  PG[pdf] §PDFED-REOPEN page=1 pagesRead=1 of=1 ms=192
+  PG[pdf] §EDSHEET-UNDO-MEM steps=1 withBytes=1 heldMB=0.07 budgetMB=128.00 dropped=0 heapMB=7
+  PG[pdf] §SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=2 reason="D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16"
+  PG[pdf] §PDFHIST-STATE entries=2 verified=true carried=none restarted=false text="History: 2 entries, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[pdf] §PDFWR-HISTORY entries=2 ops=1 cell=D10 before=498.09 after=499.09 typedOverFormula=false actor=you sheet=Report
+  PG[pdf] §SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=1 reason="D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16"
+  PG[pdf] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=2 releases=1 heapMB=8
+  PG[pdf] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=DOES_NOT_ADD_UP redBoxes=0 ms=43 heapMB=8
+  PG[pdf] §EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old="498.09" new="499.09" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74939 edits=1
+§FACTS b2a red: §EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old="498.09" new="499.09" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74939 edits=1 | §SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=1 reason="D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16" | marks [{"cell":"D28","ok":false,"gap":1,"label":"rows 40,393.44, gap 1.00"},{"cell":"F10","ok":false,"gap":1,"label":"F = C + D - E gives 1,019.16, gap 1.00"}]
+  PG[pdf] §PDFED-COST why=release-p1 pages=1 canvasesAlive=0 renders=2 releases=2 heapMB=7
+  PG[pdf] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=3 releases=2 heapMB=7
+§FACTS shot b2a_red D10 499.09: D10 is now "499.09". Page 1 does NOT add up: D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16. Ctrl+Z undoes it. clip=320,278,1100,484
+  PG[pdf] §PDFHIST-STORY cell=D10 sheet="Report" values=2 text="#1 2026-11-28 07:09 report-reader: (empty) -> 498.09 | #2 2026-11-28 07:09 you: 498.09 -> 499.09"
+  PG[pdf] §EDSHEET-EDITOR id=cD10 cell=D10 kind=cell windowScrolled=0
+  PG[pdf] §PDFHIST-CONTINUE entries=2 page=1 recorded=nothing
+  PG[pdf] §PDF_WRITE ok=true edits=1 applied=1 refused=0 bytesIn=74939 bytesOut=74939 ms=5 cells=D10:"499.09"->"498.09"
+  PG[pdf] §PDFED-REOPEN page=1 pagesRead=1 of=1 ms=179
+  PG[pdf] §EDSHEET-UNDO-MEM steps=2 withBytes=2 heldMB=0.14 budgetMB=128.00 dropped=0 heapMB=9
+  PG[pdf] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=1 reason="4 totals agree with their rows"
+  PG[pdf] §PDFHIST-STATE entries=3 verified=true carried=none restarted=false text="History: 3 entries, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[pdf] §PDFWR-HISTORY entries=3 ops=1 cell=D10 before=499.09 after=498.09 typedOverFormula=false actor=you sheet=Report
+  PG[pdf] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=0 reason="4 totals agree with their rows"
+  PG[pdf] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=4 releases=3 heapMB=9
+  PG[pdf] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=43 heapMB=10
+  PG[pdf] §EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old="499.09" new="498.09" font=LiberationSans sub=none verdict=ADDS_UP entries=3 bytes=74939 edits=2
+§FACTS b2a green: §EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old="499.09" new="498.09" font=LiberationSans sub=none verdict=ADDS_UP entries=3 bytes=74939 edits=2 | §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=0 reason="4 totals agree with their rows"
+  PG[pdf] §PDFED-COST why=release-p1 pages=1 canvasesAlive=0 renders=4 releases=4 heapMB=10
+  PG[pdf] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=5 releases=4 heapMB=11
+§FACTS shot b2a_green D10 498.09: D10 is now "498.09". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it. clip=320,278,1100,484
+  PG[pdf] §PDFHIST-STORY cell=B10 sheet="Report" values=1 text="#1 2026-11-28 07:09 report-reader: (empty) -> Accounts Receivable - Trade"
+  PG[pdf] §EDSHEET-EDITOR id=cB10 cell=B10 kind=cell windowScrolled=0
+  PG[pdf] §PDFHIST-CONTINUE entries=3 page=1 recorded=nothing
+  PG[pdf] §PDF_WRITE ok=true edits=1 applied=1 refused=0 bytesIn=74939 bytesOut=74905 ms=4 cells=B10:"Accounts Receivable - Trade"->"Accounts Receivable"
+  PG[pdf] §PDFED-REOPEN page=1 pagesRead=1 of=1 ms=323
+  PG[pdf] §EDSHEET-UNDO-MEM steps=3 withBytes=3 heldMB=0.21 budgetMB=128.00 dropped=0 heapMB=10
+  PG[pdf] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=1 reason="4 totals agree with their rows"
+  PG[pdf] §PDFHIST-STATE entries=4 verified=true carried=none restarted=false text="History: 4 entries, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[pdf] §PDFWR-HISTORY entries=4 ops=1 cell=B10 before=Accounts Receivable - Trade after=Accounts Receivable typedOverFormula=false actor=you sheet=Report
+  PG[pdf] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=1 reason="4 totals agree with their rows"
+  PG[pdf] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=72 heapMB=10
+  PG[pdf] §EDSHEET-EDIT id=cB10 cell=B10 kind=cell ok=true old="Accounts Receivable - Trade" new="Accounts Receivable" font=LiberationSans sub=none verdict=ADDS_UP entries=4 bytes=74905 edits=3
+  PG[pdf] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=6 releases=5 heapMB=10
+§FACTS b2b word: §EDSHEET-EDIT id=cB10 cell=B10 kind=cell ok=true old="Accounts Receivable - Trade" new="Accounts Receivable" font=LiberationSans sub=none verdict=ADDS_UP entries=4 bytes=74905 edits=3
+  PG[pdf] §PDFED-COST why=release-p1 pages=1 canvasesAlive=0 renders=6 releases=6 heapMB=10
+  PG[pdf] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=7 releases=6 heapMB=11
+§FACTS shot b2b_word B10: B10 is now "Accounts Receivable". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it. clip=320,278,1100,484
+  PG[pdf] §PDFHIST-STORY cell=B12 sheet="Report" values=1 text="#1 2026-11-28 07:09 report-reader: (empty) -> Product asset"
+  PG[pdf] §EDSHEET-EDITOR id=cB12 cell=B12 kind=cell windowScrolled=0
+  PG[pdf] §PDFHIST-CONTINUE entries=4 page=1 recorded=nothing
+  PG[pdf] §PDFED-FONT-SUB cell=B12 page=1 from=LiberationSans to=Helvetica missing="QzZ" new="Quiz Zebra" stated=true
+  PG[pdf] §EDSHEET-FONT cell=B12 page=1 from=LiberationSans to=Helvetica standard=true why="no face of LiberationSans in this file holds them; closest standard PDF font: described as sans-serif, old text width 1.00 of the original"
+  PG[pdf] §PDF_WRITE-FONT-ADDED page=1 fonts=DoorStd1:Helvetica holder=6
+  PG[pdf] §PDF_WRITE ok=true edits=1 applied=1 refused=0 bytesIn=74905 bytesOut=75039 ms=10 cells=B12:"Product asset"->"Quiz Zebra"
+  PG[pdf] §PDFED-REOPEN page=1 pagesRead=1 of=1 ms=316
+  PG[pdf] §EDSHEET-UNDO-MEM steps=4 withBytes=4 heldMB=0.29 budgetMB=128.00 dropped=0 heapMB=10
+  PG[pdf] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=1 reason="4 totals agree with their rows"
+  PG[pdf] §PDFHIST-STATE entries=5 verified=true carried=none restarted=false text="History: 5 entries, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[pdf] §PDFWR-HISTORY entries=5 ops=1 cell=B12 before=Product asset after=Quiz Zebra typedOverFormula=false actor=you sheet=Report
+  PG[pdf] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=4 reason="4 totals agree with their rows"
+  PG[pdf] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=8 releases=7 heapMB=13
+  PG[pdf] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=1 ms=102 heapMB=11
+  PG[pdf] §EDSHEET-EDIT id=cB12 cell=B12 kind=cell ok=true old="Product asset" new="Quiz Zebra" font=LiberationSans sub=LiberationSans>Helvetica(standard) verdict=ADDS_UP entries=5 bytes=75039 edits=4
+§FACTS b2b font: §EDSHEET-FONT cell=B12 page=1 from=LiberationSans to=Helvetica standard=true why="no face of LiberationSans in this file holds them; closest standard PDF font: described as sans-serif, old text width 1.00 of the original" | subs ["font not same: LiberationSans → Helvetica Accept"] | §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=1 ms=102 heapMB=11
+  PG[pdf] §PDFED-COST why=release-p1 pages=1 canvasesAlive=0 renders=8 releases=8 heapMB=5
+  PG[pdf] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=9 releases=8 heapMB=6
+§FACTS shot b2b_font B12 Quiz Zebra: B12 is now "Quiz Zebra", in Helvetica (font not same: LiberationSans has no "Q" "z" "Z"). Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it. clip=320,278,1100,484
+  PG[pdf] §PDFED-REOPEN page=1 pagesRead=1 of=1 ms=354
+  PG[pdf] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=9 reason="4 totals agree with their rows"
+  PG[pdf] §PDFHIST-STATE entries=6 verified=true carried=none restarted=false text="History: 6 entries, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[pdf] §PDFWR-HISTORY entries=6 ops=1 cell=B12 before=Quiz Zebra after=Product asset typedOverFormula=false actor=you (undo) sheet=Report
+  PG[pdf] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=2 reason="4 totals agree with their rows"
+  PG[pdf] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=132 heapMB=11
+  PG[pdf] §EDSHEET-UNDO cell=B12 text="Product asset" bytes=74905 undo=3 redo=1 entries=6 verdict=ADDS_UP
+  PG[pdf] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=10 releases=9 heapMB=11
+§FACTS b2b undo: §EDSHEET-UNDO cell=B12 text="Product asset" bytes=74905 undo=3 redo=1 entries=6 verdict=ADDS_UP | §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=132 heapMB=11
+  PG[pdf] §PDFED-COST why=release-p1 pages=1 canvasesAlive=0 renders=10 releases=10 heapMB=11
+  PG[pdf] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=11 releases=10 heapMB=11
+§FACTS shot b2b_undo Ctrl+Z: B12 is "Product asset" again (undo). Page 1 adds up: 4 totals agree with their rows. clip=320,278,1100,484
+  PG[pic] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[pic] §PDFED-OFFLINE ready=true
+  PG[pic] §PDFED-LAYOUT pages=1 observedAgainst=window
+  PG[pic] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=1 releases=0 heapMB=5
+  PG[pic] §PDFED-FIRST page=1 drawn=true ms=515 pages=1 canvasesAlive=1
+  PG[pic] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[pic] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[pic] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=7 reason="4 totals agree with their rows"
+  PG[pic] §EDSHEET-LAYER page=1 runs=158 writableRuns=139 lockedRuns=19 cells=144 cellTargets=133 runTargets=6 locked=20 images=1 reasons={"script-not-supported":19,"image":1} file=writable forms=1 table=ADDS_UP redBoxes=0 ms=78 heapMB=5
+  PG[pic] §PDFED-OPEN ok=true file="report_with_picture.pdf" bytes=36370 pages=1 chars=1017 outline=0 ms=647
+§FACTS b3 open: §EDSHEET-LAYER page=1 runs=158 writableRuns=139 lockedRuns=19 cells=144 cellTargets=133 runTargets=6 locked=20 images=1 reasons={"script-not-supported":19,"image":1} file=writable forms=1 table=ADDS_UP redBoxes=0 ms=78 heapMB=5
+  PG[pic] §PDFED-COST why=release-p1 pages=1 canvasesAlive=0 renders=1 releases=1 heapMB=5
+  PG[pic] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=2 releases=1 heapMB=6
+§FACTS shot b3_open the report with a stand-in picture: report_with_picture.pdf: 1 page clip=320,63,1100,850
+  PG[pic] §EDSHEET-LOCKED id=m0 kind=image lock=image why="a picture: its pixels are kept exactly as they are (text inside a picture is pixels, not editable)"
+§FACTS b3 tap on the picture: §EDSHEET-LOCKED id=m0 kind=image lock=image why="a picture: its pixels are kept exactly as they are (text inside a picture is pixels, not editable)" | page says "Locked: a picture: its pixels are kept exactly as they are (text inside a picture is pixels, not editable)."
+§FACTS shot b3_locked Locked: a picture: its pixels are kept exactly as they are (text inside a picture is pixels, not editable). clip=320,63,1100,850
+  PG[pic] §EDSHEET-EDITOR id=cB10 cell=B10 kind=cell windowScrolled=0
+  PG[pic] §PDFWR-HISTORY entries=1 ops=144 genesis=true page=1
+  PG[pic] §PDFHIST-STATE entries=1 verified=true carried=none restarted=false text="History: 1 entry, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[pic] §PDF_WRITE ok=true edits=1 applied=1 refused=0 bytesIn=36370 bytesOut=36406 ms=13 cells=B10:"Accounts Receivable - Trade"->"Accounts Receivable"
+  PG[pic] §PDFED-REOPEN page=1 pagesRead=1 of=1 ms=362
+  PG[pic] §EDSHEET-UNDO-MEM steps=1 withBytes=1 heldMB=0.03 budgetMB=128.00 dropped=0 heapMB=7
+  PG[pic] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=4 reason="4 totals agree with their rows"
+  PG[pic] §PDFHIST-STATE entries=2 verified=true carried=none restarted=false text="History: 2 entries, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[pic] §PDFWR-HISTORY entries=2 ops=1 cell=B10 before=Accounts Receivable - Trade after=Accounts Receivable typedOverFormula=false actor=you sheet=Report
+  PG[pic] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=2 reason="4 totals agree with their rows"
+  PG[pic] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=3 releases=2 heapMB=7
+  PG[pic] §EDSHEET-LAYER page=1 runs=158 writableRuns=139 lockedRuns=19 cells=144 cellTargets=133 runTargets=6 locked=20 images=1 reasons={"script-not-supported":19,"image":1} file=writable forms=1 table=ADDS_UP redBoxes=0 ms=96 heapMB=8
+  PG[pic] §EDSHEET-EDIT id=cB10 cell=B10 kind=cell ok=true old="Accounts Receivable - Trade" new="Accounts Receivable" font=LiberationSans sub=none verdict=ADDS_UP entries=2 bytes=36406 edits=1
+§FACTS b3 edit: §EDSHEET-EDIT id=cB10 cell=B10 kind=cell ok=true old="Accounts Receivable - Trade" new="Accounts Receivable" font=LiberationSans sub=none verdict=ADDS_UP entries=2 bytes=36406 edits=1
+  PG[pic] §PDFED-COST why=release-p1 pages=1 canvasesAlive=0 renders=3 releases=3 heapMB=8
+  PG[pic] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=4 releases=3 heapMB=9
+§FACTS shot b3_edit B10 Accounts Receivable on the picture page: B10 is now "Accounts Receivable". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it. clip=320,63,1100,850
+  PG[pic] §PDF_EMBED ok=true name=_door_history.jsonl bytesIn=36406 bytesOut=38545 data=15282 stored=1750 replaced=false
+  PG[pic] §PDFHIST-SAVE ok=true entries=2 lineBytes=15282 bytesIn=36406 bytesOut=38545 added=2139 replaced=false
+  PG[pic] §PDFWR-DOWNLOAD file="report_with_picture_edited.pdf" bytes=38545 edits=1 historyEntries=2 verdict= historyInFile=true
+  PG[pic] §EDSHEET-EXPORT bytes=38545 edits=1 substituted=0 list=[]
+§FACTS §FILM_H3 objects=40 identical=38 changed=1:catalog,5:page-content added=41,42 removed=0 imageObjects=1 imageBytesIdentical=true rasterInside=116 rasterOutside=0 | §PDFWR-DOWNLOAD file="report_with_picture_edited.pdf" bytes=38545 edits=1 historyEntries=2 verdict= historyInFile=true | pdfdetach: ["1: _door_history.jsonl"]
+  PG[pic] §PDFED-COST why=release-p1 pages=1 canvasesAlive=0 renders=4 releases=4 heapMB=9
+  PG[pic] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=5 releases=4 heapMB=10
+§FACTS shot b3_dl Download PDF: B10 is now "Accounts Receivable". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it. clip=0,0,1500,419
+  PG[pic] §PDFXLSX-FORMULAS aligned=0 from=history
+  PG[pic] §PDFXLSX-SHEETS page="Report" alsoFromHistory=[] historySheets=1
+  PG[pic] §PDFHIST-XLSX entries=2 sheet="_door_history" rows=2 longestLine=14586 cellLimit=32767
+  PG[pic] §PDFED-XLSX file="report_with_picture_page1.xlsx" bytes=32555 cells=144 verdict=ADDS_UP
+§FACTS b4 xlsx: §PDFED-XLSX file="report_with_picture_page1.xlsx" bytes=32555 cells=144 verdict=ADDS_UP | §PDFHIST-XLSX entries=2 sheet="_door_history" rows=2 longestLine=14586 cellLimit=32767 | sheets ["Report","_door_source","_door_history"] hidden [0,1,2] | C28=SUM(C6:C26) ; D28=SUM(D6:D26) ; E28=SUM(E6:E26) ; F28=SUM(F6:F26) | _door_text present=false
+  PG[pic] §PDFED-COST why=release-p1 pages=1 canvasesAlive=0 renders=5 releases=5 heapMB=11
+  PG[pic] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=6 releases=5 heapMB=11
+§FACTS shot b4_xlsx Download .xlsx: B10 is now "Accounts Receivable". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it. clip=0,0,1500,419
+  PG[history] §SHIST-PAGE-COST requests=6 bytes=96327 readyMs=587 heapMB=2 kernelLoaded=false scripts=5
+§FACTS shot h0_page the Sheet history page before any file
+  PG[history] §SHIST-PAGE-BIND state=intact entries=2 cells=144 pending=0
+  PG[history] §SHIST-PAGE-OPEN name=pic_report_with_picture_page1.xlsx bytes=32555 sheets=1 cells=144 state=intact ms=83 heapMB=4
+§FACTS b4 on Sheet history: §SHIST-PAGE-OPEN name=pic_report_with_picture_page1.xlsx bytes=32555 sheets=1 cells=144 state=intact ms=83 heapMB=4 | §SHIST-PAGE-BIND state=intact entries=2 cells=144 pending=0 | page says "History: 2 entries, verified. The sheet matches the last stamp (you, 2026-11-28 07:09 UTC): nothing has changed since." state=intact
+§FACTS shot h1_xlsx the .xlsx opened on Sheet history: History: 2 entries, verified. The sheet matches the last stamp (you, 2026-11-28 07:09 UTC): nothing has changed since.
+  PG[pic] §PDFHIST-STORY cell=B10 sheet="Report" values=2 text="#1 2026-11-28 07:09 report-reader: (empty) -> Accounts Receivable - Trade | #2 2026-11-28 07:09 you: Accounts Receivable - Trade -> Accounts Receivable"
+§FACTS b5 story: §PDFHIST-STORY cell=B10 sheet="Report" values=2 text="#1 2026-11-28 07:09 report-reader: (empty) -> Accounts Receivable - Trade | #2 2026-11-28 07:09 you: Accounts Receivable - Trade -> Accounts Receivable"
+§FACTS shot b5_story the story of B10 clip=0,176,250,253
+  PG[erpreport] §SPIKE-BEACON installed=Y captured=0 sample=(none-yet) buf=localStorage:bim_field_errors bound=50 telemetryPipe=N pii=N
+  PG[erpreport] §AD_PARSER_LOADED v1
+  PG[erpreport] §AD_DATA_LOADED v1
+  PG[erpreport] §IDMP-SESSION_LOADED v3
+  PG[erpreport] §ERP-DESCRIPTOR registered=ad active=ad facets=structure/data/session
+  PG[erpreport] §FIELDHEALTH_LOADED v1 (4 widgets: field_errors/durability_ladder/db_size_gauge/environment)
+  PG[erpreport] §KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+  PG[erpreport] §OP_UPCASTER_LOADED v1 (D2: schema_version stamp + read-time upcaster registry)
+  PG[erpreport] §OP_UPCASTER install OK — schema_version stamping is now the default write seam
+  PG[erpreport] §SIGN_LOADED erp_signer.js (W-SIGN edge keypair, ECDSA P-256)
+  PG[erpreport] §T1_ATTRIB_LOADED erp_attrib.js (PIN → audit metadata; device key still the only signer)
+  PG[erpreport] §KANBAN_LENS_LOADED v1 (F2 kanban chrome)
+  PG[erpreport] §REPORT layer mounted (read face — ▤ Report)
+  PG[erpreport] §RULE_FOLD_LOADED rule_fold.js (the ONE gesture — L2 premium + L1 may-complete, signed, reversible)
+  PG[erpreport] §MODEL-PA registered PA_Goal afterSave (MGoal.afterSave :594-603)
+  PG[erpreport] §ENV_EDGE set nowMs=Y uuid=Y perfMs=Y replaced=N
+  PG[erpreport] §NINJA-PILL loaded
+  PG[erpreport] §CONNECT broker loaded v1 (channels: selection/timeline/identity + toggle)
+  PG[erpreport] §TIPFOLD_LOADED tip_fold.js (T7 memoized tip-folds — moveDeltaFor precedent, ERP-side)
+  PG[erpreport] §SHARD_LOADED erp_shard.js (T7 fix 4/4b — signed snapshot boundary, archive-confirmed, lazy-verified)
+  PG[erpreport] §CRUD layer mounted (Edit-mode ready)
+  PG[erpreport] §IDMP-HIST seed restored=0 (log empty)
+  PG[erpreport] §REPLICA_CLIENT_LOADED v1
+  PG[erpreport] §PERSIST-UI loaded (window.ErpPersist: backup/restore/renderInto)
+  PG[erpreport] §RELAY_CLIENT_LOADED v1
+  PG[erpreport] §SYNC_FSM_LOADED v1 (schema-gate + chain-gate)
+  PG[erpreport] §SYNC_RELAY_LOADED v1 (no ?relay= param — disabled)
+  PG[erpreport] §BLUE_FUTURE_LOADED v1 (item 0 browser legs — rim/banner/watermark + dot gestures + zoom)
+  PG[erpreport] §DICT-LAZY asked=(none) deferred=[odoo] registered=[ad]
+  PG[erpreport] §SEAM-FROZEN seam=host-contract globals=IdmpHost methods=trace,focus,openTab,has,locate,zoom,recentItems,recentRemove,housekeeping mount=#idmp-content
+  PG[erpreport] §CRUD-IDMP-ADAPTER mounted globals=withBundle,curChain,fname,__crudHostAnchor overlay=present
+  PG[erpreport] §AD-SELFEDIT-LIVE tip-source wired (ad_parser ← crud sidecar)
+  PG[erpreport] §HELP layer mounted (NeedHelp? ready)
+  PG[erpreport] §TOUR overlay=help_overlay host=idempiere forked=0 mounts=2 init=ok
+  PG[erpreport] §TOUR overlay=help_overlay host=idempiere forked=0 adapter=init-only keys=6 globals=live
+  PG[erpreport] §ZOOM-ACROSS register id=viewer total=1
+  PG[erpreport] §ZOOM-ACROSS register id=timemachine total=2
+  PG[erpreport] §TEAMS-EMBED OFF (default) — no pill, no pane, pixel-identical
+  PG[erpreport] §WHOLE-MOUNT page=idempiere rootPrefix="../" mode=whole
+  PG[erpreport] §EVT SNIFF|on — recording every §act, deny-filtered
+  PG[erpreport] §IDMP-HIST-TAP wired fields(search,clean) + sniffer ON + bar SUBSCRIBES tap (knob=high) — one symmetric line each
+  PG[erpreport] §DURABLE-KV hydrate mirror=0 restored=0 skippedClosed=0 ms=101
+  PG[erpreport] §LEDGERUI no kept folder
+  PG[erpreport] §SW_REG scope=https://red1oon.github.io/bim-ootb/erp/
+  PG[erpreport] §VFS chosen=idb opfsApi=Y crossOriginIsolated=N misconfig=N — OPFS API present but NOT crossOriginIsolated (no COOP/COEP — e.g. GitHub Pages) → IndexedDB VFS
+  PG[erpreport] §OVERLAY pills registered ids=setuplens,windowlens
+  PG[erpreport] §PILL_BUILDER ready actions=13 layout=flow
+  PG[erpreport] §SETTINGS_SAVE items=13 hidden=0
+  PG[erpreport] §PILL_SYNC synced=1
+  PG[erpreport] §IDMP-LIFECYCLE stage=pre-client install=rail migrate=rail shown=[reports,setuplens,windowlens,dashboard,team,rule,warehouse,showme,plugin,share,home,worldhist]
+  PG[erpreport] §PILL-CUE attract=⋯ collapsed=true hidden=0
+  PG[erpreport] §PILL-CUE attract=⋯ collapsed=true hidden=0
+  PG[erpreport] §IDMP-PILLS source=registry pills=13 handAuthored=0 mountedButtons=12 overflow=⋯ hidden=0 stage=pre-client ids=[reports,setuplens,windowlens,zoomacross,dashboard,team,rule,warehouse,showme,plugin,share,home,worldhist] contributed=[]
+  PG[erpreport] §SIGN installed alg=ECDSA-P256 pubkey=3059301306072a86… custody=idb-nonextractable
+  PG[erpreport] §NINJA-REPORT-PILL loaded base=/bim-ootb/erp/overlay/ninja/
+  PG[erpreport] §OVERLAY loaded 9/9
+  PG[erpreport] §AD-SEED-PATCH file=patches/ad_seed.db.sql statements=3836 changed=19348 failed=3 duplicate_rows_removed=0 (self-heal, idempotent)
+  PG[erpreport] §AD-SEED-PATCH file=patches/mfg.sql statements=92 changed=36 failed=0 duplicate_rows_removed=0 (self-heal, idempotent)
+  PG[erpreport] §AD-SEED-FINGERPRINT 35968569
+  PG[erpreport] §UDF-BOUND at load
+  PG[erpreport] §UDF-DATA bound at load db=true
+  PG[erpreport] §BIMLINK_OVERLAY ensure column=added inserted=3(AD_Element=1000016,AD_Column=7500017,AD_Field=7820407) present=0 tab200500=N ms=91 (C_Project.BIM_ViewerURL "BIM Model", URL, read-only; rows from the legacy 2Pack 13.1.1; boot overlay, outside the team base hash)
+  PG[erpreport] §BIM_OVERLAY none (NotFoundError)
+  PG[erpreport] §SYSTEM-TENANT insert-fail AD_Org UNIQUE constraint failed: ad_org.ad_org_id
+  PG[erpreport] §SYSTEM-TENANT insert-fail AD_Role UNIQUE constraint failed: ad_role.ad_role_id
+  PG[erpreport] §SYSTEM-TENANT insert-fail AD_User_Roles UNIQUE constraint failed: ad_user_roles.ad_user_id, ad_user_roles.ad_role_id
+  PG[erpreport] §SYSTEM-TENANT insert-fail AD_User_Roles UNIQUE constraint failed: ad_user_roles.ad_user_id, ad_user_roles.ad_role_id
+  PG[erpreport] §SYSTEM-TENANT insert-fail AD_Role_OrgAccess UNIQUE constraint failed: ad_role_orgaccess.ad_role_id, ad_role_orgaccess.ad_org_id
+  PG[erpreport] §SYSTEM-TENANT insert-fail AD_Process_Access UNIQUE constraint failed: ad_process_access.ad_process_id, ad_process_access.ad_role_id
+  PG[erpreport] §SYSTEM-TENANT ensure rows=1 (System tenant 0 + role 0 + user-roles 10/100 + org-access 0 + proc-access 53161) source=idempiere_test
+  PG[erpreport] §RULE_TABLES ensure created=2 (ad_rule, ad_table_scriptvalidator; boot overlay, outside the team base hash)
+  PG[erpreport] §IMPORT_TABLES ensure created=3 (i_payment, i_product, i_order; boot overlay, outside the team base hash)
+  PG[erpreport] §RECUR_TABLES ensure created=2 (c_recurring_run, c_recurringgroup; boot overlay, outside the team base hash)
+  PG[erpreport] §IMPORT_INV_TABLES ensure created=1 (i_inventory; boot overlay, outside the team base hash)
+  PG[erpreport] §IMPORT_GLJ_TABLES ensure created=1 (i_gljournal; boot overlay, outside the team base hash)
+  PG[erpreport] §IMPORT_IBS_TABLES ensure created=1 (i_bankstatement; boot overlay, outside the team base hash)
+  PG[erpreport] §IMPORT_INVOICE_TABLES ensure created=1 (i_invoice; boot overlay, outside the team base hash)
+  PG[erpreport] §PIPO_TABLES ensure created=1 (ad_package_uuid_map; boot overlay, outside the team base hash)
+  PG[erpreport] §BANKTRANSFER_TABLES ensure created=1 (c_banktransfer; boot overlay, outside the team base hash)
+  PG[erpreport] §INDEX_OVERLAY ensure created=259 present=0 skipped=46 analyze_ms=35 ms=348 (legacy official dictionary indexes, IDEMPIERE-1132; boot overlay, outside the team base hash)
+  PG[erpreport] §TAXCAT_OVERLAY ensure filled=41 left=59 ms=2 (M_Product.C_TaxCategory_ID NOT NULL on legacy; the IsDefault tax category, as the legacy window; boot overlay, outside the team base hash)
+  PG[erpreport] §HBA_SEED_OVERLAY ensure removed=36 {"c_subscription":4,"hr_movement":7,"hr_employee":2,"s_resourceunavailable":6,"s_resourceassignment":7,"s_resource":2,"ad_user":2,"c_bpartner":6} (base seed == legacy; the rows are plugin org.kernel.hba.demo, boot overlay outside the team base hash)
+  PG[erpreport] §CTXHELP_OVERLAY ensure tables=4/4 rows=3/3 app=409/409 skipped=0 ms=41 (legacy context help tables; boot overlay, outside the team base hash)
+  PG[erpreport] §DOCVALUE_OVERLAY ensure applied=2 skipped=0 ms=4 (document-value workflows, DocWorkflowManager; boot overlay, outside the team base hash)
+  PG[erpreport] §KERNEL_OP committed id=2 uuid=acf47109 type=PLUGIN_INSTALL params={"id":"org.idempiere.webservices","version":"1.0.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/webservices.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[erpreport] §PLUGIN-INSTALL id=org.idempiere.webservices version=1.0.0 opId=2
+  PG[erpreport] §PLUGIN_UNSIGNED id=org.idempiere.webservices version=1.0.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/webservices.mjs
+  PG[erpreport] §PLUGIN-BUILTIN installed (NOT started: default off) url=https://red1oon.github.io/bim-ootb/erp/plugins/webservices.mjs
+  PG[erpreport] §KERNEL_OP committed id=3 uuid=b52e9065 type=PLUGIN_INSTALL params={"id":"org.kernel.pos-integration","version":"1.0.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/pos_integration.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[erpreport] §PLUGIN-INSTALL id=org.kernel.pos-integration version=1.0.0 opId=3
+  PG[erpreport] §PLUGIN_UNSIGNED id=org.kernel.pos-integration version=1.0.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/pos_integration.mjs
+  PG[erpreport] §PLUGIN-BUILTIN installed (NOT started: default off) url=https://red1oon.github.io/bim-ootb/erp/plugins/pos_integration.mjs
+  PG[erpreport] §KERNEL_OP committed id=4 uuid=1302a8d9 type=PLUGIN_INSTALL params={"id":"org.kernel.mf-lens","version":"1.0.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/mf_lens.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[erpreport] §PLUGIN-INSTALL id=org.kernel.mf-lens version=1.0.0 opId=4
+  PG[erpreport] §PLUGIN_UNSIGNED id=org.kernel.mf-lens version=1.0.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/mf_lens.mjs
+  PG[erpreport] §PLUGIN-BUILTIN installed (NOT started: default off) url=https://red1oon.github.io/bim-ootb/erp/plugins/mf_lens.mjs
+  PG[erpreport] §KERNEL_OP committed id=5 uuid=4fe27a39 type=PLUGIN_INSTALL params={"id":"org.idempiere.ninja.migrate","version":"1.0.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/ninja_migrate.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[erpreport] §PLUGIN-INSTALL id=org.idempiere.ninja.migrate version=1.0.0 opId=5
+  PG[erpreport] §PLUGIN_UNSIGNED id=org.idempiere.ninja.migrate version=1.0.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/ninja_migrate.mjs
+  PG[erpreport] §PLUGIN-BUILTIN installed (NOT started: default off) url=https://red1oon.github.io/bim-ootb/erp/plugins/ninja_migrate.mjs
+  PG[erpreport] §KERNEL_OP committed id=6 uuid=f905d2e3 type=PLUGIN_INSTALL params={"id":"org.kernel.odoo.migrate","version":"1.0.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/odoo_migrate.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[erpreport] §PLUGIN-INSTALL id=org.kernel.odoo.migrate version=1.0.0 opId=6
+  PG[erpreport] §PLUGIN_UNSIGNED id=org.kernel.odoo.migrate version=1.0.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/odoo_migrate.mjs
+  PG[erpreport] §PLUGIN-BUILTIN installed (NOT started: default off) url=https://red1oon.github.io/bim-ootb/erp/plugins/odoo_migrate.mjs
+  PG[erpreport] §KERNEL_OP committed id=7 uuid=161f9416 type=PLUGIN_INSTALL params={"id":"org.kernel.bc.migrate","version":"0.1.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/bc_migrate.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[erpreport] §PLUGIN-INSTALL id=org.kernel.bc.migrate version=0.1.0 opId=7
+  PG[erpreport] §PLUGIN_UNSIGNED id=org.kernel.bc.migrate version=0.1.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/bc_migrate.mjs
+  PG[erpreport] §PLUGIN-BUILTIN installed (NOT started: default off) url=https://red1oon.github.io/bim-ootb/erp/plugins/bc_migrate.mjs
+  PG[erpreport] §KERNEL_OP committed id=8 uuid=8ead2aae type=PLUGIN_INSTALL params={"id":"org.kernel.sap.migrate","version":"0.1.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/sap_migrate.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[erpreport] §PLUGIN-INSTALL id=org.kernel.sap.migrate version=0.1.0 opId=8
+  PG[erpreport] §PLUGIN_UNSIGNED id=org.kernel.sap.migrate version=0.1.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/sap_migrate.mjs
+  PG[erpreport] §PLUGIN-BUILTIN installed (NOT started: default off) url=https://red1oon.github.io/bim-ootb/erp/plugins/sap_migrate.mjs
+  PG[erpreport] §KERNEL_OP committed id=9 uuid=785f1bbd type=PLUGIN_INSTALL params={"id":"org.kernel.idempiere.migrate","version":"0.1.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/idempiere_migrate.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[erpreport] §PLUGIN-INSTALL id=org.kernel.idempiere.migrate version=0.1.0 opId=9
+  PG[erpreport] §PLUGIN_UNSIGNED id=org.kernel.idempiere.migrate version=0.1.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/idempiere_migrate.mjs
+  PG[erpreport] §PLUGIN-BUILTIN installed (NOT started: default off) url=https://red1oon.github.io/bim-ootb/erp/plugins/idempiere_migrate.mjs
+  PG[erpreport] §KERNEL_OP committed id=10 uuid=192b8791 type=PLUGIN_INSTALL params={"id":"org.kernel.hba.demo","version":"1.0.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/hba_demo.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[erpreport] §PLUGIN-INSTALL id=org.kernel.hba.demo version=1.0.0 opId=10
+  PG[erpreport] §PLUGIN_UNSIGNED id=org.kernel.hba.demo version=1.0.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/hba_demo.mjs
+  PG[erpreport] §PLUGIN-BUILTIN installed (NOT started: default off) url=https://red1oon.github.io/bim-ootb/erp/plugins/hba_demo.mjs
+  PG[erpreport] §KERNEL_OP committed id=11 uuid=4c489837 type=PLUGIN_INSTALL params={"id":"org.idempiere.ninja.excel","version":"1.0.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/ninja_excel.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[erpreport] §PLUGIN-INSTALL id=org.idempiere.ninja.excel version=1.0.0 opId=11
+  PG[erpreport] §PLUGIN_UNSIGNED id=org.idempiere.ninja.excel version=1.0.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/ninja_excel.mjs
+  PG[erpreport] §PILL-CONTRIB add id=ninja owner=org.idempiere.ninja.excel icon=named order=4.8 mounted=true
+  PG[erpreport] §SETTINGS_SAVE items=14 hidden=0
+  PG[erpreport] §KERNEL_OP committed id=12 uuid=52d0b768 type=PLUGIN_START params={"id":"org.idempiere.ninja.excel","version":"1.0.0","why":"start","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[erpreport] §PLUGIN-START    id=org.idempiere.ninja.excel state=ACTIVE contributions=1
+  PG[erpreport] §PLUGIN-BUILTIN installed+started url=https://red1oon.github.io/bim-ootb/erp/plugins/ninja_excel.mjs
+  PG[erpreport] §KERNEL_OP committed id=13 uuid=148e0a45 type=PLUGIN_INSTALL params={"id":"org.idempiere.ninja.create","version":"1.0.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/ninja_create.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[erpreport] §PLUGIN-INSTALL id=org.idempiere.ninja.create version=1.0.0 opId=13
+  PG[erpreport] §PLUGIN_UNSIGNED id=org.idempiere.ninja.create version=1.0.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/ninja_create.mjs
+  PG[erpreport] §PILL-CONTRIB add id=ninjacreate owner=org.idempiere.ninja.create icon=letter order=4.85 mounted=true
+  PG[erpreport] §SETTINGS_SAVE items=15 hidden=0
+  PG[erpreport] §KERNEL_OP committed id=14 uuid=71730abf type=PLUGIN_START params={"id":"org.idempiere.ninja.create","version":"1.0.0","why":"start","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[erpreport] §PLUGIN-START    id=org.idempiere.ninja.create state=ACTIVE contributions=1
+  PG[erpreport] §PLUGIN-BUILTIN installed+started url=https://red1oon.github.io/bim-ootb/erp/plugins/ninja_create.mjs
+  PG[erpreport] §PILL open=true
+  PG[erpreport] §NINJA-PILL open db=Y engine=Y
+  PG[erpreport] §NINJA-REPORT-PILL panel samples=2
+  PG[erpreport] §PILL action=ninja
+  PG[erpreport] §KERNEL_OP committed id=15 uuid=1c9bdd13 type=PLUGIN_INSTALL params={"id":"org.kernel.bim-document","version":"1.0.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/bim_document.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[erpreport] §PLUGIN-INSTALL id=org.kernel.bim-document version=1.0.0 opId=15
+  PG[erpreport] §PLUGIN_UNSIGNED id=org.kernel.bim-document version=1.0.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/bim_document.mjs
+  PG[erpreport] §PLUGIN-ROLE-ACCESS bundle=org.kernel.bim-document roles=12 rows=+60 other=3222 (PackInHandler.updateRoleAccess: every active non-manual role, MRole.updateAccessRecords)
+  PG[erpreport] §BIMDOC-PLUGIN task-date-columns-added=[BIM_StartDate,BIM_EndDate]
+  PG[erpreport] §BIMDOC-PLUGIN start table=9541001 cols=25 window=9541001 doctypes=1 clients=[11] windowAccess=host family=BIM_Document (dictionary staged by the host, refcounted)
+  PG[erpreport] §KERNEL_OP committed id=16 uuid=ebaf21f0 type=PLUGIN_START params={"id":"org.kernel.bim-document","version":"1.0.0","why":"start","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[erpreport] §PLUGIN-START    id=org.kernel.bim-document state=ACTIVE contributions=340
+  PG[erpreport] §PLUGIN-BUILTIN installed+started url=https://red1oon.github.io/bim-ootb/erp/plugins/bim_document.mjs
+  PG[erpreport] §PLUGIN-BOOT restored=3
+  PG[erpreport] §AD_PARSER init menu=591 windows=376 tabs=1139 fields=21042 columns=26196 tables=1005
+  PG[erpreport] §I18N initial choice=en_US src=browser shows=en_US
+  PG[erpreport] §IDEMPIERE boot db=network ms=7915
+  PG[erpreport] §IDMP-SESSION listUsers users=18 withRoles=12 source=ad_user/ad_user_roles
+  PG[erpreport] §IDMP-SESSION rolesForUser user=101 roles=3 source=ad_user_roles/ad_role
+  PG[erpreport] §IDMP-SESSION orgsForRole role=102 orgs=10 source=ad_role_orgaccess/ad_org
+  PG[erpreport] §AUTOLOGIN-ORG picked=11 of [0,11,12,50000,50001,50002,50004,50005,50006,50007] realOrgs=9 (AD_Val_Rule 130: a document org is never 0)
+  PG[erpreport] §IDMP-SESSION rolesForUser user=101 roles=3 source=ad_user_roles/ad_role
+  PG[erpreport] §IDMP-SESSION clientFor role=102 client=GardenWorld(11) source=ad_role/ad_client
+  PG[erpreport] §IDMP-SESSION orgsForRole role=102 orgs=10 source=ad_role_orgaccess/ad_org
+  PG[erpreport] §IDMP-SESSION listUsers users=18 withRoles=12 source=ad_user/ad_user_roles
+  PG[erpreport] §IDMP-SESSION accessibleWindows role=102 windows=414 rw=414 source=AdAccess/ad_window_access
+  PG[erpreport] §IDMP-SESSION accessibleProcesses role=102 processes=411 source=AdAccess/ad_process_access
+  PG[erpreport] §IDMP-SESSION accessibleForms role=102 forms=43 source=AdAccess/ad_form_access
+  PG[erpreport] §IDMP-SESSION accessibleLeaves role=102 workflows=57 infos=15 tasks=0 source=AdAccess
+  PG[erpreport] §IDMP-SESSION acctGate role=102 isShowAcct=true source=ad_role.isshowacct
+  PG[erpreport] §IDEMPIERE-AUTOLOGIN user=GardenAdmin role=102 via=GardenAdmin
+  PG[erpreport] §ACTOR login user=101 app.actor=101 client=11 org=11 role=102
+  PG[erpreport] §FIELD_HELP focus=none
+  PG[erpreport] §FIELD_HELP panel bound collapsed=false tech=false
+  PG[erpreport] §AD_PARSER getMenuTree enter
+  PG[erpreport] §AD_PARSER getMenuTree nodes=588 roots=15
+  PG[erpreport] §IDMP-SESSION scopeMenu visibleWindows=295/333 visibleProcs=137/159 visibleForms=21/24 visibleWorkflows=11/12 visibleInfos=3/4 visibleTasks=0/3 roots=15
+  PG[erpreport] §IDEMPIERE menu groups=51 leaves=467 visibleWindows=295/333 source=ad_menu handAuthored=0
+  PG[erpreport] §IDEMPIERE-LOGIN user=GardenAdmin roles=3 client=GardenWorld(11) org=HQ menu-visible=295/333 source=ad_user/ad_role/ad_window_access handAuthored=0
+  PG[erpreport] §SETTINGS_SAVE items=15 hidden=0
+  PG[erpreport] §IDMP-LIFECYCLE stage=in-client install=overflow migrate=overflow shown=[reports,setuplens,windowlens,dashboard,team,rule,warehouse,showme,plugin,share,home,worldhist,ninja,ninjacreate]
+  PG[erpreport] §HELP setOps store=default
+  PG[erpreport] §RESUME candidate=0 seen=0 otherUser=0 noDraft=0
+  PG[erpreport] §LOGINCTX build client=11 org=11 role=102 user=101 wh= day=2026-11-28 keys=50 ms=30
+  PG[erpreport] §DASH-GADGET docstatus indicators=6 Notice=0 | Request=1 | Workflow Activities=0 | Unprocessed Documents=0 | Sales Orders received today=0 | Pending Customer Shipments=0 (click opens the window WITHOUT the indicator filter: §DASH-UNPORTED zoom-filter)
+  PG[erpreport] §DASH-UNPORTED id=200018 name="KPI1" kind=statusline placement=main
+  PG[erpreport] §DASH-UNPORTED id=50002 name="Views" kind=views placement=main
+  PG[erpreport] §DASH-UNPORTED id=200019 name="KPI2" kind=statusline placement=main
+  PG[erpreport] §DASH-GADGET html id=200005 name="Donate" links=0 buttons=0
+  PG[erpreport] §DASH-UNPORTED id=200002 name="Running Jobs" kind=runningjobs placement=main
+  PG[erpreport] §DASH-UNPORTED id=50004 name="Calendar" kind=calendar placement=main
+  PG[erpreport] §DASH-GOAL id=101 source=live actual=0 percent=0
+  PG[erpreport] §DASH-GOAL id=102 source=live actual=430.35 percent=43
+  PG[erpreport] §DASH-GOAL id=104 source=live actual=0 percent=0
+  PG[erpreport] §DASH-GOAL id=105 source=live actual=1 percent=10
+  PG[erpreport] §DASH-GADGET performance goals=4 titles=["Invoice Revenue: 0%","Open Invoices: 43%","Service Requests (Quarter): 0%","Total Open Service Requests: 10%"]
+  PG[erpreport] §DASH-UNPORTED id=50001 name="Favorites" kind=favourites placement=side
+  PG[erpreport] §DASH-HOME client=11 role=102 user=101 main=8 side=2 cols=5 rendered=4 unported=6 ids=[200003,200018,50002,200019,200005,200002,50004,50003]
+  PG[erpreport] §HELP_PACK index loaded lang=en_US records=header-only vocab=0
+  PG[erpreport] §HELP_PACK loaded lang=en_US fields=0 tabs=0 processes=0 howto=0
+  PG[erpreport] §OPLOG-HYDRATE ops=0 tip=0000000000000000000000000000000000000000000000000000000000000000 source=readAll
+  PG[erpreport] §ADMIN3-CHANGEAUDIT rebuilt rows=0 from=login ms=340 (temp.ad_changelog, derived from the op-log, not exported)
+  PG[erpreport] §GRID-CUSTOM loaded user=101 tabs=[]
+  PG[erpreport] §DASH-HOME sidecar ready=true (Performance + docstatus redrawn over base + tip when the tip holds edits)
+  PG[erpreport] §UDP6G-LIST user=101 rows=0 shown=0 maxShown=10 noWindowAccess=0 staleDeleted=0 recordAccess=NOT-PORTED labels=[]
+  PG[erpreport] §DASH-GADGET recentitems shown=0 labels=[]
+  PG[erpreport] §LOGINCTX build client=11 org=11 role=102 user=101 wh= day=2026-11-28 keys=50 ms=17
+  PG[erpreport] §HELP_SEARCH index lang=en_US windows=295 records=1081 actions=13 statuses=12 howto=130 (en_US) phrases=722 vocab=0
+  PG[erpreport] §HELP_CTX window=null type=H id=0 howto=200000 shown=msg lang=en_US
+  PG[erpreport] §OPLOG-HYDRATE ops=0 tip=0000000000000000000000000000000000000000000000000000000000000000 source=readAll
+  PG[erpreport] §KRN_GROUP committed gid=b302a273-dd43-4fc1-9dde-86a51a2b53d4 ops=1 groupHash=dd34229db324… tip=55af2e00f5b4… sealed=1 (WHOLE — all-or-none)
+  PG[erpreport] §KRN_CHAIN verify OK len=1 tip=55af2e00f5b4…
+  PG[erpreport] §OPLOG-APPEND key=1 id=1 op_uuid=9a87a839-3ceb-4110-901f-eeb3506067f5
+  PG[erpreport] §CRUD-GROUP-PERSIST ops=1 source=sidecar gid=b302a273-dd43-4fc1-9dde-86a51a2b53d4 sealed=1 verifyChain=ok
+  PG[erpreport] §IDMP-HIST crumb tag=CRUD label="-GROUP-PERSIST ops=1 source=sidecar gid=b302a273-dd43-4fc1-9dde-86a51a2b53d4 sea" depth=1 (from §-stream, no per-feature wiring)
+  PG[erpreport] §IDMP-HIST render dots=1 idx=0 draftPip=N
+  PG[erpreport] §UDP8-SESSION open user=101 role=102 client=11 websession=444440f8-9fe1-4958-aa66-efc1abb1f34e committed=true row=-1
+  PG[erpreport] §KRN_CHAIN verify OK len=1 tip=55af2e00f5b4…
+  PG[erpreport] §OPLOG-HYDRATE ops=1 tip=55af2e00f5b40fe407fc1429f14145cdbe174a82232f810c7257f86d1be01e3b source=readAll
+  PG[erpreport] §KRN_GROUP committed gid=3fa1aefe-4589-4a76-9755-9c5b45a1a6a0 ops=4 groupHash=65cf9e913c33… tip=c6e423e0aa40… sealed=4 (WHOLE — all-or-none)
+  PG[erpreport] §KRN_CHAIN verify-incr OK checked=4 skipped=1 tip=c6e423e0aa40…
+  PG[erpreport] §OPLOG-APPEND key=2 id=2 op_uuid=a34e456e-50e0-4a17-9145-e1b9660110fd
+  PG[erpreport] §OPLOG-APPEND key=3 id=3 op_uuid=e53f4cba-a6b2-4e4f-a27e-9b121dfc3b31
+  PG[erpreport] §OPLOG-APPEND key=4 id=4 op_uuid=bed3442b-30c6-48b5-bcd3-f7e2beccd0a7
+  PG[erpreport] §OPLOG-APPEND key=5 id=5 op_uuid=160849f2-332f-4757-a93e-aafa9f327c7c
+  PG[erpreport] §CRUD-GROUP-PERSIST ops=4 source=sidecar gid=3fa1aefe-4589-4a76-9755-9c5b45a1a6a0 sealed=4 verifyChain=ok
+  PG[erpreport] §GOAL_STORE goals=4 written=4 ops=4 committed=true ms=263 heapMB=73
+  PG[erpreport] §STD-DEFAULTS create table=ad_session client=11 org=11 by=101 active=Y
+  PG[erpreport] §ADMIN3-CHANGEAUDIT rebuilt rows=2 from=commit ms=59 (temp.ad_changelog, derived from the op-log, not exported)
+§FACTS shot b6_pill the Excel Report pill
+  PG[erpreport] §NINJA-PILL report template=ninja_tb_sample.xlsx bytes=7806
+  PG[erpreport] §NINJA_REPORT_LOAD part=engine scripts=6 ms=1003 files=exceljs.min.js,ninja_calc.js,ninja_template.js,ninja_template_xlsx.js,ninja_preflight.js,ninja_pdf.js
+  PG[erpreport] §PREFLIGHT_SUMMARY errors=0 warnings=0 - run allowed
+  PG[erpreport] §STD-DEFAULTS create table=ad_session client=11 org=11 by=101 active=Y
+  PG[erpreport] §MV-TIP-SHADOW table=ad_session base=0 tip=1 created=1
+  PG[erpreport] §MV-TIP-SHADOW table=pa_goal base=4 tip=4 created=0
+  PG[erpreport] §MV-TIP-SHADOW views=1 [ad_sessioninfo_v]
+  PG[erpreport] §SCALE_DICT unavailable (no _coltype/_scale in this db): NUMERIC scale not applied, values keep their stored precision
+  PG[erpreport] §SQL_MS #1 ms=2.4 rows=1
+  PG[erpreport] §SQL_MS #2 ms=1.0 rows=9
+  PG[erpreport] §SQL_MS #3 ms=9.2 rows=21
+  PG[erpreport] §SQL_SUMMARY statements=3 distinct=3 duplicates=0 totalMs=12.6
+  PG[erpreport] §NINJA_REPORT_RUN client=11 from=2003-01-01 to=2003-12-31 statements=3 ms=28
+  PG[erpreport] §NINJA_REPORT_DONE client=11 formulas=34 errors=0 xlsxBytes=11644 pdf=on-demand
+  PG[erpreport] §NINJA-PILL report done statements=3 ms=28 formulaErrors=0
+§FACTS b6 run: §NINJA_REPORT_RUN client=11 from=2003-01-01 to=2003-12-31 statements=3 ms=28 | §NINJA_REPORT_DONE client=11 formulas=34 errors=0 xlsxBytes=11644 pdf=on-demand | page says "Report ready — 3 queries, 28 ms, 34 formulas (0 errors)."
+  PG[erpreport] §NINJA_REPORT_LOAD part=pdf scripts=1 ms=459 files=pdfkit.standalone.js
+  PG[erpreport] §NINJA_REPORT_LOAD part=fonts files=6 bytes=964452
+  PG[erpreport] §NINJA_PDF cells=144 pages=1 maxPageH=526.50 fontParses=5 overflowNumbers=0 missingGlyphs=0 missingDistinct=0 missingCells=0
+  PG[erpreport] §NINJA_REPORT_PDF client=11 pdfBytes=74855 page=681.00x526.50 pages=1 ms=722 renderMs=258 heapMB=67.3 overflowNumbers=0 missingGlyphs=0 missingCells=0
+  PG[erpreport] §NINJA-PILL report pdf ready bytes=74855 missingGlyphs=0
+§FACTS b6 pdf: §NINJA_REPORT_PDF client=11 pdfBytes=74855 page=681.00x526.50 pages=1 ms=722 renderMs=258 heapMB=67.3 overflowNumbers=0 missingGlyphs=0 missingCells=0 | erpreport_ninja_tb_sample_report.pdf
+§FACTS shot b6_report the report ready and its PDF made: Report ready — 3 queries, 28 ms, 34 formulas (0 errors). clip=577,383,546,381
+  PG[report] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[report] §PDFED-OFFLINE ready=true
+  PG[report] §PDFED-LAYOUT pages=1 observedAgainst=window
+  PG[report] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=1 releases=0 heapMB=5
+  PG[report] §PDFED-FIRST page=1 drawn=true ms=359 pages=1 canvasesAlive=1
+  PG[report] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[report] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[report] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=5 reason="4 totals agree with their rows"
+  PG[report] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=35 heapMB=5
+  PG[report] §PDFED-OPEN ok=true file="erpreport_ninja_tb_sample_report.pdf" bytes=74855 pages=1 chars=995 outline=0 ms=425
+§FACTS b6 open on the one page: §PDFED-OPEN ok=true file="erpreport_ninja_tb_sample_report.pdf" bytes=74855 pages=1 chars=995 outline=0 ms=425 | §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=5 reason="4 totals agree with their rows" | §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=35 heapMB=5
+  PG[report] §PDFED-COST why=release-p1 pages=1 canvasesAlive=0 renders=1 releases=1 heapMB=5
+  PG[report] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=2 releases=1 heapMB=6
+§FACTS shot b6_open the ERP report opened on the one page: erpreport_ninja_tb_sample_report.pdf: 1 page clip=320,63,1100,850
+  PG[report] §EDSHEET-EDITOR id=cC6 cell=C6 kind=cell windowScrolled=0
+  PG[report] §PDFWR-HISTORY entries=1 ops=144 genesis=true page=1
+  PG[report] §PDFHIST-STATE entries=1 verified=true carried=none restarted=false text="History: 1 entry, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[report] §PDF_WRITE ok=true edits=1 applied=1 refused=0 bytesIn=74855 bytesOut=74849 ms=8 cells=C6:"273.80"->"274.80"
+  PG[report] §PDFED-REOPEN page=1 pagesRead=1 of=1 ms=313
+  PG[report] §EDSHEET-UNDO-MEM steps=1 withBytes=1 heldMB=0.07 budgetMB=128.00 dropped=0 heapMB=6
+  PG[report] §SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=3 reason="C28: printed 0.00 != rows sum 1.00; F6: printed 273.80 != F = C + D - E gives 274.80"
+  PG[report] §PDFHIST-STATE entries=2 verified=true carried=none restarted=false text="History: 2 entries, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[report] §PDFWR-HISTORY entries=2 ops=1 cell=C6 before=273.8 after=274.8 typedOverFormula=false actor=you sheet=Report
+  PG[report] §SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=1 reason="C28: printed 0.00 != rows sum 1.00; F6: printed 273.80 != F = C + D - E gives 274.80"
+  PG[report] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=DOES_NOT_ADD_UP redBoxes=0 ms=86 heapMB=9
+  PG[report] §EDSHEET-EDIT id=cC6 cell=C6 kind=cell ok=true old="273.80" new="274.80" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74849 edits=1
+  PG[report] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=3 releases=2 heapMB=9
+§FACTS b6 edit: §EDSHEET-EDIT id=cC6 cell=C6 kind=cell ok=true old="273.80" new="274.80" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74849 edits=1 | §SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=1 reason="C28: printed 0.00 != rows sum 1.00; F6: printed 273.80 != F = C + D - E gives 274.80"
+  PG[report] §PDFED-COST why=release-p1 pages=1 canvasesAlive=0 renders=3 releases=3 heapMB=9
+  PG[report] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=4 releases=3 heapMB=10
+§FACTS shot b6_red C6 274.80: C6 is now "274.80". Page 1 does NOT add up: C28: printed 0.00 != rows sum 1.00; F6: printed 273.80 != F = C + D - E gives 274.80. Ctrl+Z undoes it. clip=320,63,1100,850
+  PG[report] §PDFED-REOPEN page=1 pagesRead=1 of=1 ms=366
+  PG[report] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=2 reason="4 totals agree with their rows"
+  PG[report] §PDFHIST-STATE entries=3 verified=true carried=none restarted=false text="History: 3 entries, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[report] §PDFWR-HISTORY entries=3 ops=1 cell=C6 before=274.8 after=273.8 typedOverFormula=false actor=you (undo) sheet=Report
+  PG[report] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=1 reason="4 totals agree with their rows"
+  PG[report] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=5 releases=4 heapMB=11
+  PG[report] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=117 heapMB=8
+  PG[report] §EDSHEET-UNDO cell=C6 text="273.80" bytes=74855 undo=0 redo=1 entries=3 verdict=ADDS_UP
+§FACTS b6 undo: §EDSHEET-UNDO cell=C6 text="273.80" bytes=74855 undo=0 redo=1 entries=3 verdict=ADDS_UP | §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=1 reason="4 totals agree with their rows"
+  PG[report] §PDFED-COST why=release-p1 pages=1 canvasesAlive=0 renders=5 releases=5 heapMB=8
+  PG[report] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=6 releases=5 heapMB=9
+§FACTS shot b6_undo Ctrl+Z: C6 is "273.80" again (undo). Page 1 adds up: 4 totals agree with their rows. clip=320,63,1100,850
+  PG[books] §RULE_TABLES ensure created=2 (ad_rule, ad_table_scriptvalidator; boot overlay, outside the team base hash)
+  PG[books] §IMPORT_TABLES ensure created=3 (i_payment, i_product, i_order; boot overlay, outside the team base hash)
+  PG[books] §RECUR_TABLES ensure created=2 (c_recurring_run, c_recurringgroup; boot overlay, outside the team base hash)
+  PG[books] §IMPORT_INV_TABLES ensure created=1 (i_inventory; boot overlay, outside the team base hash)
+  PG[books] §IMPORT_GLJ_TABLES ensure created=1 (i_gljournal; boot overlay, outside the team base hash)
+  PG[books] §IMPORT_IBS_TABLES ensure created=1 (i_bankstatement; boot overlay, outside the team base hash)
+  PG[books] §IMPORT_INVOICE_TABLES ensure created=1 (i_invoice; boot overlay, outside the team base hash)
+  PG[books] §PIPO_TABLES ensure created=1 (ad_package_uuid_map; boot overlay, outside the team base hash)
+  PG[books] §BANKTRANSFER_TABLES ensure created=1 (c_banktransfer; boot overlay, outside the team base hash)
+  PG[books] §INDEX_OVERLAY ensure created=247 present=0 skipped=48 analyze_ms=31 ms=285 (legacy official dictionary indexes, IDEMPIERE-1132; boot overlay, outside the team base hash)
+  PG[books] §DOCVALUE_OVERLAY ensure applied=2 skipped=0 ms=3 (document-value workflows, DocWorkflowManager; boot overlay, outside the team base hash)
+  PG[books] §TAXCAT_OVERLAY ensure filled=41 left=59 ms=1 (M_Product.C_TaxCategory_ID NOT NULL on legacy; the IsDefault tax category, as the legacy window; boot overlay, outside the team base hash)
+  PG[books] §ENV_EDGE set nowMs=Y uuid=Y perfMs=Y replaced=N
+  PG[books] §KRN-BROWSER-BOOT n=1 scripts=45 scriptsMs=84 seedAndPatchBytes=30440402 bootMs=1931 totalMs=2015 jsHeapMB=123
+§FACTS file_it ready after 1918 ms | page says "Books engine ready: 45 program files and 29.0 MB of demo books loaded in 2.0 s."
+§FACTS shot f0_ready the filing page: Books engine ready: 45 program files and 29.0 MB of demo books loaded in 2.0 s.
+§FACTS sample invoice: {"file":"books_sample_invoice.xlsx","opened":"Opened sample_invoice.xlsx (sheet Invoice)."}
+§FACTS shot f1_sample Get a sample invoice: Opened sample_invoice.xlsx (sheet Invoice).
+  PG[books] §LOGINCTX build client=11 org=11 role=102 user=100 wh= day=2026-11-28 keys=50 ms=17
+§FACTS filed: {"verdict":"FILED","text":"Filed. AR Invoice 100001 for C&W Construction is in the books (Completed)."}
+§FACTS shot f2_filed File it: Filed. AR Invoice 100001 for C&W Construction is in the books (Completed).
+§FACTS doc {"Document":"AR Invoice","Number":"100001","Status":"Completed","Date":"2026-11-20","Customer":"C&W Construction","Lines total":"153.50 USD","Grand total":"153.50 USD"} lines=2 | books: 6 entries, debit 283.98 credit 283.98
+§FACTS link ../idempiere.html?window=167&record=1300110
+  PG[books] §SPIKE-BEACON installed=Y captured=0 sample=(none-yet) buf=localStorage:bim_field_errors bound=50 telemetryPipe=N pii=N
+  PG[books] §AD_PARSER_LOADED v1
+  PG[books] §AD_DATA_LOADED v1
+  PG[books] §IDMP-SESSION_LOADED v3
+  PG[books] §ERP-DESCRIPTOR registered=ad active=ad facets=structure/data/session
+  PG[books] §FIELDHEALTH_LOADED v1 (4 widgets: field_errors/durability_ladder/db_size_gauge/environment)
+  PG[books] §KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+  PG[books] §OP_UPCASTER_LOADED v1 (D2: schema_version stamp + read-time upcaster registry)
+  PG[books] §OP_UPCASTER install OK — schema_version stamping is now the default write seam
+  PG[books] §SIGN_LOADED erp_signer.js (W-SIGN edge keypair, ECDSA P-256)
+  PG[books] §T1_ATTRIB_LOADED erp_attrib.js (PIN → audit metadata; device key still the only signer)
+  PG[books] §KANBAN_LENS_LOADED v1 (F2 kanban chrome)
+  PG[books] §REPORT layer mounted (read face — ▤ Report)
+  PG[books] §RULE_FOLD_LOADED rule_fold.js (the ONE gesture — L2 premium + L1 may-complete, signed, reversible)
+  PG[books] §MODEL-PA registered PA_Goal afterSave (MGoal.afterSave :594-603)
+  PG[books] §ENV_EDGE set nowMs=Y uuid=Y perfMs=Y replaced=N
+  PG[books] §NINJA-PILL loaded
+  PG[books] §CONNECT broker loaded v1 (channels: selection/timeline/identity + toggle)
+  PG[books] §TIPFOLD_LOADED tip_fold.js (T7 memoized tip-folds — moveDeltaFor precedent, ERP-side)
+  PG[books] §SHARD_LOADED erp_shard.js (T7 fix 4/4b — signed snapshot boundary, archive-confirmed, lazy-verified)
+  PG[books] §CRUD layer mounted (Edit-mode ready)
+  PG[books] §IDMP-HIST seed restored=0 (log empty)
+  PG[books] §REPLICA_CLIENT_LOADED v1
+  PG[books] §PERSIST-UI loaded (window.ErpPersist: backup/restore/renderInto)
+  PG[books] §RELAY_CLIENT_LOADED v1
+  PG[books] §SYNC_FSM_LOADED v1 (schema-gate + chain-gate)
+  PG[books] §SYNC_RELAY_LOADED v1 (no ?relay= param — disabled)
+  PG[books] §BLUE_FUTURE_LOADED v1 (item 0 browser legs — rim/banner/watermark + dot gestures + zoom)
+  PG[books] §DICT-LAZY asked=(none) deferred=[odoo] registered=[ad]
+  PG[books] §SEAM-FROZEN seam=host-contract globals=IdmpHost methods=trace,focus,openTab,has,locate,zoom,recentItems,recentRemove,housekeeping mount=#idmp-content
+  PG[books] §CRUD-IDMP-ADAPTER mounted globals=withBundle,curChain,fname,__crudHostAnchor overlay=present
+  PG[books] §AD-SELFEDIT-LIVE tip-source wired (ad_parser ← crud sidecar)
+  PG[books] §HELP layer mounted (NeedHelp? ready)
+  PG[books] §TOUR overlay=help_overlay host=idempiere forked=0 mounts=2 init=ok
+  PG[books] §TOUR overlay=help_overlay host=idempiere forked=0 adapter=init-only keys=6 globals=live
+  PG[books] §SW_REG scope=https://red1oon.github.io/bim-ootb/erp/
+  PG[books] §ZOOM-ACROSS register id=viewer total=1
+  PG[books] §ZOOM-ACROSS register id=timemachine total=2
+  PG[books] §TEAMS-EMBED OFF (default) — no pill, no pane, pixel-identical
+  PG[books] §WHOLE-MOUNT page=idempiere rootPrefix="../" mode=whole
+  PG[books] §EVT SNIFF|on — recording every §act, deny-filtered
+  PG[books] §IDMP-HIST-TAP wired fields(search,clean) + sniffer ON + bar SUBSCRIBES tap (knob=high) — one symmetric line each
+  PG[books] §DURABLE-KV hydrate mirror=0 restored=0 skippedClosed=0 ms=68
+  PG[books] §LEDGERUI no kept folder
+  PG[books] §OVERLAY loaded 9/9
+  PG[books] §NINJA-REPORT-PILL loaded base=/bim-ootb/erp/overlay/ninja/
+  PG[books] §OVERLAY pills registered ids=setuplens,windowlens
+  PG[books] §VFS chosen=idb opfsApi=Y crossOriginIsolated=N misconfig=N — OPFS API present but NOT crossOriginIsolated (no COOP/COEP — e.g. GitHub Pages) → IndexedDB VFS
+  PG[books] §PILL_BUILDER ready actions=13 layout=flow
+  PG[books] §SETTINGS_SAVE items=15 hidden=0
+  PG[books] §PILL_SYNC synced=1
+  PG[books] §IDMP-LIFECYCLE stage=pre-client install=rail migrate=rail shown=[reports,setuplens,windowlens,dashboard,team,rule,warehouse,showme,plugin,share,home,worldhist]
+  PG[books] §PILL-CUE attract=⋯ collapsed=true hidden=0
+  PG[books] §PILL-CUE attract=⋯ collapsed=true hidden=0
+  PG[books] §IDMP-PILLS source=registry pills=13 handAuthored=0 mountedButtons=12 overflow=⋯ hidden=0 stage=pre-client ids=[reports,setuplens,windowlens,zoomacross,dashboard,team,rule,warehouse,showme,plugin,share,home,worldhist] contributed=[]
+  PG[books] §SIGN installed alg=ECDSA-P256 pubkey=3059301306072a86… custody=idb-nonextractable
+  PG[books] §AD-SEED-PATCH file=patches/ad_seed.db.sql statements=3836 changed=19348 failed=3 duplicate_rows_removed=0 (self-heal, idempotent)
+  PG[books] §AD-SEED-PATCH file=patches/mfg.sql statements=92 changed=36 failed=0 duplicate_rows_removed=0 (self-heal, idempotent)
+  PG[books] §AD-SEED-FINGERPRINT 35968569
+  PG[books] §UDF-BOUND at load
+  PG[books] §UDF-DATA bound at load db=true
+  PG[books] §BIMLINK_OVERLAY ensure column=added inserted=3(AD_Element=1000016,AD_Column=7500017,AD_Field=7820407) present=0 tab200500=N ms=57 (C_Project.BIM_ViewerURL "BIM Model", URL, read-only; rows from the legacy 2Pack 13.1.1; boot overlay, outside the team base hash)
+  PG[books] §BIM_OVERLAY none (NotFoundError)
+  PG[books] §SYSTEM-TENANT insert-fail AD_Org UNIQUE constraint failed: ad_org.ad_org_id
+  PG[books] §SYSTEM-TENANT insert-fail AD_Role UNIQUE constraint failed: ad_role.ad_role_id
+  PG[books] §SYSTEM-TENANT insert-fail AD_User_Roles UNIQUE constraint failed: ad_user_roles.ad_user_id, ad_user_roles.ad_role_id
+  PG[books] §SYSTEM-TENANT insert-fail AD_User_Roles UNIQUE constraint failed: ad_user_roles.ad_user_id, ad_user_roles.ad_role_id
+  PG[books] §SYSTEM-TENANT insert-fail AD_Role_OrgAccess UNIQUE constraint failed: ad_role_orgaccess.ad_role_id, ad_role_orgaccess.ad_org_id
+  PG[books] §SYSTEM-TENANT insert-fail AD_Process_Access UNIQUE constraint failed: ad_process_access.ad_process_id, ad_process_access.ad_role_id
+  PG[books] §SYSTEM-TENANT ensure rows=1 (System tenant 0 + role 0 + user-roles 10/100 + org-access 0 + proc-access 53161) source=idempiere_test
+  PG[books] §RULE_TABLES ensure created=2 (ad_rule, ad_table_scriptvalidator; boot overlay, outside the team base hash)
+  PG[books] §IMPORT_TABLES ensure created=3 (i_payment, i_product, i_order; boot overlay, outside the team base hash)
+  PG[books] §RECUR_TABLES ensure created=2 (c_recurring_run, c_recurringgroup; boot overlay, outside the team base hash)
+  PG[books] §IMPORT_INV_TABLES ensure created=1 (i_inventory; boot overlay, outside the team base hash)
+  PG[books] §IMPORT_GLJ_TABLES ensure created=1 (i_gljournal; boot overlay, outside the team base hash)
+  PG[books] §IMPORT_IBS_TABLES ensure created=1 (i_bankstatement; boot overlay, outside the team base hash)
+  PG[books] §IMPORT_INVOICE_TABLES ensure created=1 (i_invoice; boot overlay, outside the team base hash)
+  PG[books] §PIPO_TABLES ensure created=1 (ad_package_uuid_map; boot overlay, outside the team base hash)
+  PG[books] §BANKTRANSFER_TABLES ensure created=1 (c_banktransfer; boot overlay, outside the team base hash)
+  PG[books] §INDEX_OVERLAY ensure created=259 present=0 skipped=46 analyze_ms=19 ms=206 (legacy official dictionary indexes, IDEMPIERE-1132; boot overlay, outside the team base hash)
+  PG[books] §TAXCAT_OVERLAY ensure filled=41 left=59 ms=1 (M_Product.C_TaxCategory_ID NOT NULL on legacy; the IsDefault tax category, as the legacy window; boot overlay, outside the team base hash)
+  PG[books] §HBA_SEED_OVERLAY ensure removed=36 {"c_subscription":4,"hr_movement":7,"hr_employee":2,"s_resourceunavailable":6,"s_resourceassignment":7,"s_resource":2,"ad_user":2,"c_bpartner":6} (base seed == legacy; the rows are plugin org.kernel.hba.demo, boot overlay outside the team base hash)
+  PG[books] §CTXHELP_OVERLAY ensure tables=4/4 rows=3/3 app=409/409 skipped=0 ms=20 (legacy context help tables; boot overlay, outside the team base hash)
+  PG[books] §DOCVALUE_OVERLAY ensure applied=2 skipped=0 ms=1 (document-value workflows, DocWorkflowManager; boot overlay, outside the team base hash)
+  PG[books] §KERNEL_OP committed id=2 uuid=e06459d0 type=PLUGIN_INSTALL params={"id":"org.idempiere.webservices","version":"1.0.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/webservices.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[books] §PLUGIN-INSTALL id=org.idempiere.webservices version=1.0.0 opId=2
+  PG[books] §PLUGIN_UNSIGNED id=org.idempiere.webservices version=1.0.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/webservices.mjs
+  PG[books] §KERNEL_OP committed id=3 uuid=1da85d57 type=PLUGIN_INSTALL params={"id":"org.kernel.pos-integration","version":"1.0.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/pos_integration.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[books] §PLUGIN-INSTALL id=org.kernel.pos-integration version=1.0.0 opId=3
+  PG[books] §PLUGIN_UNSIGNED id=org.kernel.pos-integration version=1.0.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/pos_integration.mjs
+  PG[books] §KERNEL_OP committed id=4 uuid=5b36eb54 type=PLUGIN_INSTALL params={"id":"org.kernel.mf-lens","version":"1.0.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/mf_lens.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[books] §PLUGIN-INSTALL id=org.kernel.mf-lens version=1.0.0 opId=4
+  PG[books] §PLUGIN_UNSIGNED id=org.kernel.mf-lens version=1.0.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/mf_lens.mjs
+  PG[books] §KERNEL_OP committed id=5 uuid=3bbbbaaa type=PLUGIN_INSTALL params={"id":"org.idempiere.ninja.migrate","version":"1.0.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/ninja_migrate.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[books] §PLUGIN-INSTALL id=org.idempiere.ninja.migrate version=1.0.0 opId=5
+  PG[books] §PLUGIN_UNSIGNED id=org.idempiere.ninja.migrate version=1.0.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/ninja_migrate.mjs
+  PG[books] §KERNEL_OP committed id=6 uuid=b25aa7d6 type=PLUGIN_INSTALL params={"id":"org.kernel.odoo.migrate","version":"1.0.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/odoo_migrate.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[books] §PLUGIN-INSTALL id=org.kernel.odoo.migrate version=1.0.0 opId=6
+  PG[books] §PLUGIN_UNSIGNED id=org.kernel.odoo.migrate version=1.0.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/odoo_migrate.mjs
+  PG[books] §KERNEL_OP committed id=7 uuid=231b2c7e type=PLUGIN_INSTALL params={"id":"org.kernel.bc.migrate","version":"0.1.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/bc_migrate.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[books] §PLUGIN-INSTALL id=org.kernel.bc.migrate version=0.1.0 opId=7
+  PG[books] §PLUGIN_UNSIGNED id=org.kernel.bc.migrate version=0.1.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/bc_migrate.mjs
+  PG[books] §KERNEL_OP committed id=8 uuid=59a23330 type=PLUGIN_INSTALL params={"id":"org.kernel.sap.migrate","version":"0.1.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/sap_migrate.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[books] §PLUGIN-INSTALL id=org.kernel.sap.migrate version=0.1.0 opId=8
+  PG[books] §PLUGIN_UNSIGNED id=org.kernel.sap.migrate version=0.1.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/sap_migrate.mjs
+  PG[books] §KERNEL_OP committed id=9 uuid=723ef55c type=PLUGIN_INSTALL params={"id":"org.kernel.idempiere.migrate","version":"0.1.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/idempiere_migrate.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[books] §PLUGIN-INSTALL id=org.kernel.idempiere.migrate version=0.1.0 opId=9
+  PG[books] §PLUGIN_UNSIGNED id=org.kernel.idempiere.migrate version=0.1.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/idempiere_migrate.mjs
+  PG[books] §KERNEL_OP committed id=10 uuid=0ba9b42b type=PLUGIN_INSTALL params={"id":"org.kernel.hba.demo","version":"1.0.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/hba_demo.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[books] §PLUGIN-INSTALL id=org.kernel.hba.demo version=1.0.0 opId=10
+  PG[books] §PLUGIN_UNSIGNED id=org.kernel.hba.demo version=1.0.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/hba_demo.mjs
+  PG[books] §KERNEL_OP committed id=11 uuid=82950b29 type=PLUGIN_INSTALL params={"id":"org.idempiere.ninja.excel","version":"1.0.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/ninja_excel.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[books] §PLUGIN-INSTALL id=org.idempiere.ninja.excel version=1.0.0 opId=11
+  PG[books] §PLUGIN_UNSIGNED id=org.idempiere.ninja.excel version=1.0.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/ninja_excel.mjs
+  PG[books] §KERNEL_OP committed id=12 uuid=e9351ef3 type=PLUGIN_INSTALL params={"id":"org.idempiere.ninja.create","version":"1.0.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/ninja_create.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[books] §PLUGIN-INSTALL id=org.idempiere.ninja.create version=1.0.0 opId=12
+  PG[books] §PLUGIN_UNSIGNED id=org.idempiere.ninja.create version=1.0.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/ninja_create.mjs
+  PG[books] §KERNEL_OP committed id=13 uuid=996892a5 type=PLUGIN_INSTALL params={"id":"org.kernel.bim-document","version":"1.0.0","manifestUrl":"https://red1oon.github.io/bim-ootb/erp/plugins/bim_document.mjs","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[books] §PLUGIN-INSTALL id=org.kernel.bim-document version=1.0.0 opId=13
+  PG[books] §PLUGIN_UNSIGNED id=org.kernel.bim-document version=1.0.0 source=https://red1oon.github.io/bim-ootb/erp/plugins/bim_document.mjs
+  PG[books] §PILL-CONTRIB add id=ninja owner=org.idempiere.ninja.excel icon=named order=4.8 mounted=true
+  PG[books] §KERNEL_OP committed id=14 uuid=7cfcfea2 type=PLUGIN_START params={"id":"org.idempiere.ninja.excel","version":"1.0.0","why":"start","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[books] §PLUGIN-START    id=org.idempiere.ninja.excel state=ACTIVE contributions=1
+  PG[books] §PILL-CONTRIB add id=ninjacreate owner=org.idempiere.ninja.create icon=letter order=4.85 mounted=true
+  PG[books] §KERNEL_OP committed id=15 uuid=3b90dc92 type=PLUGIN_START params={"id":"org.idempiere.ninja.create","version":"1.0.0","why":"start","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[books] §PLUGIN-START    id=org.idempiere.ninja.create state=ACTIVE contributions=1
+  PG[books] §PLUGIN-ROLE-ACCESS bundle=org.kernel.bim-document roles=12 rows=+60 other=3222 (PackInHandler.updateRoleAccess: every active non-manual role, MRole.updateAccessRecords)
+  PG[books] §BIMDOC-PLUGIN task-date-columns-added=[BIM_StartDate,BIM_EndDate]
+  PG[books] §BIMDOC-PLUGIN start table=9541001 cols=25 window=9541001 doctypes=1 clients=[11] windowAccess=host family=BIM_Document (dictionary staged by the host, refcounted)
+  PG[books] §KERNEL_OP committed id=16 uuid=1d434e99 type=PLUGIN_START params={"id":"org.kernel.bim-document","version":"1.0.0","why":"start","_sv":1,"_sigv":2,"signed_by":"3059301306072a8648ce3d020106082a8648ce3d030107034200043301129e58a942952738e2482c53ef76842df6371b7f161111117aa40a5a2ebb6a417dc80b9f984e057d0976df331a6dacd352c9fd4079069d68d8896a7d86d3"}
+  PG[books] §PLUGIN-START    id=org.kernel.bim-document state=ACTIVE contributions=340
+  PG[books] §PLUGIN-BOOT restored=3
+  PG[books] §EXPORTSAFE-REBIND n=1 names=core-udf
+  PG[books] §PROJ-SNAPSHOT projectors=0 unprojected=0 bytes=32841728
+  PG[books] §DOOR-HANDOVER applied=1 skipped=0 refused=0 books=1 ops=19 persisted=Y
+  PG[books] §DOOR-HANDOVER-COST ms=69 scriptsMs=3 applyMs=30 persistMs=36 entries=1 ops=19 saveHooks=6->6
+  PG[books] §AD_PARSER init menu=591 windows=376 tabs=1139 fields=21042 columns=26196 tables=1005
+  PG[books] §I18N initial choice=en_US src=browser shows=en_US
+  PG[books] §IDEMPIERE boot db=idb_cache ms=5293
+  PG[books] §IDMP-SESSION listClients tenants=7 [System(0):2,GardenWorld(11):4,Odoo(12):1,iDempiere(13):4,SAP Flights(14):1,Oracle Scott(15):1,Dynamics Cronus(16):1] source=ad_client/ad_role/ad_user_roles
+  PG[books] §IDMP-SESSION listClients tenants=7 [System(0):2,GardenWorld(11):4,Odoo(12):1,iDempiere(13):4,SAP Flights(14):1,Oracle Scott(15):1,Dynamics Cronus(16):1] source=ad_client/ad_role/ad_user_roles
+  PG[books] §IDEMPIERE login-step0 tenants=7 demos=0
+  PG[books] §CRITIC-FRONTDOOR step0 resident=[System,GardenWorld,Odoo,iDempiere,SAP Flights,Oracle Scott,Dynamics Cronus] demo=[] install-dialog=N
+  PG[books] §HELP setOps store=custom/3
+§FACTS ERP page: §IDEMPIERE boot db=idb_cache ms=5293 | §DOOR-HANDOVER applied=1 skipped=0 refused=0 books=1 ops=19 persisted=Y
+  PG[books] §IDMP-SESSION usersForClient client=11 users=4 source=ad_user_roles/ad_role
+  PG[books] §IDMP-SESSION listClients tenants=7 [System(0):2,GardenWorld(11):4,Odoo(12):1,iDempiere(13):4,SAP Flights(14):1,Oracle Scott(15):1,Dynamics Cronus(16):1] source=ad_client/ad_role/ad_user_roles
+  PG[books] §IDMP-SESSION rolesForUser user=101 roles=3 source=ad_user_roles/ad_role
+  PG[books] §IDMP-SESSION clientFor role=102 client=GardenWorld(11) source=ad_role/ad_client
+  PG[books] §IDMP-SESSION orgsForRole role=102 orgs=10 source=ad_role_orgaccess/ad_org
+  PG[books] §IDMP-SESSION rolesForUser user=101 roles=3 source=ad_user_roles/ad_role
+  PG[books] §IDMP-SESSION clientFor role=102 client=GardenWorld(11) source=ad_role/ad_client
+  PG[books] §IDMP-SESSION orgsForRole role=102 orgs=10 source=ad_role_orgaccess/ad_org
+  PG[books] §IDMP-SESSION listUsers users=18 withRoles=12 source=ad_user/ad_user_roles
+  PG[books] §IDMP-SESSION accessibleWindows role=102 windows=414 rw=414 source=AdAccess/ad_window_access
+  PG[books] §IDMP-SESSION accessibleProcesses role=102 processes=411 source=AdAccess/ad_process_access
+  PG[books] §IDMP-SESSION accessibleForms role=102 forms=43 source=AdAccess/ad_form_access
+  PG[books] §IDMP-SESSION accessibleLeaves role=102 workflows=57 infos=15 tasks=0 source=AdAccess
+  PG[books] §IDMP-SESSION acctGate role=102 isShowAcct=true source=ad_role.isshowacct
+  PG[books] §ACTOR login user=101 app.actor=101 client=11 org=0 role=102
+  PG[books] §FIELD_HELP focus=none
+  PG[books] §FIELD_HELP panel bound collapsed=false tech=false
+  PG[books] §AD_PARSER getMenuTree enter
+  PG[books] §AD_PARSER getMenuTree nodes=588 roots=15
+  PG[books] §IDMP-SESSION scopeMenu visibleWindows=295/333 visibleProcs=137/159 visibleForms=21/24 visibleWorkflows=11/12 visibleInfos=3/4 visibleTasks=0/3 roots=15
+  PG[books] §IDEMPIERE menu groups=51 leaves=467 visibleWindows=295/333 source=ad_menu handAuthored=0
+  PG[books] §IDEMPIERE-LOGIN user=GardenAdmin roles=3 client=GardenWorld(11) org=* menu-visible=295/333 source=ad_user/ad_role/ad_window_access handAuthored=0
+  PG[books] §SETTINGS_SAVE items=15 hidden=0
+  PG[books] §IDMP-LIFECYCLE stage=in-client install=overflow migrate=overflow shown=[reports,setuplens,windowlens,dashboard,team,rule,warehouse,showme,plugin,share,home,worldhist,ninja,ninjacreate]
+  PG[books] §PILL-CUE attract=⋯ collapsed=true hidden=0
+  PG[books] §HELP setOps store=default
+  PG[books] §AD_PARSER getWindow id=167 source=db
+  PG[books] §AD_PARSER getTabs windowId=167
+  PG[books] §AD_PARSER getFields tabId=263 count=68
+  PG[books] §AD_PARSER getFields tabId=270 count=44
+  PG[books] §AD_PARSER getFields tabId=271 count=11
+  PG[books] §AD_PARSER getFields tabId=460 count=14
+  PG[books] §AD_PARSER getFields tabId=684 count=17
+  PG[books] §AD_PARSER getTabs windowId=167 count=5
+  PG[books] §AD_PARSER getWindow id=167 name=Sales Invoice and Credit/Debit Note tabs=5
+  PG[books] §AD_PARSER getWindow id=167 source=db
+  PG[books] §AD_PARSER getTabs windowId=167
+  PG[books] §AD_PARSER getFields tabId=263 count=68
+  PG[books] §AD_PARSER getFields tabId=270 count=44
+  PG[books] §AD_PARSER getFields tabId=271 count=11
+  PG[books] §AD_PARSER getFields tabId=460 count=14
+  PG[books] §AD_PARSER getFields tabId=684 count=17
+  PG[books] §AD_PARSER getTabs windowId=167 count=5
+  PG[books] §AD_PARSER getWindow id=167 name=Sales Invoice and Credit/Debit Note tabs=5
+  PG[books] §IDEMPIERE window=Sales Invoice and Credit/Debit Note(167) tabs=5 source=sqlite
+  PG[books] §OPEN-MODE window=167 tab=263 (Invoice) isSingleRow=true IsDisplayedGrid=- -> form
+  PG[books] §AD-TBB tab=263(C_Invoice) rows=1 shown=1 [InvoiceCustomerCreateCreditMemo->200100]
+  PG[books] §TB-ICONS window=167 bar=[Find,New,Copy,Save,Delete|,Ignore,Refresh,Toggle,Attachment,ZoomAcross,Report,Process,Print,ParentRecord,DetailRecord,Label,ShowMore] more=[Help,Chat,SaveCreate,PostIt,Archive,Lock,ActiveWorkflows,AttributeForm,Requests,Export,Customize,QuickForm,FileImport,CSVImport] skipped=SearchQuery:not-in-catalogue,PrintFormatEditor:not-in-catalogue unported=[Report,ParentRecord,DetailRecord,Label,Help,Chat,PostIt,Archive,Lock,ActiveWorkflows,AttributeForm,Requests,Export,QuickForm,FileImport,CSVImport]
+  PG[books] §OPS-LENS panel window=167 buttons=[]
+  PG[books] §ZOOM-ACROSS-FILTER table=C_Invoice C_Invoice_ID=1300110
+  PG[books] §AD_DATA readRecords table=C_Invoice where=(C_Invoice.IsSOTrx='Y') AND AD_Client_ID IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007) AND C_Invoice_ID=1300110
+  PG[books] §AD_DATA readRecords table=C_Invoice count=1
+  PG[books] §UDP-ORDER table=C_Invoice orderBy=DocumentNo DESC applied=true
+  PG[books] §SETTINGS_SAVE items=15 hidden=0
+  PG[books] §IDMP-LIFECYCLE stage=in-client install=overflow migrate=overflow shown=[reports,setuplens,windowlens,dashboard,team,rule,warehouse,showme,plugin,share,home,worldhist,ninja,ninjacreate]
+  PG[books] §PILL-CUE attract=⋯ collapsed=true hidden=0
+  PG[books] §IDEMPIERE tab=Invoice table=C_Invoice rows=1 fields=68 parentFilter=zoomAcross=C_Invoice_ID=1300110 postingDoc=true
+  PG[books] §AD-DOCFSM-LIVE table=318(C_Invoice) record=1300110 status=CO legal=[CL,RA] periodOpen=false(period=200178 ARI=N) backDate=true(named-default)
+  PG[books] §AD-BUTTON form tab=C_Invoice buttons=CreateLinesFrom→null
+  PG[books] §STATUSLINE_UI win=167 tab=263 line=""
+  PG[books] §AD-DOCFSM-LIVE table=318(C_Invoice) record=1300110 status=CO legal=[CL,RA] periodOpen=false(period=200178 ARI=N) backDate=true(named-default)
+  PG[books] §AD-BUTTON form tab=C_Invoice buttons=CreateLinesFrom→null
+  PG[books] §STATUSLINE_UI win=167 tab=263 line=""
+  PG[books] §SETTINGS_SAVE items=15 hidden=0
+  PG[books] §IDMP-LIFECYCLE stage=in-client install=overflow migrate=overflow shown=[reports,setuplens,windowlens,dashboard,team,rule,warehouse,showme,plugin,share,home,worldhist,ninja,ninjacreate]
+  PG[books] §PILL-CUE attract=⋯ collapsed=true hidden=0
+  PG[books] §AD-TBB tab=263(C_Invoice) rows=1 shown=1 [InvoiceCustomerCreateCreditMemo->200100]
+  PG[books] §TB-ICONS window=167 bar=[Find,New,Copy,Save,Delete|,Ignore,Refresh,Toggle,Attachment,ZoomAcross,Report,Process,Print,ParentRecord,DetailRecord,Label,ShowMore] more=[Help,Chat,SaveCreate,PostIt,Archive,Lock,ActiveWorkflows,AttributeForm,Requests,Export,Customize,QuickForm,FileImport,CSVImport] skipped=SearchQuery:not-in-catalogue,PrintFormatEditor:not-in-catalogue unported=[Report,ParentRecord,DetailRecord,Label,Help,Chat,PostIt,Archive,Lock,ActiveWorkflows,AttributeForm,Requests,Export,QuickForm,FileImport,CSVImport]
+  PG[books] §OPS-LENS panel window=167 buttons=[]
+  PG[books] §WHOLE-DEDUP doc=idempiere|Sales Invoice and Credit/Debit Note day=2026-11-28 action=append count=1
+  PG[books] §WHOLE-REC page=idempiere kind=nav ts=1795849804100 label="Sales Invoice and Credit/Debit Note"
+  PG[books] §IDMP-HIST push=window:Sales Invoice and Credit/Debit Note depth=1 idx=0
+  PG[books] §IDMP-HIST render dots=1 idx=0 draftPip=N
+  PG[books] §AD-DOCFSM-LIVE table=318(C_Invoice) record=1300110 status=CO legal=[CL,RA] periodOpen=false(period=200178 ARI=N) backDate=true(named-default)
+  PG[books] §AD-BUTTON form tab=C_Invoice buttons=CreateLinesFrom→null
+  PG[books] §STATUSLINE_UI win=167 tab=263 line=""
+  PG[books] §AD-DOCFSM-LIVE table=318(C_Invoice) record=1300110 status=CO legal=[CL,RA] periodOpen=false(period=200178 ARI=N) backDate=true(named-default)
+  PG[books] §AD-BUTTON form tab=C_Invoice buttons=CreateLinesFrom→null
+  PG[books] §STATUSLINE_UI win=167 tab=263 line=""
+  PG[books] §SETTINGS_SAVE items=15 hidden=0
+  PG[books] §IDMP-LIFECYCLE stage=in-client install=overflow migrate=overflow shown=[reports,setuplens,windowlens,dashboard,team,rule,warehouse,showme,plugin,share,home,worldhist,ninja,ninjacreate]
+  PG[books] §PILL-CUE attract=⋯ collapsed=true hidden=0
+  PG[books] §AD-TBB tab=263(C_Invoice) rows=1 shown=1 [InvoiceCustomerCreateCreditMemo->200100]
+  PG[books] §TB-ICONS window=167 bar=[Find,New,Copy,Save,Delete|,Ignore,Refresh,Toggle,Attachment,ZoomAcross,Report,Process,Print,ParentRecord,DetailRecord,Label,ShowMore] more=[Help,Chat,SaveCreate,PostIt,Archive,Lock,ActiveWorkflows,AttributeForm,Requests,Export,Customize,QuickForm,FileImport,CSVImport] skipped=SearchQuery:not-in-catalogue,PrintFormatEditor:not-in-catalogue unported=[Report,ParentRecord,DetailRecord,Label,Help,Chat,PostIt,Archive,Lock,ActiveWorkflows,AttributeForm,Requests,Export,QuickForm,FileImport,CSVImport]
+  PG[books] §OPS-LENS panel window=167 buttons=[]
+  PG[books] §IDEMPIERE-DEEPLINK record=1300110 landed idx=0 of 1
+  PG[books] §ZOOM window=167 C_Invoice.C_Invoice_ID=1300110 rows=1 landed=true from=deeplink
+  PG[books] §ATT ad_attachment.js loaded on first use
+  PG[books] §AD-TBB tab=263(C_Invoice) rows=1 shown=1 [InvoiceCustomerCreateCreditMemo->200100]
+  PG[books] §ATT tabs window=167 eligible=5 of 5
+  PG[books] §TB-ICONS window=167 bar=[Find,New,Copy,Save,Delete|,Ignore,Refresh,Toggle,Attachment,ZoomAcross,Report,Process,Print,ParentRecord,DetailRecord,Label,ShowMore] more=[Help,Chat,SaveCreate,PostIt,Archive,Lock,ActiveWorkflows,AttributeForm,Requests,Export,Customize,QuickForm,FileImport,CSVImport] skipped=SearchQuery:not-in-catalogue,PrintFormatEditor:not-in-catalogue unported=[Report,ParentRecord,DetailRecord,Label,Help,Chat,PostIt,Archive,Lock,ActiveWorkflows,AttributeForm,Requests,Export,QuickForm,FileImport,CSVImport]
+  PG[books] §OPS-LENS panel window=167 buttons=[]
+  PG[books] §HELP_PACK loaded lang=en_US fields=0 tabs=0 processes=0 howto=0
+  PG[books] §HELP_PACK index loaded lang=en_US records=header-only vocab=0
+  PG[books] §LOGIN-DEFAULTS client=11 n=19 m_pricelist_id=101 c_paymentterm_id=105 c_doctypetarget_id=126 (Login.loadDefault :701-734)
+  PG[books] §AD_PARSER resolveRefTable id=170 table=C_DocType key=C_DocType_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=190 table=AD_User key=AD_User_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=200 table=C_Charge key=C_Charge_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=130 table=AD_Org key=AD_Org_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=134 table=C_ElementValue key=C_ElementValue_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=137 table=C_ElementValue key=C_ElementValue_ID where=yes
+  PG[books] §AD_PARSER resolveRef id=131
+  PG[books] §AD_PARSER resolveRef id=131 type=List options=12 orderBy=Name
+  PG[books] §AD_PARSER resolveRef id=394
+  PG[books] §AD_PARSER resolveRef id=394 type=List options=4 orderBy=Name
+  PG[books] §AD_PARSER resolveRefTable id=336 table=C_Invoice key=C_Invoice_ID where=none
+  PG[books] §AD_PARSER resolveRefTable id=252 table=C_BPartner key=C_BPartner_ID where=yes
+  PG[books] §GRIDFIELD-EXEMPT key=c_invoice n=1 cols=[DocumentNo:DocumentNo] (GridField.isMandatory:377-385)
+  PG[books] §GRIDFIELD-DATATYPE-DEFAULT key=c_invoice n=9 [isselfservice=N,currencyrate=0,isdiscountprinted=N,chargeamt=0,totallines=0,grandtotal=0,ispayschedulevalid=N,ispaid=N,isfixedassetinvoice=N] (GridField.defaultFromDatatype:1022-1051)
+  PG[books] §GRIDFIELD-EXPR-DEFAULT key=c_invoice resolved=0 [] unresolved=1 [c_currency_id="@C_Currency_ID@"] (GridField.defaultFromExpression:875-913)
+  PG[books] §GRIDFIELD-SYSPREF-DEFAULT key=c_invoice n=4 [c_doctypetarget_id=126,m_pricelist_id=101,c_conversiontype_id=114,c_paymentterm_id=105] (GridField stage 5 #ColumnName ← Login.loadDefault, FS-12)
+  PG[books] §REFTABLE-FOLD key=c_invoice resolved=8 [c_doctypetarget_id→c_doctype+where,salesrep_id→ad_user+where,c_charge_id→c_charge+where,ad_orgtrx_id→ad_org+where,user1_id→c_elementvalue+where,user2_id→c_elementvalue+where,relatedinvoice_id→c_invoice,c_employee_id→c_bpartner+where] (MLookupFactory.getLookup_Table — DisplayType 18/30 targets that <col minus _id> gets wrong)
+  PG[books] §GRIDFIELD-HIDDEN-DEFAULT key=c_invoice n=7 [isactive=Y,processed=N,isapproved=N,istransferred=N,isprinted=N,istaxincluded=N,sendemail=N] (GridTable.dataNew: every field, displayed or not)
+  PG[books] §S2B-FOLD table=c_invoice verb=update verbs=[create,update,delete,process] fields=47 isView=false tabRO=false
+  PG[books] §PARITY-FIELDSET key=c_invoice curated=5 ad=47 merged=47 pinned=5 appended=42 withLogic=21 source=AD-fold+curated-pins
+  PG[books] §AD_PARSER resolveRefTable id=170 table=C_DocType key=C_DocType_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=190 table=AD_User key=AD_User_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=200 table=C_Charge key=C_Charge_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=130 table=AD_Org key=AD_Org_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=134 table=C_ElementValue key=C_ElementValue_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=137 table=C_ElementValue key=C_ElementValue_ID where=yes
+  PG[books] §AD_PARSER resolveRef id=131
+  PG[books] §AD_PARSER resolveRef id=131 type=List options=12 orderBy=Name
+  PG[books] §AD_PARSER resolveRef id=394
+  PG[books] §AD_PARSER resolveRef id=394 type=List options=4 orderBy=Name
+  PG[books] §AD_PARSER resolveRefTable id=336 table=C_Invoice key=C_Invoice_ID where=none
+  PG[books] §AD_PARSER resolveRefTable id=252 table=C_BPartner key=C_BPartner_ID where=yes
+  PG[books] §GRIDFIELD-EXEMPT key=c_invoice n=1 cols=[DocumentNo:DocumentNo] (GridField.isMandatory:377-385)
+  PG[books] §GRIDFIELD-DATATYPE-DEFAULT key=c_invoice n=9 [isselfservice=N,currencyrate=0,isdiscountprinted=N,chargeamt=0,totallines=0,grandtotal=0,ispayschedulevalid=N,ispaid=N,isfixedassetinvoice=N] (GridField.defaultFromDatatype:1022-1051)
+  PG[books] §GRIDFIELD-EXPR-DEFAULT key=c_invoice resolved=0 [] unresolved=1 [c_currency_id="@C_Currency_ID@"] (GridField.defaultFromExpression:875-913)
+  PG[books] §GRIDFIELD-SYSPREF-DEFAULT key=c_invoice n=4 [c_doctypetarget_id=126,m_pricelist_id=101,c_conversiontype_id=114,c_paymentterm_id=105] (GridField stage 5 #ColumnName ← Login.loadDefault, FS-12)
+  PG[books] §REFTABLE-FOLD key=c_invoice resolved=8 [c_doctypetarget_id→c_doctype+where,salesrep_id→ad_user+where,c_charge_id→c_charge+where,ad_orgtrx_id→ad_org+where,user1_id→c_elementvalue+where,user2_id→c_elementvalue+where,relatedinvoice_id→c_invoice,c_employee_id→c_bpartner+where] (MLookupFactory.getLookup_Table — DisplayType 18/30 targets that <col minus _id> gets wrong)
+  PG[books] §GRIDFIELD-HIDDEN-DEFAULT key=c_invoice n=7 [isactive=Y,processed=N,isapproved=N,istransferred=N,isprinted=N,istaxincluded=N,sendemail=N] (GridTable.dataNew: every field, displayed or not)
+  PG[books] §S2B-FOLD table=c_invoice verb=update verbs=[create,update,delete,process] fields=47 isView=false tabRO=false
+  PG[books] §PARITY-FIELDSET key=c_invoice curated=5 ad=47 merged=47 pinned=5 appended=42 withLogic=21 source=AD-fold+curated-pins
+  PG[books] §AD_PARSER resolveRefTable id=170 table=C_DocType key=C_DocType_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=190 table=AD_User key=AD_User_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=200 table=C_Charge key=C_Charge_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=130 table=AD_Org key=AD_Org_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=134 table=C_ElementValue key=C_ElementValue_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=137 table=C_ElementValue key=C_ElementValue_ID where=yes
+  PG[books] §AD_PARSER resolveRef id=131
+  PG[books] §AD_PARSER resolveRef id=131 type=List options=12 orderBy=Name
+  PG[books] §AD_PARSER resolveRef id=394
+  PG[books] §AD_PARSER resolveRef id=394 type=List options=4 orderBy=Name
+  PG[books] §AD_PARSER resolveRefTable id=336 table=C_Invoice key=C_Invoice_ID where=none
+  PG[books] §AD_PARSER resolveRefTable id=252 table=C_BPartner key=C_BPartner_ID where=yes
+  PG[books] §GRIDFIELD-EXEMPT key=c_invoice n=1 cols=[DocumentNo:DocumentNo] (GridField.isMandatory:377-385)
+  PG[books] §GRIDFIELD-DATATYPE-DEFAULT key=c_invoice n=9 [isselfservice=N,currencyrate=0,isdiscountprinted=N,chargeamt=0,totallines=0,grandtotal=0,ispayschedulevalid=N,ispaid=N,isfixedassetinvoice=N] (GridField.defaultFromDatatype:1022-1051)
+  PG[books] §GRIDFIELD-EXPR-DEFAULT key=c_invoice resolved=0 [] unresolved=1 [c_currency_id="@C_Currency_ID@"] (GridField.defaultFromExpression:875-913)
+  PG[books] §GRIDFIELD-SYSPREF-DEFAULT key=c_invoice n=4 [c_doctypetarget_id=126,m_pricelist_id=101,c_conversiontype_id=114,c_paymentterm_id=105] (GridField stage 5 #ColumnName ← Login.loadDefault, FS-12)
+  PG[books] §REFTABLE-FOLD key=c_invoice resolved=8 [c_doctypetarget_id→c_doctype+where,salesrep_id→ad_user+where,c_charge_id→c_charge+where,ad_orgtrx_id→ad_org+where,user1_id→c_elementvalue+where,user2_id→c_elementvalue+where,relatedinvoice_id→c_invoice,c_employee_id→c_bpartner+where] (MLookupFactory.getLookup_Table — DisplayType 18/30 targets that <col minus _id> gets wrong)
+  PG[books] §GRIDFIELD-HIDDEN-DEFAULT key=c_invoice n=7 [isactive=Y,processed=N,isapproved=N,istransferred=N,isprinted=N,istaxincluded=N,sendemail=N] (GridTable.dataNew: every field, displayed or not)
+  PG[books] §S2B-FOLD table=c_invoice verb=update verbs=[create,update,delete,process] fields=47 isView=false tabRO=false
+  PG[books] §PARITY-FIELDSET key=c_invoice curated=5 ad=47 merged=47 pinned=5 appended=42 withLogic=21 source=AD-fold+curated-pins
+  PG[books] §AD_PARSER resolveRefTable id=170 table=C_DocType key=C_DocType_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=190 table=AD_User key=AD_User_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=200 table=C_Charge key=C_Charge_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=130 table=AD_Org key=AD_Org_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=134 table=C_ElementValue key=C_ElementValue_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=137 table=C_ElementValue key=C_ElementValue_ID where=yes
+  PG[books] §AD_PARSER resolveRef id=131
+  PG[books] §AD_PARSER resolveRef id=131 type=List options=12 orderBy=Name
+  PG[books] §AD_PARSER resolveRef id=394
+  PG[books] §AD_PARSER resolveRef id=394 type=List options=4 orderBy=Name
+  PG[books] §AD_PARSER resolveRefTable id=336 table=C_Invoice key=C_Invoice_ID where=none
+  PG[books] §AD_PARSER resolveRefTable id=252 table=C_BPartner key=C_BPartner_ID where=yes
+  PG[books] §GRIDFIELD-EXEMPT key=c_invoice n=1 cols=[DocumentNo:DocumentNo] (GridField.isMandatory:377-385)
+  PG[books] §GRIDFIELD-DATATYPE-DEFAULT key=c_invoice n=9 [isselfservice=N,currencyrate=0,isdiscountprinted=N,chargeamt=0,totallines=0,grandtotal=0,ispayschedulevalid=N,ispaid=N,isfixedassetinvoice=N] (GridField.defaultFromDatatype:1022-1051)
+  PG[books] §GRIDFIELD-EXPR-DEFAULT key=c_invoice resolved=0 [] unresolved=1 [c_currency_id="@C_Currency_ID@"] (GridField.defaultFromExpression:875-913)
+  PG[books] §GRIDFIELD-SYSPREF-DEFAULT key=c_invoice n=4 [c_doctypetarget_id=126,m_pricelist_id=101,c_conversiontype_id=114,c_paymentterm_id=105] (GridField stage 5 #ColumnName ← Login.loadDefault, FS-12)
+  PG[books] §REFTABLE-FOLD key=c_invoice resolved=8 [c_doctypetarget_id→c_doctype+where,salesrep_id→ad_user+where,c_charge_id→c_charge+where,ad_orgtrx_id→ad_org+where,user1_id→c_elementvalue+where,user2_id→c_elementvalue+where,relatedinvoice_id→c_invoice,c_employee_id→c_bpartner+where] (MLookupFactory.getLookup_Table — DisplayType 18/30 targets that <col minus _id> gets wrong)
+  PG[books] §GRIDFIELD-HIDDEN-DEFAULT key=c_invoice n=7 [isactive=Y,processed=N,isapproved=N,istransferred=N,isprinted=N,istaxincluded=N,sendemail=N] (GridTable.dataNew: every field, displayed or not)
+  PG[books] §S2B-FOLD table=c_invoice verb=update verbs=[create,update,delete,process] fields=47 isView=false tabRO=false
+  PG[books] §PARITY-FIELDSET key=c_invoice curated=5 ad=47 merged=47 pinned=5 appended=42 withLogic=21 source=AD-fold+curated-pins
+  PG[books] §KRN_CHAIN verify OK len=5 tip=c6e423e0aa40…
+  PG[books] §OPLOG-HYDRATE ops=5 tip=c6e423e0aa40189005cf674f57c565603b3829039b9c997d8d428730f406e0fd source=readAll
+  PG[books] §STD-DEFAULTS create table=ad_session client=11 org=11 by=101 active=Y
+  PG[books] §ADMIN3-CHANGEAUDIT rebuilt rows=2 from=login ms=966 (temp.ad_changelog, derived from the op-log, not exported)
+  PG[books] §GRID-CUSTOM loaded user=101 tabs=[]
+  PG[books] §INLINE-STALE-MOUNT table=c_invoice id=1300110 req=1 newest=4 skipped
+  PG[books] §INLINE-STALE-MOUNT table=c_invoice id=1300110 req=2 newest=4 skipped
+  PG[books] §INLINE-STALE-MOUNT table=c_invoice id=1300110 req=3 newest=4 skipped
+  PG[books] §CRUD-DATE col=dateinvoiced raw="2026-11-20 00:00:00" normalized="2026-11-20" widget=date
+  PG[books] §IDMP-HIST crumb tag=CRUD label="-DATE col=dateinvoiced raw="2026-11-20 00:00:00" normalized="2026-11-20" widget=" depth=2 (from §-stream, no per-feature wiring)
+  PG[books] §IDMP-HIST render dots=2 idx=1 draftPip=N
+  PG[books] §CRUD-DATE col=dateordered raw="" normalized="" widget=date
+  PG[books] §YESNO col=isselfservice cur="N" editable=false
+  PG[books] §CRUD-DATE col=dateacct raw="2026-11-20 00:00:00" normalized="2026-11-20" widget=date
+  PG[books] §YESNO col=isoverridecurrencyrate cur="N" editable=true
+  PG[books] §YESNO col=isdiscountprinted cur="N" editable=true
+  PG[books] §YESNO col=ispayschedulevalid cur="N" editable=false
+  PG[books] §YESNO col=isindispute cur="N" editable=true
+  PG[books] §YESNO col=ispaid cur="N" editable=false
+  PG[books] §CRUD-DATE col=dunninggrace raw="" normalized="" widget=date
+  PG[books] §YESNO col=isfixedassetinvoice cur="N" editable=false
+  PG[books] §CRUD-LIST col=docstatus cur="CO" options=4 selected="CO"
+  PG[books] §FK-ACCESS col=ad_org_id table=ad_org client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=8 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §VALRULE col=ad_org_id vr=130 rule="AD_Org Trx Security validation" table=ad_org before=23 after=8 offered=8 verdict=applied ctx={} kept=11
+  PG[books] §FK-ACCESS col=c_doctypetarget_id table=c_doctype client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=3 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §REFTABLE col=c_doctypetarget_id src=AD_Ref_Table:170 table=c_doctype key=c_doctype_id refWhere=applied rows=3
+  PG[books] §VALRULE col=c_doctypetarget_id vr=124 rule="C_DocTypeTarget AR/AP Invoices and Credit Memos" table=c_doctype before=53 after=3 offered=3 verdict=applied ctx={"IsSOTrx":"Y","#AD_Client_ID":"11"} kept=116
+  PG[books] §FK-ACCESS col=c_bpartner_id table=c_bpartner client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=18 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §VALRULE col=c_bpartner_id vr=230 rule="C_BPartner (Trx)" table=c_bpartner before=107 after=18 offered=18 verdict=applied ctx={} kept=117
+  PG[books] §FK-ACCESS col=c_bpartner_location_id table=c_bpartner_location client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=1 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §VALRULE col=c_bpartner_location_id vr=200 rule="C_BPartner_Loc BillTo" table=c_bpartner_location before=16 after=1 offered=1 verdict=applied ctx={"C_BPartner_ID":"117"} kept=112
+  PG[books] §FK-ACCESS col=ad_user_id table=ad_user client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=1 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §VALRULE col=ad_user_id vr=123 rule="AD_User BPartner" table=ad_user before=19 after=1 offered=1 verdict=applied ctx={"C_BPartner_ID":"117"} kept=(blank)
+  PG[books] §FK-ACCESS col=m_pricelist_id table=m_pricelist client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=2 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §VALRULE col=m_pricelist_id vr=271 rule="M_PriceList is SO/PO" table=m_pricelist before=5 after=2 offered=2 verdict=applied ctx={"IsSOTrx":"Y"} kept=101
+  PG[books] §FK-ACCESS col=c_conversiontype_id table=c_conversiontype client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=4 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §FK-ACCESS col=salesrep_id table=ad_user client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=2 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §REFTABLE col=salesrep_id src=AD_Ref_Table:190 table=ad_user key=ad_user_id refWhere=applied rows=2
+  PG[books] §FK-ACCESS col=c_charge_id table=c_charge client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=3 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §REFTABLE col=c_charge_id src=AD_Ref_Table:200 table=c_charge key=c_charge_id refWhere=applied rows=3
+  PG[books] §FK-ACCESS col=c_paymentterm_id table=c_paymentterm client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=5 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §VALRULE col=c_paymentterm_id vr=52098 rule="Payment Term based on IsSOTrx" table=c_paymentterm before=5 after=5 offered=5 verdict=applied ctx={"IsSOTrx":"Y"} kept=105
+  PG[books] §FK-ACCESS col=c_project_id table=c_project client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=3 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §VALRULE col=c_project_id vr=227 rule="C_Project of BPartner" table=c_project before=3 after=3 offered=3 verdict=applied ctx={"C_BPartner_ID":"117"} kept=(blank)
+  PG[books] §AD-MODELVAL-LIVE bundle-gap (no such table: c_activity) → no-row conservative default
+  PG[books] §FK-ACCESS col=c_campaign_id table=c_campaign client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=2 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §VALRULE col=c_campaign_id vr=236 rule="C_Campaign (Trx)" table=c_campaign before=2 after=2 offered=2 verdict=applied ctx={} kept=(blank)
+  PG[books] §FK-ACCESS col=ad_orgtrx_id table=ad_org client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=8 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §REFTABLE col=ad_orgtrx_id src=AD_Ref_Table:130 table=ad_org key=ad_org_id refWhere=applied rows=8
+  PG[books] §FK-ACCESS col=user1_id table=c_elementvalue client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=0 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §REFTABLE col=user1_id src=AD_Ref_Table:134 table=c_elementvalue key=c_elementvalue_id refWhere=applied rows=0
+  PG[books] §FK-ACCESS col=user2_id table=c_elementvalue client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=0 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §REFTABLE col=user2_id src=AD_Ref_Table:137 table=c_elementvalue key=c_elementvalue_id refWhere=applied rows=0
+  PG[books] §REFLIST col=invoicecollectiontype refId=394 options=4 cur="" selected="(blank)" source=AD_Ref_List
+  PG[books] §CRUD-LIST col=invoicecollectiontype cur="" options=4 selected="(blank)"
+  PG[books] §AD-MODELVAL-LIVE bundle-gap (no such table: c_cashplanline) → no-row conservative default
+  PG[books] §FK-ACCESS col=c_employee_id table=c_bpartner client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=2 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §REFTABLE col=c_employee_id src=AD_Ref_Table:252 table=c_bpartner key=c_bpartner_id refWhere=applied rows=2
+  PG[books] §LOGIC_EVAL attr=display col=c_conversiontype_id expr="@C_Currency_ID@!@$C_Currency_ID@" ctx={"ad_client_id":11,"ad_org_id":0,"ad_user_id":101,"date":"2026-11-28"} result=true
+  PG[books] §LOGIC_EVAL attr=display col=isoverridecurrencyrate expr="@C_Currency_ID@!@$C_Currency_ID@" ctx={"ad_client_id":11,"ad_org_id":0,"ad_user_id":101,"date":"2026-11-28"} result=true
+  PG[books] §LOGIC_EVAL attr=display col=currencyrate expr="@C_Currency_ID@!@$C_Currency_ID@ & @IsOverrideCurrencyRate@=Y" ctx={"ad_client_id":11,"ad_org_id":0,"ad_user_id":101,"date":"2026-11-28"} result=false
+  PG[books] §LOGIC_EVAL attr=display col=c_charge_id expr="@HasCharges@='Y'" ctx={"ad_client_id":11,"ad_org_id":0,"ad_user_id":101,"date":"2026-11-28"} result=false
+  PG[books] §LOGIC_EVAL attr=display col=chargeamt expr="@HasCharges@='Y'" ctx={"ad_client_id":11,"ad_org_id":0,"ad_user_id":101,"date":"2026-11-28"} result=false
+  PG[books] §LOGIC_EVAL attr=display col=c_paymentterm_id expr="@PaymentRule@='P' | @PaymentRule@='D'" ctx={"ad_client_id":11,"ad_org_id":0,"ad_user_id":101,"date":"2026-11-28"} result=true
+  PG[books] §LOGIC_EVAL attr=display col=c_project_id expr="@$Element_PJ@='Y'" ctx={"ad_client_id":11,"ad_org_id":0,"ad_user_id":101,"date":"2026-11-28"} result=false
+  PG[books] §LOGIC_EVAL attr=display col=c_activity_id expr="@$Element_AY@='Y'" ctx={"ad_client_id":11,"ad_org_id":0,"ad_user_id":101,"date":"2026-11-28"} result=false
+  PG[books] §LOGIC_EVAL attr=display col=c_campaign_id expr="@$Element_MC@='Y'" ctx={"ad_client_id":11,"ad_org_id":0,"ad_user_id":101,"date":"2026-11-28"} result=false
+  PG[books] §LOGIC_EVAL attr=display col=ad_orgtrx_id expr="@$Element_OT@=Y" ctx={"ad_client_id":11,"ad_org_id":0,"ad_user_id":101,"date":"2026-11-28"} result=false
+  PG[books] §LOGIC_EVAL attr=display col=user1_id expr="@$Element_U1@=Y" ctx={"ad_client_id":11,"ad_org_id":0,"ad_user_id":101,"date":"2026-11-28"} result=false
+  PG[books] §LOGIC_EVAL attr=display col=user2_id expr="@$Element_U2@=Y" ctx={"ad_client_id":11,"ad_org_id":0,"ad_user_id":101,"date":"2026-11-28"} result=false
+  PG[books] §LOGIC_EVAL attr=display col=isindispute expr="@Processed@=Y" ctx={"ad_client_id":11,"ad_org_id":0,"ad_user_id":101,"date":"2026-11-28"} result=false
+  PG[books] §LOGIC_EVAL attr=display col=ispaid expr="@Processed@=Y" ctx={"ad_client_id":11,"ad_org_id":0,"ad_user_id":101,"date":"2026-11-28"} result=false
+  PG[books] §LOGIC_EVAL attr=display col=invoicecollectiontype expr="@Processed@=Y" ctx={"ad_client_id":11,"ad_org_id":0,"ad_user_id":101,"date":"2026-11-28"} result=false
+  PG[books] §LOGIC_EVAL attr=display col=dunninggrace expr="@Processed@=Y" ctx={"ad_client_id":11,"ad_org_id":0,"ad_user_id":101,"date":"2026-11-28"} result=false
+  PG[books] §LOGIC_EVAL attr=display col=c_dunninglevel_id expr="@Processed@=Y" ctx={"ad_client_id":11,"ad_org_id":0,"ad_user_id":101,"date":"2026-11-28"} result=false
+  PG[books] §LOGIC_EVAL attr=display col=relatedinvoice_id expr="@RelatedInvoice_ID@ > 0" ctx={"ad_client_id":11,"ad_org_id":0,"ad_user_id":101,"date":"2026-11-28"} result=false
+  PG[books] §LOGIC_EVAL attr=display col=c_department_id expr="@$Element_DP@=Y" ctx={"ad_client_id":11,"ad_org_id":0,"ad_user_id":101,"date":"2026-11-28"} result=false
+  PG[books] §LOGIC_EVAL attr=display col=c_costcenter_id expr="@$Element_CC@=Y" ctx={"ad_client_id":11,"ad_org_id":0,"ad_user_id":101,"date":"2026-11-28"} result=false
+  PG[books] §LOGIC_EVAL attr=display col=c_employee_id expr="@$Element_EP@=Y" ctx={"ad_client_id":11,"ad_org_id":0,"ad_user_id":101,"date":"2026-11-28"} result=false
+  PG[books] §AD-LOGIC-LIVE key=c_invoice fields=47 withLogic=21 visibilityFlips=18 applied=DOM
+  PG[books] §STD-DEFAULTS create table=ad_session client=11 org=11 by=101 active=Y
+  PG[books] §MV-TIP-SHADOW table=ad_session base=0 tip=1 created=1
+  PG[books] §MV-TIP-SHADOW table=pa_goal base=4 tip=4 created=0
+  PG[books] §MV-TIP-SHADOW views=1 [ad_sessioninfo_v]
+  PG[books] §LOGINCTX build client=11 org=0 role=102 user=101 wh= day=2026-11-28 keys=48 ms=9
+  PG[books] §CALLOUT-OPEN table=c_invoice tab=263 fields=68 verb=update
+  PG[books] §INPLACE-EDIT table=c_invoice id=1300110 verb=update fields=47 mount=inline (no modal, no ✎ Edit)
+  PG[books] §HELP_SEARCH index lang=en_US windows=295 records=1081 actions=13 statuses=12 howto=130 (en_US) phrases=722 vocab=0
+  PG[books] §HELP_CTX window=167 type=T id=263 howto=1000002 shown=dict+msg lang=en_US
+  PG[books] §KRN_CHAIN verify OK len=5 tip=c6e423e0aa40…
+  PG[books] §OPLOG-HYDRATE ops=5 tip=c6e423e0aa40189005cf674f57c565603b3829039b9c997d8d428730f406e0fd source=readAll
+  PG[books] §KRN_GROUP committed gid=11c7fc6f-9749-4db8-a06a-871ed0fdafd7 ops=1 groupHash=bf888dca1e93… tip=2bbdb44b0a02… sealed=1 (WHOLE — all-or-none)
+  PG[books] §KRN_CHAIN verify-incr OK checked=1 skipped=5 tip=2bbdb44b0a02…
+  PG[books] §OPLOG-APPEND key=6 id=6 op_uuid=bac5de71-6691-412f-80d0-8b30460ac512
+  PG[books] §CRUD-GROUP-PERSIST ops=1 source=sidecar gid=11c7fc6f-9749-4db8-a06a-871ed0fdafd7 sealed=1 verifyChain=ok
+  PG[books] §UDP8-SESSION open user=101 role=102 client=11 websession=bdc96c59-aa9e-46f9-9516-e62c6cd8976c committed=true row=-6
+  PG[books] §STD-DEFAULTS create table=ad_session client=11 org=11 by=101 active=Y
+  PG[books] §STD-DEFAULTS create table=ad_session client=11 org=0 by=101 active=Y
+  PG[books] §ADMIN3-CHANGEAUDIT rebuilt rows=2 from=commit ms=24 (temp.ad_changelog, derived from the op-log, not exported)
+§FACTS ERP window: Sales Invoice and Credit/Debit Note › Invoice  ·  Record 1 of 1 | tabs Invoice,Invoice Line,Invoice Tax,Payment Schedule,Allocation
+§FACTS shot e1_invoice_form the invoice in the ERP window (form)
+  PG[books] §GRID-COLS tab=Invoice cols=48 mobile=false [AD_Org_ID,C_Order_ID,DateOrdered,DocumentNo,POReference,Description,C_DocTypeTarget_ID,IsSelfService,DateInvoiced,DateAcct,C_BPartner_ID,C_BPartner_Location_ID,AD_User_ID,M_PriceList_ID,C_Currency_ID,C_ConversionType_ID,IsOverrideCurrencyRate,CurrencyRate,SalesRep_ID,IsDiscountPrinted,C_Charge_ID,ChargeAmt,PaymentRule,C_PaymentTerm_ID,C_Project_ID,C_Activity_ID,C_Campaign_ID,AD_OrgTrx_ID,User1_ID,User2_ID,TotalLines,GrandTotal,DocStatus,C_DocType_ID,IsPayScheduleValid,IsInDispute,DocAction,Posted,IsPaid,InvoiceCollectionType,DunningGrace,C_DunningLe
+  PG[books] §AD_DATA resolveFK col=AD_Org_ID val=11 label=HQ
+  PG[books] §AD_DATA resolveFK col=C_DocTypeTarget_ID val=116 label=AR Invoice
+  PG[books] §AD_DATA resolveFK col=IsSelfService val=N label=No
+  PG[books] §AD_DATA resolveFK col=C_BPartner_ID val=117 label=C&W Construction
+  PG[books] §AD_DATA resolveFK col=C_BPartner_Location_ID val=112 label=Stamford
+  PG[books] §AD_DATA resolveFK col=M_PriceList_ID val=101 label=Standard
+  PG[books] §AD_DATA resolveFK col=C_Currency_ID val=100 label=USD
+  PG[books] §AD_DATA resolveFK col=SalesRep_ID val=100 label=SuperUser
+  PG[books] §AD_DATA resolveFK col=PaymentRule val=P label=On Credit
+  PG[books] §AD_DATA resolveFK col=C_PaymentTerm_ID val=105 label=Immediate
+  PG[books] §AD_DATA resolveFK col=C_DocType_ID val=116 label=AR Invoice
+  PG[books] §AD_DATA resolveFK col=DocAction val=CL label=Close
+  PG[books] §AD_DATA resolveFK col=AD_Client_ID val=11 label=GardenWorld
+  PG[books] §AD_DATA resolveFK col=DocStatus val=CO label=Completed
+  PG[books] §AD_DATA resolveFK col=Posted val=Y label=Posted
+  PG[books] §MOBILE-VIEW cards=1 rows=1 tableHidden@≤760=n/a cardsShown@≤760=n/a desktopTable=Y pillRail=bottom@≤760
+  PG[books] §STATUSLINE_UI win=167 tab=263 line=""
+  PG[books] §STATUSLINE_UI win=167 tab=263 line=""
+  PG[books] §SETTINGS_SAVE items=15 hidden=0
+  PG[books] §IDMP-LIFECYCLE stage=in-client install=overflow migrate=overflow shown=[reports,setuplens,windowlens,dashboard,team,rule,warehouse,showme,plugin,share,home,worldhist,ninja,ninjacreate]
+  PG[books] §PILL-CUE attract=⋯ collapsed=true hidden=0
+  PG[books] §AD-TBB tab=263(C_Invoice) rows=1 shown=1 [InvoiceCustomerCreateCreditMemo->200100]
+  PG[books] §TB-ICONS window=167 bar=[Find,New,Copy,Save,Delete|,Ignore,Refresh,Toggle,Attachment,ZoomAcross,Report,Process,Print,ParentRecord,DetailRecord,Label,ShowMore] more=[Help,Chat,SaveCreate,PostIt,Archive,Lock,ActiveWorkflows,AttributeForm,Requests,Export,Customize,QuickForm,FileImport,CSVImport] skipped=SearchQuery:not-in-catalogue,PrintFormatEditor:not-in-catalogue unported=[Report,ParentRecord,DetailRecord,Label,Help,Chat,PostIt,Archive,Lock,ActiveWorkflows,AttributeForm,Requests,Export,QuickForm,FileImport,CSVImport]
+  PG[books] §OPS-LENS panel window=167 buttons=[]
+§FACTS ERP grid rows [{"id":"1300110","table":"C_Invoice","doc":"100001"}]
+§FACTS shot e2_invoice_grid the Invoice window as a grid: 1 row
+  PG[books] §OPEN-MODE window=167 tab=270 (Invoice Line) isSingleRow=true IsDisplayedGrid=- -> form
+  PG[books] §HELP_CTX window=167 type=T id=270 howto=none shown=dict lang=en_US
+  PG[books] §IDEMPIERE-MD tab=Invoice Line level=1 parent=C_Invoice filter=C_Invoice_ID=1300110 link=C_Invoice_ID source=IsParent-single parentNeedSave=false
+  PG[books] §AD_DATA readRecords table=C_InvoiceLine where=C_InvoiceLine.C_Invoice_ID=1300110 AND AD_Client_ID IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)
+  PG[books] §AD_DATA readRecords table=C_InvoiceLine count=2
+  PG[books] §UDP-ORDER table=C_InvoiceLine orderBy=Line applied=true
+  PG[books] §SETTINGS_SAVE items=15 hidden=0
+  PG[books] §IDMP-LIFECYCLE stage=in-client install=overflow migrate=overflow shown=[reports,setuplens,windowlens,dashboard,team,rule,warehouse,showme,plugin,share,home,worldhist,ninja,ninjacreate]
+  PG[books] §PILL-CUE attract=⋯ collapsed=true hidden=0
+  PG[books] §IDEMPIERE tab=Invoice Line table=C_InvoiceLine rows=2 fields=44 parentFilter=C_Invoice.C_Invoice_ID=1300110 postingDoc=false
+  PG[books] §AD_PARSER resolveRefTable id=130 table=AD_Org key=AD_Org_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=134 table=C_ElementValue key=C_ElementValue_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=137 table=C_ElementValue key=C_ElementValue_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=252 table=C_BPartner key=C_BPartner_ID where=yes
+  PG[books] §GRIDFIELD-EXEMPT key=c_invoiceline n=1 cols=[M_AttributeSetInstance_ID:M_AttributeSetInstance_ID] (GridField.isMandatory:377-385)
+  PG[books] §GRIDFIELD-DATATYPE-DEFAULT key=c_invoiceline n=5 [line=0,priceentered=0,priceactual=0,pricelist=0,linenetamt=0] (GridField.defaultFromDatatype:1022-1051)
+  PG[books] §GRIDFIELD-EXPR-DEFAULT key=c_invoiceline resolved=2 [ad_client_id="@AD_Client_ID@"→11 · ad_org_id="@AD_Org_ID@"→11] unresolved=2 [line="@SQL=SELECT NVL(MAX(Line),0)+10 AS DefaultValue FROM C_InvoiceLine WHERE C_Invoice_ID=@C_Invoice_ID@" · c_uom_id="@#C_UOM_ID@"] (GridField.defaultFromExpression:875-913)
+  PG[books] §GRIDFIELD-SYSPREF-DEFAULT key=c_invoiceline n=2 [c_uom_id=100,c_tax_id=104] (GridField stage 5 #ColumnName ← Login.loadDefault, FS-12)
+  PG[books] §REFTABLE-FOLD key=c_invoiceline resolved=4 [ad_orgtrx_id→ad_org+where,user1_id→c_elementvalue+where,user2_id→c_elementvalue+where,c_employee_id→c_bpartner+where] (MLookupFactory.getLookup_Table — DisplayType 18/30 targets that <col minus _id> gets wrong)
+  PG[books] §GRIDFIELD-HIDDEN-DEFAULT key=c_invoiceline n=7 [isactive=Y,pricelimit=0,taxamt=0,linetotalamt=0,processed=N,rramt=0,isfixedassetinvoice=N] (GridTable.dataNew: every field, displayed or not)
+  PG[books] §S2B-FOLD table=c_invoiceline verb=update verbs=[create,update,delete] fields=30 isView=false tabRO=false
+  PG[books] §YESNO col=isdescription cur="N" editable=false
+  PG[books] §YESNO col=isprinted cur="Y" editable=false
+  PG[books] §FK-ACCESS col=ad_org_id table=ad_org client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=8 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §VALRULE col=ad_org_id vr=130 rule="AD_Org Trx Security validation" table=ad_org before=23 after=8 offered=8 verdict=applied ctx={} kept=11
+  PG[books] §FK-ACCESS col=m_product_id table=m_product client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=197 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §VALRULE col=m_product_id vr=231 rule="M_Product (Trx)" table=m_product before=311 after=197 offered=197 verdict=applied ctx={} kept=123
+  PG[books] §AD-MODELVAL-LIVE bundle-gap (no such table: C_ChargeType) → no-row conservative default
+  PG[books] §FK-ACCESS col=c_charge_id table=c_charge client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=3 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §VALRULE col=c_charge_id vr=52030 rule="C_Charge by Doc Type Target" table=c_charge before=3 after=3 offered=3 verdict=engine-error:Cannot read properties of undefined (reading 'n') ctx={"C_DocTypeTarget_ID":116,"AD_Client_ID":"11"} kept=(blank)
+  PG[books] §FK-ACCESS col=c_tax_id table=c_tax client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=7 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §FK-ACCESS col=c_project_id table=c_project client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=3 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §VALRULE col=c_project_id vr=227 rule="C_Project of BPartner" table=c_project before=3 after=3 offered=3 verdict=applied ctx={"C_BPartner_ID":117} kept=(blank)
+  PG[books] §AD-MODELVAL-LIVE bundle-gap (no such table: c_activity) → no-row conservative default
+  PG[books] §FK-ACCESS col=c_campaign_id table=c_campaign client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=2 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §VALRULE col=c_campaign_id vr=236 rule="C_Campaign (Trx)" table=c_campaign before=2 after=2 offered=2 verdict=applied ctx={} kept=(blank)
+  PG[books] §FK-ACCESS col=ad_orgtrx_id table=ad_org client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=8 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §REFTABLE col=ad_orgtrx_id src=AD_Ref_Table:130 table=ad_org key=ad_org_id refWhere=applied rows=8
+  PG[books] §FK-ACCESS col=user1_id table=c_elementvalue client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=0 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §REFTABLE col=user1_id src=AD_Ref_Table:134 table=c_elementvalue key=c_elementvalue_id refWhere=applied rows=0
+  PG[books] §FK-ACCESS col=user2_id table=c_elementvalue client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=0 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §REFTABLE col=user2_id src=AD_Ref_Table:137 table=c_elementvalue key=c_elementvalue_id refWhere=applied rows=0
+  PG[books] §FK-ACCESS col=a_asset_id table=a_asset client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=3 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §FK-ACCESS col=c_employee_id table=c_bpartner client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=2 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §REFTABLE col=c_employee_id src=AD_Ref_Table:252 table=c_bpartner key=c_bpartner_id refWhere=applied rows=2
+  PG[books] §LOGIC_EVAL attr=readonly col=m_product_id expr="@S_ResourceAssignment_ID@!0 | @C_Charge_ID@!0" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c
+  PG[books] §LOGIC_EVAL attr=readonly col=c_charge_id expr="@M_Product_ID@!0" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117,"c_bpartner_
+  PG[books] §LOGIC_EVAL attr=readonly col=m_attributesetinstance_id expr="@C_Charge_ID@!0" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117
+  PG[books] §LOGIC_EVAL attr=readonly col=s_resourceassignment_id expr="@C_Charge_ID@!0" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117,"
+  PG[books] §LOGIC_EVAL attr=display col=qtyinvoiced expr="@UOMConversion@=Y | @Processed@=Y" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":
+  PG[books] §LOGIC_EVAL attr=display col=c_project_id expr="@$Element_PJ@='Y'" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117,"c_bpartner
+  PG[books] §LOGIC_EVAL attr=display col=c_activity_id expr="@$Element_AY@='Y'" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117,"c_bpartne
+  PG[books] §LOGIC_EVAL attr=display col=c_campaign_id expr="@$Element_MC@='Y'" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117,"c_bpartne
+  PG[books] §LOGIC_EVAL attr=display col=ad_orgtrx_id expr="@$Element_OT@=Y" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117,"c_bpartner_l
+  PG[books] §LOGIC_EVAL attr=display col=user1_id expr="@$Element_U1@='Y'" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117,"c_bpartner_loc
+  PG[books] §LOGIC_EVAL attr=display col=user2_id expr="@$Element_U2@='Y'" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117,"c_bpartner_loc
+  PG[books] §LOGIC_EVAL attr=display col=c_department_id expr="@$Element_DP@=Y" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117,"c_bpartne
+  PG[books] §LOGIC_EVAL attr=display col=c_costcenter_id expr="@$Element_CC@=Y" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117,"c_bpartne
+  PG[books] §LOGIC_EVAL attr=display col=c_employee_id expr="@$Element_EP@=Y" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117,"c_bpartner_
+  PG[books] §AD-LOGIC-LIVE key=c_invoiceline fields=30 withLogic=14 visibilityFlips=9 applied=DOM
+  PG[books] §STD-DEFAULTS create table=ad_session client=11 org=11 by=101 active=Y
+  PG[books] §STD-DEFAULTS create table=ad_session client=11 org=0 by=101 active=Y
+  PG[books] §MV-TIP-SHADOW table=ad_session base=0 tip=2 created=2
+  PG[books] §MV-TIP-SHADOW table=pa_goal base=4 tip=4 created=0
+  PG[books] §MV-TIP-SHADOW views=1 [ad_sessioninfo_v]
+  PG[books] §CALLOUT-OPEN table=c_invoiceline tab=270 fields=44 verb=update
+  PG[books] §INPLACE-EDIT table=c_invoiceline id=12000043 verb=update fields=30 mount=inline (no modal, no ✎ Edit)
+  PG[books] §STATUSLINE_UI win=167 tab=270 line=""
+  PG[books] §AD_PARSER resolveRefTable id=130 table=AD_Org key=AD_Org_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=134 table=C_ElementValue key=C_ElementValue_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=137 table=C_ElementValue key=C_ElementValue_ID where=yes
+  PG[books] §AD_PARSER resolveRefTable id=252 table=C_BPartner key=C_BPartner_ID where=yes
+  PG[books] §GRIDFIELD-EXEMPT key=c_invoiceline n=1 cols=[M_AttributeSetInstance_ID:M_AttributeSetInstance_ID] (GridField.isMandatory:377-385)
+  PG[books] §GRIDFIELD-DATATYPE-DEFAULT key=c_invoiceline n=5 [line=0,priceentered=0,priceactual=0,pricelist=0,linenetamt=0] (GridField.defaultFromDatatype:1022-1051)
+  PG[books] §GRIDFIELD-EXPR-DEFAULT key=c_invoiceline resolved=2 [ad_client_id="@AD_Client_ID@"→11 · ad_org_id="@AD_Org_ID@"→11] unresolved=2 [line="@SQL=SELECT NVL(MAX(Line),0)+10 AS DefaultValue FROM C_InvoiceLine WHERE C_Invoice_ID=@C_Invoice_ID@" · c_uom_id="@#C_UOM_ID@"] (GridField.defaultFromExpression:875-913)
+  PG[books] §GRIDFIELD-SYSPREF-DEFAULT key=c_invoiceline n=2 [c_uom_id=100,c_tax_id=104] (GridField stage 5 #ColumnName ← Login.loadDefault, FS-12)
+  PG[books] §REFTABLE-FOLD key=c_invoiceline resolved=4 [ad_orgtrx_id→ad_org+where,user1_id→c_elementvalue+where,user2_id→c_elementvalue+where,c_employee_id→c_bpartner+where] (MLookupFactory.getLookup_Table — DisplayType 18/30 targets that <col minus _id> gets wrong)
+  PG[books] §GRIDFIELD-HIDDEN-DEFAULT key=c_invoiceline n=7 [isactive=Y,pricelimit=0,taxamt=0,linetotalamt=0,processed=N,rramt=0,isfixedassetinvoice=N] (GridTable.dataNew: every field, displayed or not)
+  PG[books] §S2B-FOLD table=c_invoiceline verb=update verbs=[create,update,delete] fields=30 isView=false tabRO=false
+  PG[books] §YESNO col=isdescription cur="N" editable=false
+  PG[books] §YESNO col=isprinted cur="Y" editable=false
+  PG[books] §FK-ACCESS col=ad_org_id table=ad_org client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=8 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §VALRULE col=ad_org_id vr=130 rule="AD_Org Trx Security validation" table=ad_org before=23 after=8 offered=8 verdict=applied ctx={} kept=11
+  PG[books] §FK-ACCESS col=m_product_id table=m_product client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=197 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §VALRULE col=m_product_id vr=231 rule="M_Product (Trx)" table=m_product before=311 after=197 offered=197 verdict=applied ctx={} kept=123
+  PG[books] §AD-MODELVAL-LIVE bundle-gap (no such table: C_ChargeType) → no-row conservative default
+  PG[books] §FK-ACCESS col=c_charge_id table=c_charge client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=3 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §VALRULE col=c_charge_id vr=52030 rule="C_Charge by Doc Type Target" table=c_charge before=3 after=3 offered=3 verdict=engine-error:Cannot read properties of undefined (reading 'n') ctx={"C_DocTypeTarget_ID":116,"AD_Client_ID":"11"} kept=(blank)
+  PG[books] §FK-ACCESS col=c_tax_id table=c_tax client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=7 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §FK-ACCESS col=c_project_id table=c_project client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=3 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §VALRULE col=c_project_id vr=227 rule="C_Project of BPartner" table=c_project before=3 after=3 offered=3 verdict=applied ctx={"C_BPartner_ID":117} kept=(blank)
+  PG[books] §AD-MODELVAL-LIVE bundle-gap (no such table: c_activity) → no-row conservative default
+  PG[books] §FK-ACCESS col=c_campaign_id table=c_campaign client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=2 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §VALRULE col=c_campaign_id vr=236 rule="C_Campaign (Trx)" table=c_campaign before=2 after=2 offered=2 verdict=applied ctx={} kept=(blank)
+  PG[books] §FK-ACCESS col=ad_orgtrx_id table=ad_org client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=8 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §REFTABLE col=ad_orgtrx_id src=AD_Ref_Table:130 table=ad_org key=ad_org_id refWhere=applied rows=8
+  PG[books] §FK-ACCESS col=user1_id table=c_elementvalue client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=0 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §REFTABLE col=user1_id src=AD_Ref_Table:134 table=c_elementvalue key=c_elementvalue_id refWhere=applied rows=0
+  PG[books] §FK-ACCESS col=user2_id table=c_elementvalue client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=0 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §REFTABLE col=user2_id src=AD_Ref_Table:137 table=c_elementvalue key=c_elementvalue_id refWhere=applied rows=0
+  PG[books] §FK-ACCESS col=a_asset_id table=a_asset client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=3 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §FK-ACCESS col=c_employee_id table=c_bpartner client=11 clause="ad_client_id IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007)" admitted=2 (MRole.addAccessSQL via MLookupFactory.java:270)
+  PG[books] §REFTABLE col=c_employee_id src=AD_Ref_Table:252 table=c_bpartner key=c_bpartner_id refWhere=applied rows=2
+  PG[books] §LOGIC_EVAL attr=readonly col=m_product_id expr="@S_ResourceAssignment_ID@!0 | @C_Charge_ID@!0" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c
+  PG[books] §LOGIC_EVAL attr=readonly col=c_charge_id expr="@M_Product_ID@!0" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117,"c_bpartner_
+  PG[books] §LOGIC_EVAL attr=readonly col=m_attributesetinstance_id expr="@C_Charge_ID@!0" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117
+  PG[books] §LOGIC_EVAL attr=readonly col=s_resourceassignment_id expr="@C_Charge_ID@!0" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117,"
+  PG[books] §LOGIC_EVAL attr=display col=qtyinvoiced expr="@UOMConversion@=Y | @Processed@=Y" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":
+  PG[books] §LOGIC_EVAL attr=display col=c_project_id expr="@$Element_PJ@='Y'" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117,"c_bpartner
+  PG[books] §LOGIC_EVAL attr=display col=c_activity_id expr="@$Element_AY@='Y'" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117,"c_bpartne
+  PG[books] §LOGIC_EVAL attr=display col=c_campaign_id expr="@$Element_MC@='Y'" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117,"c_bpartne
+  PG[books] §LOGIC_EVAL attr=display col=ad_orgtrx_id expr="@$Element_OT@=Y" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117,"c_bpartner_l
+  PG[books] §LOGIC_EVAL attr=display col=user1_id expr="@$Element_U1@='Y'" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117,"c_bpartner_loc
+  PG[books] §LOGIC_EVAL attr=display col=user2_id expr="@$Element_U2@='Y'" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117,"c_bpartner_loc
+  PG[books] §LOGIC_EVAL attr=display col=c_department_id expr="@$Element_DP@=Y" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117,"c_bpartne
+  PG[books] §LOGIC_EVAL attr=display col=c_costcenter_id expr="@$Element_CC@=Y" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117,"c_bpartne
+  PG[books] §LOGIC_EVAL attr=display col=c_employee_id expr="@$Element_EP@=Y" ctx={"c_invoice_id":1300110,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":"2026-11-28 15:09:53","createdby":100,"updated":"2026-11-28 15:09:53","updatedby":100,"issotrx":"Y","documentno":"100001","docstatus":"CO","docaction":"CL","processing":"N","processed":"Y","posted":"Y","c_doctype_id":116,"c_doctypetarget_id":116,"description":"Oak tree, 2m","isapproved":"Y","istransferred":"N","isprinted":"N","salesrep_id":100,"dateinvoiced":"2026-11-20 00:00:00","dateacct":"2026-11-20 00:00:00","c_bpartner_id":117,"c_bpartner_
+  PG[books] §AD-LOGIC-LIVE key=c_invoiceline fields=30 withLogic=14 visibilityFlips=9 applied=DOM
+  PG[books] §STD-DEFAULTS create table=ad_session client=11 org=11 by=101 active=Y
+  PG[books] §STD-DEFAULTS create table=ad_session client=11 org=0 by=101 active=Y
+  PG[books] §MV-TIP-SHADOW table=ad_session base=0 tip=2 created=2
+  PG[books] §MV-TIP-SHADOW table=pa_goal base=4 tip=4 created=0
+  PG[books] §MV-TIP-SHADOW views=1 [ad_sessioninfo_v]
+  PG[books] §CALLOUT-OPEN table=c_invoiceline tab=270 fields=44 verb=update
+  PG[books] §INPLACE-EDIT table=c_invoiceline id=12000043 verb=update fields=30 mount=inline (no modal, no ✎ Edit)
+  PG[books] §STATUSLINE_UI win=167 tab=270 line=""
+  PG[books] §SETTINGS_SAVE items=15 hidden=0
+  PG[books] §IDMP-LIFECYCLE stage=in-client install=overflow migrate=overflow shown=[reports,setuplens,windowlens,dashboard,team,rule,warehouse,showme,plugin,share,home,worldhist,ninja,ninjacreate]
+  PG[books] §PILL-CUE attract=⋯ collapsed=true hidden=0
+  PG[books] §AD-TBB tab=270(C_InvoiceLine) rows=0 shown=0 []
+  PG[books] §TB-ICONS window=167 bar=[Find,New,Copy,Save,Delete|,Ignore,Refresh,Toggle,Attachment,ZoomAcross,Report,Process,Print,ParentRecord,DetailRecord,Label,ShowMore] more=[Help,Chat,SaveCreate,PostIt,Archive,Lock,ActiveWorkflows,AttributeForm,Requests,Export,Customize,QuickForm,FileImport,CSVImport] skipped=SearchQuery:not-in-catalogue,PrintFormatEditor:not-in-catalogue unported=[Report,ParentRecord,DetailRecord,Label,Help,Chat,PostIt,Archive,Lock,ActiveWorkflows,AttributeForm,Requests,Export,QuickForm,FileImport,CSVImport]
+  PG[books] §OPS-LENS panel window=167 buttons=[]
+  PG[books] §AD-TBB tab=270(C_InvoiceLine) rows=0 shown=0 []
+  PG[books] §TB-ICONS window=167 bar=[Find,New,Copy,Save,Delete|,Ignore,Refresh,Toggle,Attachment,ZoomAcross,Report,Process,Print,ParentRecord,DetailRecord,Label,ShowMore] more=[Help,Chat,SaveCreate,PostIt,Archive,Lock,ActiveWorkflows,AttributeForm,Requests,Export,Customize,QuickForm,FileImport,CSVImport] skipped=SearchQuery:not-in-catalogue,PrintFormatEditor:not-in-catalogue unported=[Report,ParentRecord,DetailRecord,Label,Help,Chat,PostIt,Archive,Lock,ActiveWorkflows,AttributeForm,Requests,Export,QuickForm,FileImport,CSVImport]
+  PG[books] §OPS-LENS panel window=167 buttons=[]
+  PG[books] §WHOLE-DEDUP doc=idempiere|Sales Invoice and Credit/Debit Note › Invoice Line day=2026-11-28 action=append count=2
+  PG[books] §WHOLE-REC page=idempiere kind=nav ts=1795849811720 label="Sales Invoice and Credit/Debit Note › Invoice Line"
+  PG[books] §IDMP-HIST push=tab:Sales Invoice and Credit/Debit Note › Invoice Line depth=3 idx=2
+  PG[books] §IDMP-HIST render dots=3 idx=2 draftPip=N
+  PG[books] §GRID-COLS tab=Invoice Line cols=28 mobile=false [AD_Org_ID,C_Invoice_ID,Line,M_InOutLine_ID,M_Product_ID,C_Charge_ID,M_AttributeSetInstance_ID,S_ResourceAssignment_ID,Description,QtyEntered,C_UOM_ID,QtyInvoiced,PriceEntered,PriceActual,PriceList,C_Tax_ID,C_Project_ID,C_Activity_ID,C_Campaign_ID,AD_OrgTrx_ID,User1_ID,User2_ID,LineNetAmt,IsDescription,IsPrinted,C_Department_ID,C_CostCenter_ID,C_Employee_ID]
+  PG[books] §AD_DATA resolveFK col=C_Invoice_ID val=1300110 label=100001
+  PG[books] §AD_DATA resolveFK col=M_Product_ID val=123 label=Oak Tree
+  PG[books] §AD_DATA resolveFK col=C_UOM_ID val=100 label=Each
+  PG[books] §AD_DATA resolveFK col=C_Tax_ID val=104 label=Standard
+  PG[books] §AD_DATA resolveFK col=M_Product_ID val=124 label=Elm Tree
+  PG[books] §MOBILE-VIEW cards=2 rows=2 tableHidden@≤760=n/a cardsShown@≤760=n/a desktopTable=Y pillRail=bottom@≤760
+  PG[books] §STATUSLINE_UI win=167 tab=270 line=""
+  PG[books] §STATUSLINE_UI win=167 tab=270 line=""
+  PG[books] §SETTINGS_SAVE items=15 hidden=0
+  PG[books] §IDMP-LIFECYCLE stage=in-client install=overflow migrate=overflow shown=[reports,setuplens,windowlens,dashboard,team,rule,warehouse,showme,plugin,share,home,worldhist,ninja,ninjacreate]
+  PG[books] §PILL-CUE attract=⋯ collapsed=true hidden=0
+  PG[books] §AD-TBB tab=270(C_InvoiceLine) rows=0 shown=0 []
+  PG[books] §TB-ICONS window=167 bar=[Find,New,Copy,Save,Delete|,Ignore,Refresh,Toggle,Attachment,ZoomAcross,Report,Process,Print,ParentRecord,DetailRecord,Label,ShowMore] more=[Help,Chat,SaveCreate,PostIt,Archive,Lock,ActiveWorkflows,AttributeForm,Requests,Export,Customize,QuickForm,FileImport,CSVImport] skipped=SearchQuery:not-in-catalogue,PrintFormatEditor:not-in-catalogue unported=[Report,ParentRecord,DetailRecord,Label,Help,Chat,PostIt,Archive,Lock,ActiveWorkflows,AttributeForm,Requests,Export,QuickForm,FileImport,CSVImport]
+  PG[books] §OPS-LENS panel window=167 buttons=[]
+§FACTS ERP Invoice Line rows [{"id":"12000043","line":"10","product":"Oak Tree","qty":"2","price":"61.75","net":"123.5"},{"id":"12000044","line":"20","product":"Elm Tree","qty":"3","price":"10","net":"30"}]
+§FACTS shot e3_invoice_lines the Invoice Line tab: 2 rows
+  PG[books] §HELP_CTX window=167 type=T id=263 howto=1000002 shown=dict+msg lang=en_US
+  PG[books] §ZOOM-ACROSS-FILTER table=C_Invoice C_Invoice_ID=1300110
+  PG[books] §AD_DATA readRecords table=C_Invoice where=(C_Invoice.IsSOTrx='Y') AND AD_Client_ID IN (0,11) AND AD_Org_ID IN (0,11,12,50000,50001,50002,50004,50005,50006,50007) AND C_Invoice_ID=1300110
+  PG[books] §AD_DATA readRecords table=C_Invoice count=1
+  PG[books] §UDP-ORDER table=C_Invoice orderBy=DocumentNo DESC applied=true
+  PG[books] §SETTINGS_SAVE items=15 hidden=0
+  PG[books] §IDMP-LIFECYCLE stage=in-client install=overflow migrate=overflow shown=[reports,setuplens,windowlens,dashboard,team,rule,warehouse,showme,plugin,share,home,worldhist,ninja,ninjacreate]
+  PG[books] §PILL-CUE attract=⋯ collapsed=true hidden=0
+  PG[books] §IDEMPIERE tab=Invoice table=C_Invoice rows=1 fields=68 parentFilter=zoomAcross=C_Invoice_ID=1300110 postingDoc=true
+  PG[books] §GRID-COLS tab=Invoice cols=48 mobile=false [AD_Org_ID,C_Order_ID,DateOrdered,DocumentNo,POReference,Description,C_DocTypeTarget_ID,IsSelfService,DateInvoiced,DateAcct,C_BPartner_ID,C_BPartner_Location_ID,AD_User_ID,M_PriceList_ID,C_Currency_ID,C_ConversionType_ID,IsOverrideCurrencyRate,CurrencyRate,SalesRep_ID,IsDiscountPrinted,C_Charge_ID,ChargeAmt,PaymentRule,C_PaymentTerm_ID,C_Project_ID,C_Activity_ID,C_Campaign_ID,AD_OrgTrx_ID,User1_ID,User2_ID,TotalLines,GrandTotal,DocStatus,C_DocType_ID,IsPayScheduleValid,IsInDispute,DocAction,Posted,IsPaid,InvoiceCollectionType,DunningGrace,C_DunningLe
+  PG[books] §MOBILE-VIEW cards=1 rows=1 tableHidden@≤760=n/a cardsShown@≤760=n/a desktopTable=Y pillRail=bottom@≤760
+  PG[books] §STATUSLINE_UI win=167 tab=263 line=""
+  PG[books] §STATUSLINE_UI win=167 tab=263 line=""
+  PG[books] §SETTINGS_SAVE items=15 hidden=0
+  PG[books] §IDMP-LIFECYCLE stage=in-client install=overflow migrate=overflow shown=[reports,setuplens,windowlens,dashboard,team,rule,warehouse,showme,plugin,share,home,worldhist,ninja,ninjacreate]
+  PG[books] §PILL-CUE attract=⋯ collapsed=true hidden=0
+  PG[books] §AD-TBB tab=263(C_Invoice) rows=1 shown=1 [InvoiceCustomerCreateCreditMemo->200100]
+  PG[books] §TB-ICONS window=167 bar=[Find,New,Copy,Save,Delete|,Ignore,Refresh,Toggle,Attachment,ZoomAcross,Report,Process,Print,ParentRecord,DetailRecord,Label,ShowMore] more=[Help,Chat,SaveCreate,PostIt,Archive,Lock,ActiveWorkflows,AttributeForm,Requests,Export,Customize,QuickForm,FileImport,CSVImport] skipped=SearchQuery:not-in-catalogue,PrintFormatEditor:not-in-catalogue unported=[Report,ParentRecord,DetailRecord,Label,Help,Chat,PostIt,Archive,Lock,ActiveWorkflows,AttributeForm,Requests,Export,QuickForm,FileImport,CSVImport]
+  PG[books] §OPS-LENS panel window=167 buttons=[]
+  PG[books] §AD-TBB tab=263(C_Invoice) rows=1 shown=1 [InvoiceCustomerCreateCreditMemo->200100]
+  PG[books] §TB-ICONS window=167 bar=[Find,New,Copy,Save,Delete|,Ignore,Refresh,Toggle,Attachment,ZoomAcross,Report,Process,Print,ParentRecord,DetailRecord,Label,ShowMore] more=[Help,Chat,SaveCreate,PostIt,Archive,Lock,ActiveWorkflows,AttributeForm,Requests,Export,Customize,QuickForm,FileImport,CSVImport] skipped=SearchQuery:not-in-catalogue,PrintFormatEditor:not-in-catalogue unported=[Report,ParentRecord,DetailRecord,Label,Help,Chat,PostIt,Archive,Lock,ActiveWorkflows,AttributeForm,Requests,Export,QuickForm,FileImport,CSVImport]
+  PG[books] §OPS-LENS panel window=167 buttons=[]
+  PG[books] §WHOLE-DEDUP doc=idempiere|Sales Invoice and Credit/Debit Note › Invoice day=2026-11-28 action=append count=3
+  PG[books] §WHOLE-REC page=idempiere kind=nav ts=1795849816962 label="Sales Invoice and Credit/Debit Note › Invoice"
+  PG[books] §IDMP-HIST push=tab:Sales Invoice and Credit/Debit Note › Invoice depth=4 idx=3
+  PG[books] §IDMP-HIST render dots=4 idx=3 draftPip=N
+  PG[books] §POSTED-COLUMN open rec=1300110 posted=true → GL-facts
+  PG[books] §IDMP-HIST crumb tag=POSTED label="-COLUMN open rec=1300110 posted=true → GL-facts" depth=5 (from §-stream, no per-feature wiring)
+  PG[books] §IDMP-HIST render dots=5 idx=4 draftPip=N
+  PG[books] §STD-DEFAULTS create table=ad_session client=11 org=11 by=101 active=Y
+  PG[books] §STD-DEFAULTS create table=ad_session client=11 org=0 by=101 active=Y
+  PG[books] §MV-TIP-SHADOW table=ad_session base=0 tip=2 created=2
+  PG[books] §MV-TIP-SHADOW table=pa_goal base=4 tip=4 created=0
+  PG[books] §MV-TIP-SHADOW views=1 [ad_sessioninfo_v]
+  PG[books] §POSTED-FACTS table=C_Invoice rec=1300110 schema=101 lines=3 schemas=2 dr=153.5 cr=153.5 balanced=true selector=101,200000 of=6 all=101:3:153.5:153.5,200000:3:130.48:130.48
+  PG[books] §POSTED-LIVE table=C_Invoice rec=1300110 visible=true source=fact_acct coverage=complete
+§FACTS Posted view: [["12110 · Accounts Receivable - Trade","153.50","0.00"],["41000 · Trade Revenue","0.00","123.50"],["41000 · Trade Revenue","0.00","30.00"]] |  | §POSTED-FACTS table=C_Invoice rec=1300110 schema=101 lines=3 schemas=2 dr=153.5 cr=153.5 balanced=true selector=101,200000 of=6 all=101:3:153.5:153.5,200000:3:130.48:130.48
+§FACTS shot e4_posted the Posted view
+  PG[books] §HELP_CTX window=167 type=P id=310 howto=1000009 shown=dict+msg lang=en_US
+  PG[books] §AD-PROC-LIVE handlers=[org.compiere.report.FinReport,report:c_order,report:c_invoice,report:m_inout,report:m_inoutconfirm,report:m_movement,report:m_inventory,report:pp_order,report:c_project,report:c_payment,org.compiere.process.Aging,reportview:rv_openitem,org.compiere.process.ImportBPartner,org.compiere.report.TrialBalance,org.compiere.process.FactAcctReset,org.compiere.process.DocumentTypeVerify] reportCore=Y engine=Y
+  PG[books] §AD-PROC-LIVE open proc=310 name="Trial Balance" report=Y paras=15
+  PG[books] §PROC-PARAM-PICKER col=C_AcctSchema_ID table=C_AcctSchema rows=2 display=[Name] clause="AD_Client_ID IN (0,11)"
+  PG[books] §PROC-PARAM-PICKER col=C_Period_ID table=C_Period rows=360 display=[Name] clause="AD_Client_ID IN (0,11)"
+  PG[books] §PROC-PARAM-PICKER col=AD_Org_ID table=AD_Org rows=10 display=[Name] clause="AD_Client_ID IN (0,11)" valrule=UNRESOLVED
+  PG[books] §PROC-PARAM-PICKER col=C_BPartner_ID table=C_BPartner rows=18 display=[Name] clause="AD_Client_ID IN (0,11)"
+  PG[books] §PROC-PARAM-PICKER col=M_Product_ID table=M_Product rows=197 display=[Value,Name] clause="AD_Client_ID IN (0,11)"
+  PG[books] §PROC-PARAM-PICKER col=C_Project_ID table=C_Project rows=3 display=[Value,Name] clause="AD_Client_ID IN (0,11)"
+  PG[books] §PROC-PARAM-PICKER col=C_Activity_ID table=C_Activity skipped=no-table-or-identifier → text box kept
+  PG[books] §PROC-PARAM-PICKER col=C_SalesRegion_ID table=C_SalesRegion rows=2 display=[Name] clause="AD_Client_ID IN (0,11)"
+  PG[books] §PROC-PARAM-PICKER col=C_Campaign_ID table=C_Campaign rows=2 display=[Name] clause="AD_Client_ID IN (0,11)"
+  PG[books] §PROC-PARAM-PICKER col=PA_Hierarchy_ID table=PA_Hierarchy skipped=no-table-or-identifier → text box kept
+  PG[books] §UDP2-SAVED proc=310 user=101 list=0 []
+  PG[books] §PROC-PARAM-PICKER col=AD_Org_ID table=AD_Org rows=10 display=[Name] clause="AD_Client_ID IN (0,11)" valrule=UNRESOLVED
+  PG[books] §FIELD_HELP focus=DateAcct · date header="Account Date" desc=15 help=162
+  PG[books] §PROC-PARAM-PICKER col=AD_Org_ID table=AD_Org rows=10 display=[Name] clause="AD_Client_ID IN (0,11)" valrule=UNRESOLVED
+  PG[books] §PROC-PARAM-PICKER col=AD_Org_ID table=AD_Org rows=10 display=[Name] clause="AD_Client_ID IN (0,11)" valrule=UNRESOLVED
+  PG[books] §PROC-PARAM-PICKER col=AD_Org_ID table=AD_Org rows=10 display=[Name] clause="AD_Client_ID IN (0,11)" valrule=UNRESOLVED
+  PG[books] §PROC-PARAM-PICKER col=AD_Org_ID table=AD_Org rows=10 display=[Name] clause="AD_Client_ID IN (0,11)" valrule=UNRESOLVED
+§FACTS shot e5_tb_params the Trial Balance report: schema and date chosen
+  PG[books] §PROC_PARAM_VALIDATE proc=310 ok required=[C_AcctSchema_ID,PostingType] supplied=[C_AcctSchema_ID,DateAcct,PostingType,IsGroupByOrg]
+  PG[books] §KRN_CHAIN verify OK len=6 tip=2bbdb44b0a02…
+  PG[books] §OPLOG-HYDRATE ops=6 tip=2bbdb44b0a0219609804c6aff12759e196edca1ff8a981be91ef5ada2a0d97d2 source=readAll
+  PG[books] §CRUD-GROUP-OPREF nextId=7 resolved=4 unresolved=0 (a line's parent FK = the synthetic pk listTip will give its header op)
+  PG[books] §IDMP-HIST crumb tag=CRUD label="-GROUP-OPREF nextId=7 resolved=4 unresolved=0 (a line's parent FK = the syntheti" depth=6 (from §-stream, no per-feature wiring)
+  PG[books] §IDMP-HIST render dots=6 idx=5 draftPip=N
+  PG[books] §KRN_GROUP committed gid=c2ddab81-4df0-4cc0-b9e3-d81efa684888 ops=5 groupHash=2fa4c1029da5… tip=bfd4702bf093… sealed=5 (WHOLE — all-or-none)
+  PG[books] §KRN_CHAIN verify-incr OK checked=5 skipped=6 tip=bfd4702bf093…
+  PG[books] §OPLOG-APPEND key=7 id=7 op_uuid=d6c5a000-48b6-4893-bb36-7e13261fe62d
+  PG[books] §OPLOG-APPEND key=8 id=8 op_uuid=4d7bcffa-55a1-4820-88f1-e96f2af5550f
+  PG[books] §OPLOG-APPEND key=9 id=9 op_uuid=fcc413ce-6027-4b4e-9c23-8fa59aa11263
+  PG[books] §OPLOG-APPEND key=10 id=10 op_uuid=10180e8c-ce3f-4a70-8c58-5b7e22e1ffbc
+  PG[books] §OPLOG-APPEND key=11 id=11 op_uuid=bf850235-abe5-40bf-b29e-0b85b51930cf
+  PG[books] §CRUD-GROUP-PERSIST ops=5 source=sidecar gid=c2ddab81-4df0-4cc0-b9e3-d81efa684888 sealed=5 verifyChain=ok
+  PG[books] §UDP2-SAVED run (Last Run entry) proc=310 ops=5 committed=true
+  PG[books] §TB-SCOPE where=ad_client_id=11 AND c_acctschema_id=101
+  PG[books] §AD-PROC-LIVE proc=310 name="Trial Balance" classname=org.compiere.report.TrialBalance dispatched=Y ok=Y rows=20
+  PG[books] §STD-DEFAULTS create table=ad_session client=11 org=11 by=101 active=Y
+  PG[books] §STD-DEFAULTS create table=ad_session client=11 org=0 by=101 active=Y
+  PG[books] §ADMIN3-CHANGEAUDIT rebuilt rows=2 from=commit ms=13 (temp.ad_changelog, derived from the op-log, not exported)
+§FACTS report: 12110 row ["12110","Accounts Receivable - Trade","734.91","151.05","583.86"] | Total Dr 25329.19 · Total Cr 25329.19 · balanced=true | from the entries: debit with the invoice 734.91, without it 581.41, this invoice 153.5
+§FACTS shot e6_tb_report the Trial Balance report, row 12110
+§FACTS report honest=true
+  PG[offline] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[offline] §PDFED-OFFLINE ready=true
+§FACTS §FILM_FIRSTVISIT bytes=257309 requests=11 msToUsable=341 bytesAfterPrecache=257309 serviceWorkerActive=true | §PDFED-OFFLINE ready=true
+  PG[offline] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[offline] §PDFED-OFFLINE ready=true
+  PG[offline] §PDFED-LAYOUT pages=1 observedAgainst=window
+  PG[offline] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=1 releases=0 heapMB=6
+  PG[offline] §PDFED-FIRST page=1 drawn=true ms=291 pages=1 canvasesAlive=1
+  PG[offline] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[offline] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[offline] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=7 reason="4 totals agree with their rows"
+  PG[offline] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=36 heapMB=7
+  PG[offline] §PDFED-OPEN ok=true file="trial_balance_th.pdf" bytes=74945 pages=1 chars=1017 outline=0 ms=343
+  PG[offline] §EDSHEET-EDITOR id=cD10 cell=D10 kind=cell windowScrolled=0
+  PG[offline] §PDFWR-HISTORY entries=1 ops=144 genesis=true page=1
+  PG[offline] §PDFHIST-STATE entries=1 verified=true carried=none restarted=false text="History: 1 entry, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[offline] §PDF_WRITE ok=true edits=1 applied=1 refused=0 bytesIn=74945 bytesOut=74939 ms=8 cells=D10:"498.09"->"499.09"
+  PG[offline] §PDFED-REOPEN page=1 pagesRead=1 of=1 ms=259
+  PG[offline] §EDSHEET-UNDO-MEM steps=1 withBytes=1 heldMB=0.07 budgetMB=128.00 dropped=0 heapMB=8
+  PG[offline] §SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=4 reason="D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16"
+  PG[offline] §PDFHIST-STATE entries=2 verified=true carried=none restarted=false text="History: 2 entries, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[offline] §PDFWR-HISTORY entries=2 ops=1 cell=D10 before=498.09 after=499.09 typedOverFormula=false actor=you sheet=Report
+  PG[offline] §SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=2 reason="D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16"
+  PG[offline] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=DOES_NOT_ADD_UP redBoxes=0 ms=66 heapMB=10
+  PG[offline] §EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old="498.09" new="499.09" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74939 edits=1
+  PG[offline] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=2 releases=1 heapMB=9
+§FACTS §FILM_OFFLINE reloadOk=true openOk=true editOk=true requestsWhileOffline=13 failedWhileOffline=0
+  PG[phone] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[phone] §PDFED-OFFLINE ready=true
+  PG[phone] §PDFED-LAYOUT pages=1 observedAgainst=window
+  PG[phone] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=1 releases=0 heapMB=5
+  PG[phone] §PDFED-FIRST page=1 drawn=true ms=422 pages=1 canvasesAlive=1
+  PG[phone] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[phone] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[phone] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=16 reason="4 totals agree with their rows"
+  PG[phone] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=101 heapMB=6
+  PG[phone] §PDFED-OPEN ok=true file="trial_balance_th.pdf" bytes=74945 pages=1 chars=1017 outline=0 ms=549
+§FACTS ink p0_trial darkPixelSamples=1284
+§FACTS darkshare p0_trial 0.02521 retakes=0
+§FACTS shot p0_trial on an emulated phone: the report opened clip=0,0,390,389
+  PG[phone] §EDSHEET-EDITOR id=cD10 cell=D10 kind=cell windowScrolled=0
+  PG[phone] §PDFWR-HISTORY entries=1 ops=144 genesis=true page=1
+  PG[phone] §PDFHIST-STATE entries=1 verified=true carried=none restarted=false text="History: 1 entry, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[phone] §PDF_WRITE ok=true edits=1 applied=1 refused=0 bytesIn=74945 bytesOut=74939 ms=46 cells=D10:"498.09"->"499.09"
+  PG[phone] §PDFED-REOPEN page=1 pagesRead=1 of=1 ms=355
+  PG[phone] §EDSHEET-UNDO-MEM steps=1 withBytes=1 heldMB=0.07 budgetMB=128.00 dropped=0 heapMB=8
+  PG[phone] §SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=10 reason="D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16"
+  PG[phone] §PDFHIST-STATE entries=2 verified=true carried=none restarted=false text="History: 2 entries, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[phone] §PDFWR-HISTORY entries=2 ops=1 cell=D10 before=498.09 after=499.09 typedOverFormula=false actor=you sheet=Report
+  PG[phone] §SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=10 reason="D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16"
+  PG[phone] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=DOES_NOT_ADD_UP redBoxes=0 ms=132 heapMB=9
+  PG[phone] §EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old="498.09" new="499.09" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74939 edits=1
+  PG[phone] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=2 releases=1 heapMB=8
+§FACTS phone tap edit: §EDSHEET-EDITOR id=cD10 cell=D10 kind=cell windowScrolled=0 | §EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old="498.09" new="499.09" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74939 edits=1 | docWidth=390
+§FACTS ink p1_trial darkPixelSamples=1284
+§FACTS darkshare p1_trial 0.03196 retakes=0
+§FACTS shot p1_trial on an emulated phone: D10 is now "499.09". Page 1 does NOT add up: D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16. Ctrl+Z undoes it. clip=0,0,390,389
+§FACTS quiet? before long-file run 1 loadavg1=25.00 waitedMs=120119 cpus=20
+  PG[phone] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[phone] §PDFED-OFFLINE ready=true
+  PG[phone] §PDFED-LAYOUT pages=2400 observedAgainst=window
+  PG[phone] §PDFED-COST why=draw-p1 pages=2400 canvasesAlive=1 renders=1 releases=0 heapMB=23
+  PG[phone] §PDFED-FIRST page=1 drawn=true ms=5233 pages=2400 canvasesAlive=2
+  PG[phone] §PDFED-COST why=draw-p2 pages=2400 canvasesAlive=2 renders=2 releases=0 heapMB=24
+  PG[phone] §PDFED-COST why=draw-p3 pages=2400 canvasesAlive=3 renders=3 releases=0 heapMB=24
+  PG[phone] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[phone] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[phone] §SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=12 lines=12 cols=0 cells=0 blankRows=0 edgeSplits=0 bandsMerged=0 boxesTrimmed=0 collisions=0 checks=0 ms=6 reason="no table found (fewer than 2 lines with 3 or more cells)"
+  PG[phone] §EDSHEET-LAYER page=1 runs=16 writableRuns=16 lockedRuns=0 cells=0 cellTargets=0 runTargets=16 locked=0 images=0 reasons={} file=writable forms=0 table=INCONCLUSIVE redBoxes=0 ms=1484 heapMB=80
+  PG[phone] §PDFED-OPEN ok=true file="long_report_2400_pages.pdf" bytes=19636046 pages=2400 chars=3368400 outline=0 ms=29763
+§FACTS phone long file run 1: firstPagePaintedMs=5555 | §PDFED-FIRST page=1 drawn=true ms=5233 pages=2400 canvasesAlive=2 | §PDFED-OPEN ok=true  bytes=19636046 pages=2400 chars=3368400 outline=0 ms=29763 | canvases=3 | loadavg1=28.84 cpus=20
+§FACTS quiet? before long-file run 2 loadavg1=27.64 waitedMs=120131 cpus=20
+  PG[phone] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[phone] §PDFED-OFFLINE ready=true
+  PG[phone] §PDFED-LAYOUT pages=2400 observedAgainst=window
+  PG[phone] §PDFED-COST why=draw-p1 pages=2400 canvasesAlive=1 renders=1 releases=0 heapMB=23
+  PG[phone] §PDFED-FIRST page=1 drawn=true ms=5572 pages=2400 canvasesAlive=2
+  PG[phone] §PDFED-COST why=draw-p2 pages=2400 canvasesAlive=2 renders=2 releases=0 heapMB=24
+  PG[phone] §PDFED-COST why=draw-p3 pages=2400 canvasesAlive=3 renders=3 releases=0 heapMB=24
+  PG[phone] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[phone] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[phone] §SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=12 lines=12 cols=0 cells=0 blankRows=0 edgeSplits=0 bandsMerged=0 boxesTrimmed=0 collisions=0 checks=0 ms=4 reason="no table found (fewer than 2 lines with 3 or more cells)"
+  PG[phone] §EDSHEET-LAYER page=1 runs=16 writableRuns=16 lockedRuns=0 cells=0 cellTargets=0 runTargets=16 locked=0 images=0 reasons={} file=writable forms=0 table=INCONCLUSIVE redBoxes=0 ms=1578 heapMB=82
+  PG[phone] §PDFED-OPEN ok=true file="long_report_2400_pages.pdf" bytes=19636046 pages=2400 chars=3368400 outline=0 ms=32403
+§FACTS phone long file run 2: firstPagePaintedMs=5939 | §PDFED-FIRST page=1 drawn=true ms=5572 pages=2400 canvasesAlive=2 | §PDFED-OPEN ok=true  bytes=19636046 pages=2400 chars=3368400 outline=0 ms=32403 | canvases=3 | loadavg1=28.73 cpus=20
+§FACTS quiet? before long-file run 3 loadavg1=25.14 waitedMs=120125 cpus=20
+  PG[phone] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[phone] §PDFED-OFFLINE ready=true
+  PG[phone] §PDFED-LAYOUT pages=2400 observedAgainst=window
+  PG[phone] §PDFED-COST why=draw-p1 pages=2400 canvasesAlive=1 renders=1 releases=0 heapMB=23
+  PG[phone] §PDFED-FIRST page=1 drawn=true ms=5172 pages=2400 canvasesAlive=2
+  PG[phone] §PDFED-COST why=draw-p2 pages=2400 canvasesAlive=2 renders=2 releases=0 heapMB=24
+  PG[phone] §PDFED-COST why=draw-p3 pages=2400 canvasesAlive=3 renders=3 releases=0 heapMB=24
+  PG[phone] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[phone] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[phone] §SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=12 lines=12 cols=0 cells=0 blankRows=0 edgeSplits=0 bandsMerged=0 boxesTrimmed=0 collisions=0 checks=0 ms=7 reason="no table found (fewer than 2 lines with 3 or more cells)"
+  PG[phone] §EDSHEET-LAYER page=1 runs=16 writableRuns=16 lockedRuns=0 cells=0 cellTargets=0 runTargets=16 locked=0 images=0 reasons={} file=writable forms=0 table=INCONCLUSIVE redBoxes=0 ms=1475 heapMB=82
+  PG[phone] §PDFED-OPEN ok=true file="long_report_2400_pages.pdf" bytes=19636046 pages=2400 chars=3368400 outline=0 ms=32080
+§FACTS phone long file run 3: firstPagePaintedMs=5517 | §PDFED-FIRST page=1 drawn=true ms=5172 pages=2400 canvasesAlive=2 | §PDFED-OPEN ok=true  bytes=19636046 pages=2400 chars=3368400 outline=0 ms=32080 | canvases=3 | loadavg1=29.27 cpus=20
+§FACTS quiet? before long-file run 4 loadavg1=17.21 waitedMs=120116 cpus=20
+  PG[phone] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[phone] §PDFED-OFFLINE ready=true
+  PG[phone] §PDFED-LAYOUT pages=2400 observedAgainst=window
+  PG[phone] §PDFED-COST why=draw-p1 pages=2400 canvasesAlive=1 renders=1 releases=0 heapMB=23
+  PG[phone] §PDFED-FIRST page=1 drawn=true ms=3133 pages=2400 canvasesAlive=2
+  PG[phone] §PDFED-COST why=draw-p2 pages=2400 canvasesAlive=2 renders=2 releases=0 heapMB=24
+  PG[phone] §PDFED-COST why=draw-p3 pages=2400 canvasesAlive=3 renders=3 releases=0 heapMB=24
+  PG[phone] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[phone] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[phone] §SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=12 lines=12 cols=0 cells=0 blankRows=0 edgeSplits=0 bandsMerged=0 boxesTrimmed=0 collisions=0 checks=0 ms=2 reason="no table found (fewer than 2 lines with 3 or more cells)"
+  PG[phone] §EDSHEET-LAYER page=1 runs=16 writableRuns=16 lockedRuns=0 cells=0 cellTargets=0 runTargets=16 locked=0 images=0 reasons={} file=writable forms=0 table=INCONCLUSIVE redBoxes=0 ms=896 heapMB=82
+  PG[phone] §PDFED-OPEN ok=true file="long_report_2400_pages.pdf" bytes=19636046 pages=2400 chars=3368400 outline=0 ms=17490
+§FACTS phone long file run 4: firstPagePaintedMs=3514 | §PDFED-FIRST page=1 drawn=true ms=3133 pages=2400 canvasesAlive=2 | §PDFED-OPEN ok=true  bytes=19636046 pages=2400 chars=3368400 outline=0 ms=17490 | canvases=3 | loadavg1=16.82 cpus=20
+§FACTS quiet? before long-file run 5 loadavg1=8.74 waitedMs=120121 cpus=20
+  PG[phone] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[phone] §PDFED-OFFLINE ready=true
+  PG[phone] §PDFED-LAYOUT pages=2400 observedAgainst=window
+  PG[phone] §PDFED-COST why=draw-p1 pages=2400 canvasesAlive=1 renders=1 releases=0 heapMB=23
+  PG[phone] §PDFED-FIRST page=1 drawn=true ms=2311 pages=2400 canvasesAlive=2
+  PG[phone] §PDFED-COST why=draw-p2 pages=2400 canvasesAlive=2 renders=2 releases=0 heapMB=24
+  PG[phone] §PDFED-COST why=draw-p3 pages=2400 canvasesAlive=3 renders=3 releases=0 heapMB=24
+  PG[phone] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[phone] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[phone] §SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=12 lines=12 cols=0 cells=0 blankRows=0 edgeSplits=0 bandsMerged=0 boxesTrimmed=0 collisions=0 checks=0 ms=3 reason="no table found (fewer than 2 lines with 3 or more cells)"
+  PG[phone] §EDSHEET-LAYER page=1 runs=16 writableRuns=16 lockedRuns=0 cells=0 cellTargets=0 runTargets=16 locked=0 images=0 reasons={} file=writable forms=0 table=INCONCLUSIVE redBoxes=0 ms=548 heapMB=82
+  PG[phone] §PDFED-OPEN ok=true file="long_report_2400_pages.pdf" bytes=19636046 pages=2400 chars=3368400 outline=0 ms=11646
+§FACTS phone long file run 5: firstPagePaintedMs=2440 | §PDFED-FIRST page=1 drawn=true ms=2311 pages=2400 canvasesAlive=2 | §PDFED-OPEN ok=true  bytes=19636046 pages=2400 chars=3368400 outline=0 ms=11646 | canvases=3 | loadavg1=8.72 cpus=20
+§FACTS ink p2_long darkPixelSamples=217
+§FACTS darkshare p2_long 0.00359 retakes=0
+§FACTS shot p2_long a long file on an emulated phone: long_report_2400_pages.pdf: 2400 pages clip=0,0,390,389
+§FACTS phone long file: runs ms=[2440,3514,5517,5555,5939] median=5517 ms (pages=2400)
+§FACTS DERIVED {"cells":144,"addsUp":true,"cellTargets":133,"lockedRuns":46,"writableRuns":139,"noUpload":true,"gap":1,"redTotal":true,"greenAgain":true,"wordEdited":true,"fontBox":true,"undoClears":true,"pictureLocked":true,"objectsInOriginal":40,"objectsIdentical":38,"objectsChanged":2,"changedAreCatalogAndPage":true,"objectsAdded":2,"imageSame":true,"rasterOutside":0,"rasterInside":116,"integrity":true,"sumFormulas":4,"noDoorText":true,"historyInBoth":true,"historyEntries":2,"xlsxCells":144,"historyOnSheetPage":true,"storyValues":2,"storyOk":true,"erpReportReady":true,"erpPdfOnePage":true,"erpReadBack":144,"erpAddsUp":true,"erpEditNames":true,"erpUndoAdds":true,"erpReportCells":144,"filed":true,"entriesBalanced":true,"erpOnce":true,"handover":true,"postedBalanced":true,"invoiceDollars":153,"invoiceCents":50,"reportHonest":true,"firstVisitBytes":257309,"firstVisitMs":341,"pageOneMs":235,"rewriteMs":6,"offlineOk":true,"phoneTapOk":true,"longPages":2400,"longFirstMs":5517,"longCanvases":3,"longOk":true}
+§FACTS FACTS_VERDICT PASS (judged: 55 derived facts)

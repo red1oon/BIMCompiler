@@ -1,0 +1,4 @@
+§GUARD novelty words (new, first, unique, only; the licence name GPL-2.0-only is an SPDX id, not a claim) on any card or strip: none
+§GUARD cards: 438 numbers printed on the cards and in the strip, each a number of facts.json / credits.json (15 of them are a half-typed prefix of such a number, while the keys are still being pressed): yes
+§GUARD_CONTROL planted number on a card is REJECTED
+§GUARD_VERDICT cards PASS facts=438 bad=0

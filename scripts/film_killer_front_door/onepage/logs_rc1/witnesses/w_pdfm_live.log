@@ -1,0 +1,63 @@
+§PDFM-SITE LIVE https://red1oon.github.io/bim-ootb/pdf/ files=6 source=pdf/corpus
+§PDFM-FIRSTVISIT bytes=256953 msToUsable=1765 net=slow4G cpu=4x
+  §PDFM-U2-empty PASS header=99px
+  §PDFM-U4-empty PASS documentWidth=390 small=[]
+§PDFM-FILE n=1 kind=corpus bytes=22728 pages=1 chars1=77 money1=4
+  §PDFM-OPEN n=1 opened=§PDFED-OPEN ok=true file=<withheld> bytes=22728 pages=1 chars=77 outline=0 ms=243 firstPagePaintedMs=257 allTextReadMs~307 canvases=1 heapMB=4 longTasks=1/147ms
+  §PDFM-LAYER n=1 page=1 runs=12 writableRuns=12 lockedRuns=0 cells=12 cellTargets=12 runTargets=0 locked=0 images=0 reasons={} file=writable forms=0 table=INCONCLUSIVE redBoxes=0 ms=29
+  §PDFM-M1 n=1 PASS firstPagePaintedMs=257 (openMs=243)
+  §PDFM-U1 n=1 PASS page 1 covers 27% of the first screen, wholly on it: true
+  §PDFM-U2 n=1 PASS header=99px
+  §PDFM-M2 n=1 PASS canvasesAlive afterOpen=1 afterScrollToEnd=1 of 1 pages; peakHeapMB=4
+  §PDFM-M3 n=1 readMs=54 verdict="Page 1 was not judged: no total row found: nothing was judged." readerLog=§SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=12 lines=4 cols=5 cells=12 blankR
+  §PDFM-U4 n=1 PASS documentWidth=390 small=[]
+§PDFM-FILE n=2 kind=corpus bytes=23866 pages=1 chars1=155 money1=1
+  §PDFM-OPEN n=2 opened=§PDFED-OPEN ok=true file=<withheld> bytes=23866 pages=1 chars=155 outline=0 ms=248 firstPagePaintedMs=248 allTextReadMs~298 canvases=1 heapMB=4 longTasks=1/149ms
+  §PDFM-LAYER n=2 page=1 runs=19 writableRuns=19 lockedRuns=0 cells=19 cellTargets=19 runTargets=0 locked=0 images=0 reasons={} file=writable forms=0 table=INCONCLUSIVE redBoxes=0 ms=28
+  §PDFM-M1 n=2 PASS firstPagePaintedMs=248 (openMs=248)
+  §PDFM-U1 n=2 PASS page 1 covers 18% of the first screen, wholly on it: true
+  §PDFM-U2 n=2 PASS header=99px
+  §PDFM-M2 n=2 PASS canvasesAlive afterOpen=1 afterScrollToEnd=1 of 1 pages; peakHeapMB=4
+  §PDFM-M3 n=2 readMs=59 verdict="Page 1 was not judged: no total row found: nothing was judged." readerLog=§SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=19 lines=7 cols=6 cells=19 blankR
+  §PDFM-U4 n=2 PASS documentWidth=390 small=[]
+§PDFM-FILE n=3 kind=corpus bytes=183883 pages=12 chars1=402 money1=0
+  §PDFM-OPEN n=3 opened=§PDFED-OPEN ok=true file=<withheld> bytes=183883 pages=12 chars=16842 outline=23 ms=376 firstPagePaintedMs=240 allTextReadMs~441 canvases=3 heapMB=5 longTasks=1/149ms
+  §PDFM-LAYER n=3 page=1 runs=16 writableRuns=16 lockedRuns=0 cells=0 cellTargets=0 runTargets=16 locked=0 images=0 reasons={} file=writable forms=0 table=INCONCLUSIVE redBoxes=0 ms=49
+  §PDFM-M1 n=3 PASS firstPagePaintedMs=240 (openMs=376)
+  §PDFM-U1 n=3 PASS page 1 covers 56% of the first screen, wholly on it: true
+  §PDFM-U2 n=3 PASS header=99px
+  §PDFM-U7 n=3 PASS scrolled to the end, the Sheet button is on screen and tappable
+  §PDFM-M2 n=3 PASS canvasesAlive afterOpen=3 afterScrollToEnd=2 of 12 pages; peakHeapMB=5
+  §PDFM-U6 n=3 PASS page 3 in the middle of the screen; Read as sheet read page 3
+  §PDFM-M3 n=3 readMs=86 verdict="Page 3 was not judged: no total row found: nothing was judged." readerLog=§SHEET_READER verdict=INCONCLUSIVE ok=false page=3 items=33 lines=18 cols=3 cells=28 blank
+  §PDFM-U4 n=3 PASS documentWidth=390 small=[]
+§PDFM-FILE n=4 kind=corpus bytes=43522 pages=1 chars1=164 money1=2
+  §PDFM-OPEN n=4 opened=§PDFED-OPEN ok=true file=<withheld> bytes=43522 pages=1 chars=164 outline=0 ms=249 firstPagePaintedMs=222 allTextReadMs~272 canvases=1 heapMB=4 longTasks=1/149ms
+  §PDFM-LAYER n=4 page=1 runs=48 writableRuns=13 lockedRuns=35 cells=17 cellTargets=8 runTargets=5 locked=35 images=0 reasons={"script-not-supported":35} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=35
+  §PDFM-M1 n=4 PASS firstPagePaintedMs=222 (openMs=249)
+  §PDFM-U1 n=4 PASS page 1 covers 23% of the first screen, wholly on it: true
+  §PDFM-U2 n=4 PASS header=99px
+  §PDFM-M2 n=4 PASS canvasesAlive afterOpen=1 afterScrollToEnd=1 of 1 pages; peakHeapMB=4
+  §PDFM-M3 n=4 readMs=63 verdict="Page 1 adds up: 1 totals agree with their rows." readerLog=§SHEET_READER verdict=ADDS_UP ok=true page=1 items=23 lines=7 cols=4 cells=17 blankRows=3 
+  §PDFM-U4 n=4 PASS documentWidth=390 small=[]
+§PDFM-FILE n=5 kind=corpus bytes=54258 pages=1 chars1=449 money1=15
+  §PDFM-OPEN n=5 opened=§PDFED-OPEN ok=true file=<withheld> bytes=54258 pages=1 chars=449 outline=0 ms=442 firstPagePaintedMs=459 allTextReadMs~509 canvases=1 heapMB=5 longTasks=1/150ms
+  §PDFM-LAYER n=5 page=1 runs=42 writableRuns=42 lockedRuns=0 cells=36 cellTargets=35 runTargets=1 locked=1 images=0 reasons={"not-in-page-content":1} file=writable forms=0 table=INCONCLUSIVE redBoxes=0 ms=41
+  §PDFM-M1 n=5 PASS firstPagePaintedMs=459 (openMs=442)
+  §PDFM-U1 n=5 PASS page 1 covers 32% of the first screen, wholly on it: true
+  §PDFM-U2 n=5 PASS header=99px
+  §PDFM-M2 n=5 PASS canvasesAlive afterOpen=1 afterScrollToEnd=1 of 1 pages; peakHeapMB=5
+  §PDFM-M3 n=5 readMs=64 verdict="Page 1 was not judged: no total row found: nothing was judged." readerLog=§SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=42 lines=16 cols=4 cells=36 blank
+  §PDFM-U3 n=5 PASS verdict top=151px of 844 (seen without scrolling: true)
+  §PDFM-U4 n=5 PASS documentWidth=390 small=[]
+§PDFM-FILE n=6 kind=corpus bytes=74945 pages=1 chars1=1017 money1=55
+  §PDFM-OPEN n=6 opened=§PDFED-OPEN ok=true file=<withheld> bytes=74945 pages=1 chars=1017 outline=0 ms=303 firstPagePaintedMs=326 allTextReadMs~377 canvases=1 heapMB=6 longTasks=1/146ms
+  §PDFM-LAYER n=6 page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=58
+  §PDFM-M1 n=6 PASS firstPagePaintedMs=326 (openMs=303)
+  §PDFM-U1 n=6 PASS page 1 covers 34% of the first screen, wholly on it: true
+  §PDFM-U2 n=6 PASS header=99px
+  §PDFM-M2 n=6 PASS canvasesAlive afterOpen=1 afterScrollToEnd=1 of 1 pages; peakHeapMB=6
+  §PDFM-M3 n=6 readMs=84 verdict="Page 1 adds up: 4 totals agree with their rows." readerLog=§SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows
+  §PDFM-U3 n=6 PASS verdict top=151px of 844 (seen without scrolling: true)
+  §PDFM-U4 n=6 PASS documentWidth=390 small=[]
+§PDFM-VERDICT PASS judged=36 failed=0

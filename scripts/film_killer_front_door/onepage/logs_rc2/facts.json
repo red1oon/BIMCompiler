@@ -1,0 +1,1077 @@
+{
+ "states": {
+  "b1_blank": {
+   "file": "shots/b1_blank.png",
+   "note": "a browser with nothing open",
+   "clip": "viewport"
+  },
+  "b1_empty": {
+   "file": "shots/b1_empty.png",
+   "note": "the PDF page, empty: Open a PDF, or drop one here.",
+   "clip": {
+    "x": 0,
+    "y": 0,
+    "width": 1500,
+    "height": 419
+   }
+  },
+  "b1_full": {
+   "file": "shots/b1_full.png",
+   "note": "the whole page as it loads: trial_balance_th.pdf: 1 page",
+   "clip": {
+    "x": 0,
+    "y": 0,
+    "width": 1500,
+    "height": 940
+   }
+  },
+  "b1_open": {
+   "file": "shots/b1_open.png",
+   "note": "the report, zoomed to the page: trial_balance_th.pdf: 1 page",
+   "clip": {
+    "x": 320,
+    "y": 63,
+    "width": 1100,
+    "height": 850
+   }
+  },
+  "b2a_red": {
+   "file": "shots/b2a_red.png",
+   "note": "D10 499.09: D10 is now \"499.09\". Page 1 does NOT add up: D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16. Ctrl+Z undoes it.",
+   "clip": {
+    "x": 320,
+    "y": 277.640625,
+    "width": 1100,
+    "height": 484.0625
+   }
+  },
+  "b2a_green": {
+   "file": "shots/b2a_green.png",
+   "note": "D10 498.09: D10 is now \"498.09\". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it.",
+   "clip": {
+    "x": 320,
+    "y": 277.640625,
+    "width": 1100,
+    "height": 484.0625
+   }
+  },
+  "b2b_word": {
+   "file": "shots/b2b_word.png",
+   "note": "B10: B10 is now \"Accounts Receivable\". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it.",
+   "clip": {
+    "x": 320,
+    "y": 277.640625,
+    "width": 1100,
+    "height": 484.0625
+   }
+  },
+  "b2b_font": {
+   "file": "shots/b2b_font.png",
+   "note": "B12 Quiz Zebra: B12 is now \"Quiz Zebra\", in Helvetica (font not same: LiberationSans has no \"Q\" \"z\" \"Z\"). Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it.",
+   "clip": {
+    "x": 320,
+    "y": 277.640625,
+    "width": 1100,
+    "height": 484.0625
+   }
+  },
+  "b2b_undo": {
+   "file": "shots/b2b_undo.png",
+   "note": "Ctrl+Z: B12 is \"Product asset\" again (undo). Page 1 adds up: 4 totals agree with their rows.",
+   "clip": {
+    "x": 320,
+    "y": 277.640625,
+    "width": 1100,
+    "height": 484.0625
+   }
+  },
+  "b3_open": {
+   "file": "shots/b3_open.png",
+   "note": "the report with a stand-in picture: report_with_picture.pdf: 1 page",
+   "clip": {
+    "x": 320,
+    "y": 63,
+    "width": 1100,
+    "height": 850
+   }
+  },
+  "b3_locked": {
+   "file": "shots/b3_locked.png",
+   "note": "Locked: a picture: its pixels are kept exactly as they are (text inside a picture is pixels, not editable).",
+   "clip": {
+    "x": 320,
+    "y": 63,
+    "width": 1100,
+    "height": 850
+   }
+  },
+  "b3_edit": {
+   "file": "shots/b3_edit.png",
+   "note": "B10 Accounts Receivable on the picture page: B10 is now \"Accounts Receivable\". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it.",
+   "clip": {
+    "x": 320,
+    "y": 63,
+    "width": 1100,
+    "height": 850
+   }
+  },
+  "b3_dl": {
+   "file": "shots/b3_dl.png",
+   "note": "Download PDF: B10 is now \"Accounts Receivable\". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it.",
+   "clip": {
+    "x": 0,
+    "y": 0,
+    "width": 1500,
+    "height": 419
+   }
+  },
+  "b4_xlsx": {
+   "file": "shots/b4_xlsx.png",
+   "note": "the press on Download .xlsx (the page shows nothing else when a file is downloaded; its own log line is in the strip): B10 is now \"Accounts Receivable\". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it.",
+   "clip": {
+    "x": 420,
+    "y": 0,
+    "width": 1080,
+    "height": 303
+   }
+  },
+  "h0_page": {
+   "file": "shots/h0_page.png",
+   "note": "the Sheet history page, empty",
+   "clip": "viewport"
+  },
+  "h1_xlsx": {
+   "file": "shots/h1_xlsx.png",
+   "note": "the .xlsx opened on Sheet history: History: 2 entries, verified. The sheet matches the last stamp (you, 2026-11-28 09:12 UTC): nothing has changed since.",
+   "clip": "viewport"
+  },
+  "b5_story": {
+   "file": "shots/b5_story.png",
+   "note": "the story of B10",
+   "clip": {
+    "x": 0,
+    "y": 175.78125,
+    "width": 250,
+    "height": 252.578125
+   }
+  },
+  "b6_pill": {
+   "file": "shots/b6_pill.png",
+   "note": "the Excel Report pill",
+   "clip": "viewport"
+  },
+  "b6_report": {
+   "file": "shots/b6_report.png",
+   "note": "the report ready and its PDF made: Report ready — 3 queries, 17 ms, 34 formulas (0 errors).",
+   "clip": {
+    "x": 577,
+    "y": 382.5,
+    "width": 546,
+    "height": 381
+   }
+  },
+  "b6_open": {
+   "file": "shots/b6_open.png",
+   "note": "the ERP report opened on the one page: erpreport_ninja_tb_sample_report.pdf: 1 page",
+   "clip": {
+    "x": 320,
+    "y": 63,
+    "width": 1100,
+    "height": 850
+   }
+  },
+  "b6_red": {
+   "file": "shots/b6_red.png",
+   "note": "C6 274.80: C6 is now \"274.80\". Page 1 does NOT add up: C28: printed 0.00 != rows sum 1.00; F6: printed 273.80 != F = C + D - E gives 274.80. Ctrl+Z undoes it.",
+   "clip": {
+    "x": 320,
+    "y": 63,
+    "width": 1100,
+    "height": 850
+   }
+  },
+  "b6_undo": {
+   "file": "shots/b6_undo.png",
+   "note": "Ctrl+Z: C6 is \"273.80\" again (undo). Page 1 adds up: 4 totals agree with their rows.",
+   "clip": {
+    "x": 320,
+    "y": 63,
+    "width": 1100,
+    "height": 850
+   }
+  },
+  "f0_ready": {
+   "file": "shots/f0_ready.png",
+   "note": "the filing page: Books engine ready: 46 program files and 29.0 MB of demo books loaded in 0.9 s.",
+   "clip": "viewport"
+  },
+  "f1_sample": {
+   "file": "shots/f1_sample.png",
+   "note": "Get a sample invoice: Opened sample_invoice.xlsx (sheet Invoice).",
+   "clip": "viewport"
+  },
+  "f2_filed": {
+   "file": "shots/f2_filed.png",
+   "note": "File it: Filed. AR Invoice 100001 for C&W Construction is saved as In Progress. Nothing is posted to the accounts yet: open it in the ERP and press Complete.",
+   "clip": "viewport"
+  },
+  "e1_invoice_form": {
+   "file": "shots/e1_invoice_form.png",
+   "note": "the invoice in the ERP window, as handed over (In Progress)",
+   "clip": "viewport"
+  },
+  "e2_completed": {
+   "file": "shots/e2_completed.png",
+   "note": "the window after its own Complete",
+   "clip": "viewport"
+  },
+  "e3_refreshed": {
+   "file": "shots/e3_refreshed.png",
+   "note": "after the window's Refresh the row says Posted",
+   "clip": "viewport"
+  },
+  "e4_posted": {
+   "file": "shots/e4_posted.png",
+   "note": "the Posted view",
+   "clip": "viewport"
+  },
+  "p0_trial": {
+   "file": "shots/p0_trial.png",
+   "note": "on an emulated phone: the report opened",
+   "clip": {
+    "x": 0,
+    "y": 0,
+    "width": 390,
+    "height": 389
+   }
+  },
+  "p1_trial": {
+   "file": "shots/p1_trial.png",
+   "note": "on an emulated phone: D10 is now \"499.09\". Page 1 does NOT add up: D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16. Ctrl+Z undoes it.",
+   "clip": {
+    "x": 0,
+    "y": 0,
+    "width": 390,
+    "height": 389
+   }
+  },
+  "p2_long": {
+   "file": "shots/p2_long.png",
+   "note": "a long file on an emulated phone: long_report_2400_pages.pdf: 2400 pages",
+   "clip": {
+    "x": 0,
+    "y": 0,
+    "width": 390,
+    "height": 389
+   }
+  }
+ },
+ "net": {
+  "pdfPages": {
+   "requestsAfterReady": [
+    "GET https://red1oon.github.io/bim-ootb/modeller/lib/pdfjs/pdf.worker.min.js"
+   ]
+  },
+  "erpReportPageErrors": [],
+  "phoneNonGet": [],
+  "pdfNonGet": [],
+  "pdfExternal": [],
+  "otherExternal": [
+   "erpreport GET https://www.idempiere.org/short-donate/",
+   "erpreport GET https://idempiere.org/short-donate/",
+   "erpreport GET https://idempiere.org/wp-content/plugins/honeypot/includes/css/wpa.css?ver=2.3.04",
+   "erpreport GET https://idempiere.org/wp-content/plugins/futurio-extra/assets/css/style.css?ver=2.0.23",
+   "erpreport GET https://idempiere.org/wp-content/themes/futurio/css/bootstrap.css?ver=3.3.7",
+   "erpreport GET https://idempiere.org/wp-content/themes/futurio/style.css?ver=1.5.7",
+   "erpreport GET https://idempiere.org/wp-content/themes/futurio/css/font-awesome.min.css?ver=4.7.0",
+   "erpreport GET https://idempiere.org/?action=kirki-styles&ver=4.0",
+   "erpreport GET https://idempiere.org/wp-includes/blocks/paragraph/style.min.css?ver=6.9.4",
+   "erpreport GET https://idempiere.org/wp-includes/js/jquery/jquery.min.js?ver=3.7.1",
+   "erpreport GET https://idempiere.org/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1",
+   "erpreport GET https://idempiere.org/wp-content/uploads/2020/03/cropped-taglinef3-scaled-1.jpg",
+   "erpreport GET https://idempiere.org/wp-content/uploads/2021/08/photo_2021-08-31_11-12-18-1024x550.jpg",
+   "erpreport GET https://idempiere.org/wp-content/plugins/honeypot/includes/js/wpa.js?ver=2.3.04",
+   "erpreport GET https://idempiere.org/wp-content/plugins/futurio-extra/assets/js/futurio-extra.js?ver=2.0.23",
+   "erpreport GET https://idempiere.org/wp-content/themes/futurio/js/bootstrap.min.js?ver=3.3.7",
+   "erpreport GET https://idempiere.org/wp-content/themes/futurio/js/customscript.js?ver=1.5.7",
+   "erpreport GET https://idempiere.org/wp-content/uploads/2021/08/photo_2021-08-31_11-12-18-300x161.jpg"
+  ]
+ },
+ "made": "2026-11-28T09:11:46.549Z",
+ "base": "https://red1oon.github.io/bim-ootb/",
+ "ootb": "21f1e492eaee3f5b3b58b31ee932135433d22478",
+ "ootbShort": "21f1e492",
+ "d": {
+  "cells": 144,
+  "addsUp": true,
+  "cellTargets": 133,
+  "lockedRuns": 46,
+  "writableRuns": 139,
+  "noUpload": true,
+  "gap": 1,
+  "redTotal": true,
+  "greenAgain": true,
+  "wordEdited": true,
+  "fontBox": true,
+  "undoClears": true,
+  "pictureLocked": true,
+  "objectsInOriginal": 40,
+  "objectsIdentical": 38,
+  "objectsChanged": 2,
+  "changedAreCatalogAndPage": true,
+  "objectsAdded": 2,
+  "imageSame": true,
+  "rasterOutside": 0,
+  "rasterInside": 116,
+  "integrity": true,
+  "sumFormulas": 4,
+  "noDoorText": true,
+  "historyInBoth": true,
+  "historyEntries": 2,
+  "xlsxCells": 144,
+  "historyOnSheetPage": true,
+  "storyValues": 2,
+  "storyOk": true,
+  "erpReportReady": true,
+  "erpPdfOnePage": true,
+  "erpReadBack": 144,
+  "erpAddsUp": true,
+  "erpEditNames": true,
+  "erpUndoAdds": true,
+  "erpReportCells": 144,
+  "filedDraft": true,
+  "sentNoDocAction": true,
+  "erpDraft": true,
+  "completed": true,
+  "refreshPosted": true,
+  "erpOnce": true,
+  "postedBalanced": true,
+  "entriesBalanced": true,
+  "handover": true,
+  "invoiceDollars": 153,
+  "invoiceCents": 50,
+  "filed": true,
+  "postedDebit": "153.5",
+  "postedFacts": 6,
+  "firstVisitBytes": 260567,
+  "firstVisitMs": 378,
+  "pageOneMs": 193,
+  "rewriteMs": 7,
+  "offlineOk": true,
+  "phoneTapOk": true,
+  "longPages": 2400,
+  "longFirstMs": 1950,
+  "longCanvases": 3,
+  "longOk": true
+ },
+ "liveEqMain": {
+  "files": {
+   "pdf/index.html": "a2f3532d/a2f3532d",
+   "pdf/edit_layer.js": "90b4ea63/90b4ea63",
+   "pdf/pdf_write.js": "a812bc46/a812bc46",
+   "pdf/pdf_open.js": "6372e4a5/6372e4a5",
+   "pdf/pdf_history.js": "2758df8b/2758df8b",
+   "pdf/report_reader.js": "b640561e/b640561e",
+   "erp/sheet_addin/file_it.html": "fd1cb4fa/fd1cb4fa"
+  },
+  "differ": [],
+  "minifiedMarkers": {
+   "file_it_draft": true,
+   "report_pill": true,
+   "ninja_pdf": true
+  },
+  "at": "2026-11-28T09:11:48.233Z",
+  "overlayHash": "469dc517/89f189b5/daa35640"
+ },
+ "inputs": {
+  "picture": "made by ghostscript from the corpus trial balance (a 64x32 stand-in picture added)",
+  "pictureExit": 0,
+  "longExit": 0,
+  "longPages": 2400,
+  "longBytes": 19636046,
+  "longSource": "the 12-page corpus report joined 200 times (pdfunite)"
+ },
+ "ink": [
+  {
+   "still": "b1_full",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.04301,
+   "ref": 0.04301,
+   "ok": true,
+   "waitedMs": 806
+  },
+  {
+   "still": "b1_open",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.04301,
+   "ref": 0.04301,
+   "ok": true,
+   "waitedMs": 546
+  },
+  {
+   "still": "b2a_red",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.04301,
+   "ref": 0.04301,
+   "ok": true,
+   "waitedMs": 555
+  },
+  {
+   "still": "b2a_green",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.04301,
+   "ref": 0.04301,
+   "ok": true,
+   "waitedMs": 549
+  },
+  {
+   "still": "b2b_word",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.04288,
+   "ref": 0.04301,
+   "ok": true,
+   "waitedMs": 543
+  },
+  {
+   "still": "b2b_font",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.04282,
+   "ref": 0.04301,
+   "ok": true,
+   "waitedMs": 541
+  },
+  {
+   "still": "b2b_undo",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.04288,
+   "ref": 0.04301,
+   "ok": true,
+   "waitedMs": 542
+  },
+  {
+   "still": "b3_open",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.0486,
+   "ref": 0.0486,
+   "ok": true,
+   "waitedMs": 814
+  },
+  {
+   "still": "b3_locked",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.0486,
+   "ref": 0.0486,
+   "ok": true,
+   "waitedMs": 542
+  },
+  {
+   "still": "b3_edit",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.04847,
+   "ref": 0.0486,
+   "ok": true,
+   "waitedMs": 543
+  },
+  {
+   "still": "b3_dl",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.04847,
+   "ref": 0.0486,
+   "ok": true,
+   "waitedMs": 543
+  },
+  {
+   "still": "b4_xlsx",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.04847,
+   "ref": 0.0486,
+   "ok": true,
+   "waitedMs": 541
+  },
+  {
+   "still": "b6_open",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.04255,
+   "ref": 0.04255,
+   "ok": true,
+   "waitedMs": 814
+  },
+  {
+   "still": "b6_red",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.04255,
+   "ref": 0.04255,
+   "ok": true,
+   "waitedMs": 548
+  },
+  {
+   "still": "b6_undo",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.04255,
+   "ref": 0.04255,
+   "ok": true,
+   "waitedMs": 540
+  },
+  {
+   "still": "p0_trial",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.06386,
+   "ref": 0.06386,
+   "ok": true,
+   "waitedMs": 793
+  },
+  {
+   "still": "p1_trial",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.06385,
+   "ref": 0.06386,
+   "ok": true,
+   "waitedMs": 532
+  },
+  {
+   "still": "p2_long",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.00825,
+   "ref": 0.00825,
+   "ok": true,
+   "waitedMs": 811
+  }
+ ],
+ "b1": {
+  "address": "red1oon.github.io/bim-ootb/pdf",
+  "statBefore": "Nothing is uploaded: the file stays on this device.",
+  "empty": {
+   "drop": [
+    "Open a PDF, or drop one here.",
+    "Change its text right on the page: tables add up as you type.",
+    "Pictures and fonts that cannot be written stay exactly as they are.",
+    "No PDF to hand? Press Try a sample report."
+   ],
+   "openLabel": "Open a PDF",
+   "sampleLabel": "Try a sample report",
+   "q": "Find text"
+  },
+  "chosen": {
+   "name": "trial_balance_th.pdf",
+   "bytes": 74945
+  },
+  "open": "§PDFED-OPEN ok=true file=\"trial_balance_th.pdf\" bytes=74945 pages=1 chars=1017 outline=0 ms=224",
+  "layer": "§EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={\"script-not-supported\":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=20 heapMB=7",
+  "reader": "§SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=2 reason=\"4 totals agree with their rows\"",
+  "stat": "trial_balance_th.pdf: 1 page",
+  "requestsAfterReady": [
+   "GET https://red1oon.github.io/bim-ootb/modeller/lib/pdfjs/pdf.worker.min.js"
+  ],
+  "first": "§PDFED-FIRST page=1 drawn=true ms=193 pages=1 canvasesAlive=1"
+ },
+ "b2a": {
+  "red": {
+   "write": "§PDF_WRITE ok=true edits=1 applied=1 refused=0 bytesIn=74945 bytesOut=74939 ms=7 xref=table objStreams=0 decodedKB=0.0 cells=D10:\"498.09\"->\"499.09\"",
+   "edit": "§EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old=\"498.09\" new=\"499.09\" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74939 edits=1",
+   "stat": "D10 is now \"499.09\". Page 1 does NOT add up: D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16. Ctrl+Z undoes it.",
+   "marks": [
+    {
+     "cell": "C28",
+     "ok": true,
+     "gap": 0,
+     "label": "✓"
+    },
+    {
+     "cell": "D28",
+     "ok": false,
+     "gap": 1,
+     "label": "rows 40,393.44, gap 1.00"
+    },
+    {
+     "cell": "E28",
+     "ok": true,
+     "gap": 0,
+     "label": "✓"
+    },
+    {
+     "cell": "F28",
+     "ok": true,
+     "gap": 0,
+     "label": "✓"
+    },
+    {
+     "cell": "F10",
+     "ok": false,
+     "gap": 1,
+     "label": "F = C + D - E gives 1,019.16, gap 1.00"
+    }
+   ],
+   "reader": "§SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=1 reason=\"D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16\""
+  },
+  "green": {
+   "edit": "§EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old=\"499.09\" new=\"498.09\" font=LiberationSans sub=none verdict=ADDS_UP entries=3 bytes=74939 edits=2",
+   "stat": "D10 is now \"498.09\". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it.",
+   "marks": [
+    {
+     "cell": "C28",
+     "ok": true,
+     "gap": 0,
+     "label": "✓"
+    },
+    {
+     "cell": "D28",
+     "ok": true,
+     "gap": 0,
+     "label": "✓"
+    },
+    {
+     "cell": "E28",
+     "ok": true,
+     "gap": 0,
+     "label": "✓"
+    },
+    {
+     "cell": "F28",
+     "ok": true,
+     "gap": 0,
+     "label": "✓"
+    }
+   ],
+   "reader": "§SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=1 reason=\"4 totals agree with their rows\""
+  }
+ },
+ "b2b": {
+  "word": {
+   "edit": "§EDSHEET-EDIT id=cB10 cell=B10 kind=cell ok=true old=\"Accounts Receivable - Trade\" new=\"Accounts Receivable\" font=LiberationSans sub=none verdict=ADDS_UP entries=4 bytes=74905 edits=3",
+   "stat": "B10 is now \"Accounts Receivable\". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it."
+  },
+  "font": {
+   "edit": "§EDSHEET-EDIT id=cB12 cell=B12 kind=cell ok=true old=\"Product asset\" new=\"Quiz Zebra\" font=LiberationSans sub=LiberationSans>Helvetica(standard) verdict=ADDS_UP entries=5 bytes=75039 edits=4",
+   "fontLog": "§EDSHEET-FONT cell=B12 page=1 from=LiberationSans to=Helvetica standard=true why=\"no face of LiberationSans in this file holds them; closest standard PDF font: described as sans-serif, old text width 1.00 of the original\"",
+   "stat": "B12 is now \"Quiz Zebra\", in Helvetica (font not same: LiberationSans has no \"Q\" \"z\" \"Z\"). Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it.",
+   "subs": [
+    "font not same: LiberationSans → Helvetica Accept"
+   ],
+   "layer": "§EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={\"script-not-supported\":46} file=writable forms=0 table=ADDS_UP redBoxes=1 ms=44 heapMB=23"
+  },
+  "undo": {
+   "log": "§EDSHEET-UNDO cell=B12 text=\"Product asset\" bytes=74905 undo=3 redo=1 entries=6 verdict=ADDS_UP",
+   "layer": "§EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={\"script-not-supported\":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=30 heapMB=21",
+   "stat": "B12 is \"Product asset\" again (undo). Page 1 adds up: 4 totals agree with their rows.",
+   "subs": 0
+  }
+ },
+ "b3": {
+  "layer": "§EDSHEET-LAYER page=1 runs=158 writableRuns=139 lockedRuns=19 cells=144 cellTargets=133 runTargets=6 locked=20 images=1 reasons={\"script-not-supported\":19,\"image\":1} file=writable forms=1 table=ADDS_UP redBoxes=0 ms=22 heapMB=5",
+  "stat": "report_with_picture.pdf: 1 page",
+  "locked": {
+   "log": "§EDSHEET-LOCKED id=m0 kind=image lock=image why=\"a picture: its pixels are kept exactly as they are (text inside a picture is pixels, not editable)\"",
+   "stat": "Locked: a picture: its pixels are kept exactly as they are (text inside a picture is pixels, not editable)."
+  },
+  "edit": {
+   "log": "§EDSHEET-EDIT id=cB10 cell=B10 kind=cell ok=true old=\"Accounts Receivable - Trade\" new=\"Accounts Receivable\" font=LiberationSans sub=none verdict=ADDS_UP entries=2 bytes=36406 edits=1",
+   "stat": "B10 is now \"Accounts Receivable\". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it."
+  },
+  "h3": {
+   "objectsInOriginal": 40,
+   "identical": 38,
+   "changed": [
+    "1",
+    "5"
+   ],
+   "changedKinds": [
+    "1:catalog",
+    "5:page-content"
+   ],
+   "added": [
+    "41",
+    "42"
+   ],
+   "removed": [],
+   "imageObjects": 1,
+   "imageBytesIdentical": true,
+   "rasterInside": 116,
+   "rasterOutside": 0,
+   "download": "§PDFWR-DOWNLOAD file=\"report_with_picture_edited.pdf\" bytes=38548 edits=1 historyEntries=2 verdict= historyInFile=true",
+   "export": "§EDSHEET-EXPORT bytes=38548 edits=1 substituted=0 list=[]",
+   "attachments": [
+    "1: _door_history.jsonl"
+   ]
+  },
+  "dlStat": "B10 is now \"Accounts Receivable\". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it."
+ },
+ "b4": {
+  "xlsxLog": "§PDFED-XLSX file=\"report_with_picture_page1.xlsx\" bytes=32557 cells=144 verdict=ADDS_UP",
+  "histLog": "§PDFHIST-XLSX entries=2 sheet=\"_door_history\" rows=2 longestLine=14586 cellLimit=32767",
+  "file": "pic_report_with_picture_page1.xlsx",
+  "sheets": [
+   "Report",
+   "_door_source",
+   "_door_history"
+  ],
+  "hidden": [
+   0,
+   1,
+   2
+  ],
+  "sums": [
+   "C28=SUM(C6:C26)",
+   "D28=SUM(D6:D26)",
+   "E28=SUM(E6:E26)",
+   "F28=SUM(F6:F26)"
+  ],
+  "cells": 144,
+  "doorText": false,
+  "stat": "B10 is now \"Accounts Receivable\". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it.",
+  "pdfHistoryEntries": 2,
+  "pdfAttachment": true,
+  "pressed": {
+   "label": "Download .xlsx",
+   "hover": true
+  },
+  "hempty": {
+   "openLabel": "Open a workbook (.xlsx)",
+   "opened": "No workbook opened yet.",
+   "status": "Open a workbook to see its history.",
+   "url": "/bim-ootb/erp/sheet_addin/history.html"
+  },
+  "hist": {
+   "bind": "§SHIST-PAGE-BIND state=intact entries=2 cells=144 pending=0",
+   "open": "§SHIST-PAGE-OPEN name=pic_report_with_picture_page1.xlsx bytes=32557 sheets=1 cells=144 state=intact ms=25 heapMB=4",
+   "status": "History: 2 entries, verified. The sheet matches the last stamp (you, 2026-11-28 09:12 UTC): nothing has changed since.",
+   "state": "intact",
+   "opened": "Opened pic_report_with_picture_page1.xlsx (1 sheet, 144 cells)."
+  }
+ },
+ "histErrors": [],
+ "b5": {
+  "log": "§PDFHIST-STORY cell=B10 sheet=\"Report\" values=2 text=\"#1 2026-11-28 09:12 report-reader: (empty) -> Accounts Receivable - Trade | #2 2026-11-28 09:12 you: Accounts Receivable - Trade -> Accounts Receivable\"",
+  "story": "#1 2026-11-28 09:12 report-reader: (empty) -> Accounts Receivable - Trade\n#2 2026-11-28 09:12 you: Accounts Receivable - Trade -> Accounts Receivable",
+  "say": "History: 2 entries, verified. It is kept inside the PDF and the .xlsx you download."
+ },
+ "pdfErrors": [],
+ "b6": {
+  "runLog": "§NINJA_REPORT_RUN client=11 from=2003-01-01 to=2003-12-31 statements=3 ms=17",
+  "doneLog": "§NINJA_REPORT_DONE client=11 formulas=34 errors=0 xlsxBytes=11642 pdf=on-demand",
+  "ready": "Report ready — 3 queries, 17 ms, 34 formulas (0 errors).",
+  "pdfLog": "§NINJA_REPORT_PDF client=11 pdfBytes=74855 page=681.00x526.50 pages=1 ms=345 renderMs=75 heapMB=180.5 overflowNumbers=0 missingGlyphs=0 missingCells=0",
+  "pdfFile": "erpreport_ninja_tb_sample_report.pdf",
+  "open": {
+   "open": "§PDFED-OPEN ok=true file=\"erpreport_ninja_tb_sample_report.pdf\" bytes=74855 pages=1 chars=995 outline=0 ms=236",
+   "reader": "§SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=3 reason=\"4 totals agree with their rows\"",
+   "layer": "§EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={\"script-not-supported\":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=19 heapMB=6",
+   "stat": "erpreport_ninja_tb_sample_report.pdf: 1 page"
+  },
+  "edit": {
+   "cell": "C6",
+   "old": "273.80",
+   "neu": "274.80",
+   "log": "§EDSHEET-EDIT id=cC6 cell=C6 kind=cell ok=true old=\"273.80\" new=\"274.80\" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74849 edits=1",
+   "reader": "§SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=1 reason=\"C28: printed 0.00 != rows sum 1.00; F6: printed 273.80 != F = C + D - E gives 274.80\"",
+   "stat": "C6 is now \"274.80\". Page 1 does NOT add up: C28: printed 0.00 != rows sum 1.00; F6: printed 273.80 != F = C + D - E gives 274.80. Ctrl+Z undoes it.",
+   "marks": [
+    {
+     "cell": "C28",
+     "ok": false,
+     "gap": 1,
+     "label": "rows 1.00, gap 1.00"
+    },
+    {
+     "cell": "D28",
+     "ok": true,
+     "gap": 0,
+     "label": "✓"
+    },
+    {
+     "cell": "E28",
+     "ok": true,
+     "gap": 0,
+     "label": "✓"
+    },
+    {
+     "cell": "F28",
+     "ok": true,
+     "gap": 0,
+     "label": "✓"
+    },
+    {
+     "cell": "F6",
+     "ok": false,
+     "gap": 1,
+     "label": "F = C + D - E gives 274.80, gap 1.00"
+    }
+   ]
+  },
+  "undo": {
+   "log": "§EDSHEET-UNDO cell=C6 text=\"273.80\" bytes=74855 undo=0 redo=1 entries=3 verdict=ADDS_UP",
+   "reader": "§SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=0 reason=\"4 totals agree with their rows\"",
+   "stat": "C6 is \"273.80\" again (undo). Page 1 adds up: 4 totals agree with their rows."
+  }
+ },
+ "fileit": {
+  "readyMs": 863,
+  "engine": "Books engine ready: 46 program files and 29.0 MB of demo books loaded in 0.9 s."
+ },
+ "sample": {
+  "file": "books_sample_invoice.xlsx",
+  "opened": "Opened sample_invoice.xlsx (sheet Invoice)."
+ },
+ "filed": {
+  "verdict": "FILED",
+  "text": "Filed. AR Invoice 100001 for C&W Construction is saved as In Progress. Nothing is posted to the accounts yet: open it in the ERP and press Complete.",
+  "booksNone": "No accounting entries yet. The ERP makes them when the document is completed.",
+  "booksNoneShown": true,
+  "booksRows": 0,
+  "runnerLog": [
+   "§SHEET_DOOR declared rows=2 partner=C&W docno=(minted)",
+   "§IMPORT_INVOICE client=11 org=11 docAction=PR invoices=1 lines=2 errors=0",
+   "§SHEET_DOOR verdict=FILED ok=true checks: line=ran subtotal=ran grandtotal=ran linenet=ran writes=[\"F2\",\"G24\"]"
+  ],
+  "importLog": "§IMPORT_INVOICE client=11 org=11 docAction=PR invoices=1 lines=2 errors=0"
+ },
+ "doc": {
+  "head": {
+   "Document": "AR Invoice",
+   "Number": "100001",
+   "Status": "In Progress",
+   "Date": "2026-11-20",
+   "Customer": "C&W Construction",
+   "Lines total": "153.50 USD",
+   "Grand total": "153.50 USD"
+  },
+  "lines": [
+   [
+    "10",
+    "Oak Tree",
+    "",
+    "2",
+    "61.75",
+    "123.50",
+    "Standard"
+   ],
+   [
+    "20",
+    "Elm Tree",
+    "",
+    "3",
+    "10.00",
+    "30.00",
+    "Standard"
+   ]
+  ]
+ },
+ "link": "../idempiere.html?window=167&record=1300110",
+ "erpBoot": "§IDEMPIERE boot db=idb_cache ms=2406",
+ "handover": "§DOOR-HANDOVER applied=1 skipped=0 refused=0 books=1 ops=12 persisted=Y",
+ "erp": {
+  "status": "Sales Invoice and Credit/Debit Note › Invoice  ·  Record 1 of 1",
+  "tabs": [
+   "Invoice",
+   "Invoice Line",
+   "Invoice Tax",
+   "Payment Schedule",
+   "Allocation"
+  ],
+  "before": {
+   "docStatus": null,
+   "actions": [
+    "CO:Complete",
+    "PR:Prepare",
+    "VO:Void"
+   ],
+   "posted": "Not Posted",
+   "statusLines": [
+    "In Progress · IP",
+    "Status *",
+    "DR · Drafted"
+   ]
+  },
+  "grid": [
+   {
+    "id": "1300110",
+    "table": "C_Invoice",
+    "doc": "100001"
+   }
+  ]
+ },
+ "complete": {
+  "button": "Complete",
+  "docAction": "§MODEL-DOCACTION table=c_invoice id=1300110 action=CO ok=true status=CO ops=18 tables={\"ad_wf_process:CREATE\":1,\"ad_wf_activity:CREATE\":3,\"ad_wf_eventaudit:CREATE\":3,\"c_invoice:UPDATE\":1,\"c_bpartner:UPDATE\":1,\"c_invoiceline:UPDATE\":2,\"c_invoicetax:UPDATE\":1,\"fact_acct:CREATE\":6}",
+  "post": "§MODEL-POST table=c_invoice id=1300110 posted=Y facts=6",
+  "commit": "§CRUD process committed key=c_invoice viaGroup=Y gid=27b84a24-7859-4aed-af1e-c4e46adbb147 ops=19 sealed=19 op_uuid=c677c0cf-b2b4-4f2a-a616-4ee7c1dee59c to=CO verifyChain=ok",
+  "after": {
+   "docStatus": null,
+   "posted": "Not Posted",
+   "status": "Sales Invoice and Credit/Debit Note › Invoice  ·  Record 1 of 1"
+  },
+  "afterRefresh": {
+   "docStatus": null,
+   "posted": "Posted"
+  }
+ },
+ "posted": {
+  "button": "Posted",
+  "lines": [
+   [
+    "41000 · Trade Revenue",
+    "0.00",
+    "30.00"
+   ],
+   [
+    "41000 · Trade Revenue",
+    "0.00",
+    "123.50"
+   ],
+   [
+    "12110 · Accounts Receivable - Trade",
+    "153.50",
+    "0.00"
+   ]
+  ],
+  "log": "§POSTED-FACTS table=C_Invoice rec=1300110 schema=101 lines=3 schemas=2 dr=153.5 cr=153.5 balanced=true selector=101,200000 of=6 all=200000:3:130.48:130.48,101:3:153.5:153.5",
+  "note": "",
+  "balanced": true
+ },
+ "books": {
+  "debit": "153.5",
+  "credit": "153.5",
+  "facts": 6,
+  "filedDocNo": "100001",
+  "grand": "153.50 USD"
+ },
+ "erpErrors": [],
+ "light": {
+  "bytesAtUsable": 260567,
+  "requestsAtUsable": 11,
+  "msToUsable": 378,
+  "bytesAfterSettle": 260567,
+  "serviceWorkerActive": true,
+  "line": "§PDFED-OFFLINE ready=true",
+  "note": "fresh context, empty cache, desktop size, no throttling; encoded bytes of every finished request"
+ },
+ "offlineEdit": {
+  "edit": "§EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old=\"498.09\" new=\"499.09\" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74939 edits=1",
+  "write": "§PDF_WRITE ok=true edits=1 applied=1 refused=0 bytesIn=74945 bytesOut=74939 ms=4 xref=table objStreams=0 decodedKB=0.0 cells=D10:\"498.09\"->\"499.09\"",
+  "stat": "D10 is now \"499.09\". Page 1 does NOT add up: D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16. Ctrl+Z undoes it."
+ },
+ "offline": {
+  "reloadOk": true,
+  "openOk": true,
+  "editOk": true,
+  "requestsWhileOffline": 13,
+  "failedWhileOffline": 0,
+  "why": ""
+ },
+ "phone": {
+  "viewport": "390x844, device scale 3, touch, processor 4 times slower (an emulated phone, headless)",
+  "msToUsable": 350,
+  "tap": {
+   "editor": "§EDSHEET-EDITOR id=cD10 cell=D10 kind=cell windowScrolled=0",
+   "edit": "§EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old=\"498.09\" new=\"499.09\" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74939 edits=1",
+   "stat": "D10 is now \"499.09\". Page 1 does NOT add up: D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16. Ctrl+Z undoes it.",
+   "docWidth": 390
+  },
+  "long": {
+   "file": "a file made for the film: the corpus report joined 200 times",
+   "pages": 2400,
+   "bytes": 19636046,
+   "runs": [
+    {
+     "run": 1,
+     "firstPagePaintedMs": 1848,
+     "firstLog": "§PDFED-FIRST page=1 drawn=true ms=1740 pages=2400 canvasesAlive=2",
+     "openLog": "§PDFED-OPEN ok=true  bytes=19636046 pages=2400 chars=3368400 outline=0 ms=7860",
+     "canvasesAlive": 3,
+     "stat": "long_report_2400_pages.pdf: 2400 pages",
+     "loadavg1": 2.69,
+     "cpus": 20
+    },
+    {
+     "run": 2,
+     "firstPagePaintedMs": 1622,
+     "firstLog": "§PDFED-FIRST page=1 drawn=true ms=1572 pages=2400 canvasesAlive=2",
+     "openLog": "§PDFED-OPEN ok=true  bytes=19636046 pages=2400 chars=3368400 outline=0 ms=7653",
+     "canvasesAlive": 3,
+     "stat": "long_report_2400_pages.pdf: 2400 pages",
+     "loadavg1": 2.58,
+     "cpus": 20
+    },
+    {
+     "run": 3,
+     "firstPagePaintedMs": 1950,
+     "firstLog": "§PDFED-FIRST page=1 drawn=true ms=1821 pages=2400 canvasesAlive=2",
+     "openLog": "§PDFED-OPEN ok=true  bytes=19636046 pages=2400 chars=3368400 outline=0 ms=10046",
+     "canvasesAlive": 3,
+     "stat": "long_report_2400_pages.pdf: 2400 pages",
+     "loadavg1": 3.26,
+     "cpus": 20
+    },
+    {
+     "run": 4,
+     "firstPagePaintedMs": 2116,
+     "firstLog": "§PDFED-FIRST page=1 drawn=true ms=1954 pages=2400 canvasesAlive=2",
+     "openLog": "§PDFED-OPEN ok=true  bytes=19636046 pages=2400 chars=3368400 outline=0 ms=9831",
+     "canvasesAlive": 3,
+     "stat": "long_report_2400_pages.pdf: 2400 pages",
+     "loadavg1": 3.54,
+     "cpus": 20
+    },
+    {
+     "run": 5,
+     "firstPagePaintedMs": 2427,
+     "firstLog": "§PDFED-FIRST page=1 drawn=true ms=2308 pages=2400 canvasesAlive=2",
+     "openLog": "§PDFED-OPEN ok=true  bytes=19636046 pages=2400 chars=3368400 outline=0 ms=9834",
+     "canvasesAlive": 3,
+     "stat": "long_report_2400_pages.pdf: 2400 pages",
+     "loadavg1": 3.37,
+     "cpus": 20
+    }
+   ],
+   "runsMs": [
+    1622,
+    1848,
+    1950,
+    2116,
+    2427
+   ],
+   "firstPagePaintedMs": 1950,
+   "medianOf": 5,
+   "firstLog": "§PDFED-FIRST page=1 drawn=true ms=1821 pages=2400 canvasesAlive=2",
+   "openLog": "§PDFED-OPEN ok=true  bytes=19636046 pages=2400 chars=3368400 outline=0 ms=10046",
+   "canvasesAlive": 3,
+   "stat": "long_report_2400_pages.pdf: 2400 pages"
+  }
+ },
+ "liveEqMainEnd": {
+  "files": {
+   "pdf/index.html": "a2f3532d/a2f3532d",
+   "pdf/edit_layer.js": "90b4ea63/90b4ea63",
+   "pdf/pdf_write.js": "a812bc46/a812bc46",
+   "pdf/pdf_open.js": "6372e4a5/6372e4a5",
+   "pdf/pdf_history.js": "2758df8b/2758df8b",
+   "pdf/report_reader.js": "b640561e/b640561e",
+   "erp/sheet_addin/file_it.html": "fd1cb4fa/fd1cb4fa"
+  },
+  "differ": [],
+  "minifiedMarkers": {
+   "file_it_draft": true,
+   "report_pill": true,
+   "ninja_pdf": true
+  },
+  "at": "2026-11-28T09:14:32.503Z",
+  "overlayHash": "469dc517/89f189b5/daa35640"
+ }
+}

@@ -1,0 +1,20 @@
+§FILM_OUT file=/home/red1/Videos/PDF_and_Excel_are_killer_apps_ONE_PAGE_EN_rc2.mp4 duration_s=170.792 resolution=1920x1080 fps=24/1 frames=4099 audio=aac,48000,1,170.717000 silent_picture_s=170.792
+§FILM beat=cover start=0.000 end=4.000 planned_frames=96 measured_frames=95
+§FILM beat=b1 start=4.000 end=17.750 planned_frames=330 measured_frames=330
+§FILM beat=b2a start=17.750 end=24.708 planned_frames=167 measured_frames=167
+§FILM beat=b2a2 start=24.708 end=29.125 planned_frames=106 measured_frames=106
+§FILM beat=b2b start=29.125 end=39.167 planned_frames=241 measured_frames=241
+§FILM beat=b2c start=39.167 end=43.333 planned_frames=100 measured_frames=100
+§FILM beat=b3 start=43.333 end=61.792 planned_frames=443 measured_frames=443
+§FILM beat=b4 start=61.792 end=79.833 planned_frames=433 measured_frames=433
+§FILM beat=b5 start=79.833 end=87.125 planned_frames=175 measured_frames=175
+§FILM beat=choice start=87.125 end=90.708 planned_frames=86 measured_frames=86
+§FILM beat=b6 start=90.708 end=107.333 planned_frames=399 measured_frames=399
+§FILM beat=b6u start=107.333 end=111.625 planned_frames=103 measured_frames=103
+§FILM beat=b7a start=111.625 end=123.875 planned_frames=294 measured_frames=294
+§FILM beat=b7b start=123.875 end=140.125 planned_frames=390 measured_frames=390
+§FILM beat=b8 start=140.125 end=159.417 planned_frames=463 measured_frames=463
+§FILM beat=close start=159.417 end=165.292 planned_frames=141 measured_frames=141
+§FILM beat=prior start=165.292 end=170.792 planned_frames=132 measured_frames=132
+§FILM total planned_frames=4099 measured=4099
+§FILM_VERDICT PASS beats=17 bad=0
