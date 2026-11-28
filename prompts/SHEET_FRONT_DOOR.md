@@ -18,10 +18,13 @@ text in a script with no font vanished silently (now counted and said on the pil
 the review, the design calls, the specs — and hands EASIER, well-scoped work to **Sonnet** agents (Agent tool, `model: sonnet`). One bounded task per agent, its own
 `/tmp/wt-*` worktree, the spec section to read named in the brief, the rules of "How to run things" restated (a fresh agent has no memory), and the coordinator
 re-runs the agent's witness itself before believing its report.
-**▶ NEXT (2026-11-28 late; read §26 first):** (1) the owner watches FILM v2 rc1 and confirms the cover; beat 7 is re-shot (File it now stops at a draft). (2) §24 Part B
-waits on five owner decisions (§26.5). (3) §25 (ERP drafted / ERP posted, Unlock = void) waits on one detail: Unlock with the network off - wait, or free with a void
-pending (coordinator: wait). (4) TURNED PAGES are now the largest lock on real files (19 of 128): the next unlock. (5) §23 designer overlay (picture, page, column).
-Done the same day: §21 number cells, plain words, the guide (live), §22 PDF 1.5+ with two real-file defects fixed (§26.2-26.3), §24 Part A (live).
+**▶ NEXT (2026-11-28 night; read §27 then §29 - the shape changed):** two products that meet through a FILE: the PDF handler (alone, light, network off) and the ERP
+drop-in. The PDF page SAVES a qualified file; the ERP takes a dragged file and makes a DRAFT in the standard window, the file attached; the File it page, the
+tab hand-over and the menus' File it action are to be DELETED (§29.1, §29.4 list). **Slice 1+2 is LIVE (§29.7): a tagged workbook dropped on the ERP.** Build
+order: 2b master data at the drop after an OK (§29.6) -> 3 PDF marks + "mark my invoice" -> 4 the ERP reads a dropped PDF -> 5 same file again / update /
+completed -> 6 unqualified opens /pdf -> 7 deletion. FILM v2: rc2 in ~/Videos is the review cut; beat 7 is re-shot when the drop takes a PDF (owner).
+Still open with the owner: §25 Unlock with the network off (wait / pending void); §26.5 (2)-(5) for the Request; the cover line. Also open: turned pages are
+the largest lock on real files (19 of 128); one real hybrid PDF is refused ("object stream 2652 is missing", not understood); U6 on two real multi-page files.
 **Left open by the review (each small, none started):** ⛔ the report takes the LOWEST client id - can the live page's database hold more than one tenant? (§20.6);
 the `_door_text` tab is visible in the .xlsx (hiding it = the Sheet-history reader, three hosts); the undo limit (128 MB) is chosen, not measured on a phone;
 the link row / download helper / 760 px breakpoint are each written 3-4 times; `witness_pdf_mobile.js` rests three gates on the one multi-page corpus file;
@@ -2271,3 +2274,26 @@ Verbatim: *"But in such separation, it still gets 'sanitized' by our ERP?"* · *
   "create new" (a PDF's spelling becomes master data: "Acme Sdn Bhd" / "ACME Sdn. Bhd." would be two partners); a supplier layout's mark may pin the partner.
 - Slice order with this: 1+2 the tagged workbook (built, §29.7 when merged); **2b master data at the drop with its dialog**; 3 PDF marks; 4 the ERP reads a
   dropped PDF; 5 same file again / update / completed; 6 unqualified -> `/pdf`; 7 deletion (File it page, the hand-over, the menus' File it action).
+
+### 29.7 RESULT 2026-11-28 - slice 1 + 2 LIVE: a tagged workbook dropped on the ERP becomes a draft with the file attached (bim-ootb #3530, Sonnet builder)
+`erp/overlay/door_drop.js` (+153, one overlay, no host code, no per-window branch, nothing loaded before a drop) and the engine's `check()` + a duplicate's words.
+| Run (coordinator's own, logs read) | Verdict |
+|---|---|
+| local, mutants | `§DOORDROP-VERDICT PASS judged=30 failed=0`, `§DOORDROP-MUTANTS killed=5/5` |
+| **LIVE** `https://red1oon.github.io/bim-ootb/` | `§DOORDROP-VERDICT PASS judged=27 failed=0` (D1-D8; the regression claim D9 is local) |
+| overlay line taken out of `boot.js`'s list (builder) | `§DOORDROP-D1 verdict=FAIL judged=4 failed=4` - the browser would open the file instead |
+D1 one draft, In Progress, not posted, 0 Fact_Acct, the node oracle's fingerprint, filed by the session's user · D2 the standard window on that record, its
+lines without Save, the window's own Complete posts the §24 oracle's 6 entries · D3 the Attachment dialog lists the file, bytes equal · D4 eight refusals in
+words, 0 ops, 0 attachment ("Log in first, then drop the file." / "Choose an organisation at login: a document cannot be filed under *." / "This file is not
+marked for the ERP yet." / "Not filed: the lines add up to 153.5 but the subtotal prints 153.51." / "Not filed: Invalid Country, No BPartner." / the `CO`
+template / "Not filed: document number DROP-0001 already exists for this business partner and document type.") · D5 nothing loaded before a drop; first drop
+`requests=37 bytes=332227 ms=1875 heapMB=62` on the live site (31 of the requests are the window's toolbar icons) · D6 three existing drop zones still take
+their own drops · D7 reload keeps the draft and its attachment · D8 home "Unprocessed Documents" 0 -> 1 -> 0 after Complete.
+**What the gate caught:** CI's `witness_manifest_roundtrip.js` failed (`§MANIFEST_C10_MISS module=erp/overlay/door_drop.js`): the builder had not run the CI
+job's steps; one line in `erp/modules.json` (`lazyGroup` = the file that really loads it). A builder's brief must name "every step of the CI job, locally".
+A real bug the builder found in its own first cut: a session-created record has a NEGATIVE id, and legacy's `MAttachment.get` then looks it up by `Record_UU` -
+saved by id alone, the window's Attachment button showed 0 entries.
+**Not verified / open:** a real drag from a file manager (the witness uses a synthetic `DragEvent` with a real File); the witness has no live switch (the live
+run used a temporary copy with its base address changed - add `DOORDROP_BASE`); two drop zones not exercised (the plugin engine's, System Administrator only;
+the kanban's); an unknown partner still reads legacy's raw "Invalid Country, No BPartner" until slice 2b; the stale `poc_erp_picker` waits on a `#pill-migrate`
+that no longer exists. **Next: slice 2b (§29.6, master data at the drop after an OK), then 3 (PDF marks).**
