@@ -1,0 +1,24 @@
+{
+ "links": [
+  {
+   "id": "pdf",
+   "url": "https://red1oon.github.io/bim-ootb/pdf/",
+   "shown": "red1oon.github.io/bim-ootb/pdf",
+   "http": 200
+  },
+  {
+   "id": "fileit",
+   "url": "https://red1oon.github.io/bim-ootb/file-it/",
+   "shown": "red1oon.github.io/bim-ootb/file-it",
+   "http": 200
+  },
+  {
+   "id": "guide",
+   "url": "https://red1oon.github.io/BIMCompiler/PdfPageGuide/",
+   "shown": "red1oon.github.io/BIMCompiler/PdfPageGuide",
+   "http": 200,
+   "anchor": true
+  }
+ ],
+ "dropped": []
+}
