@@ -1,0 +1,7 @@
+§CREDITS LINE no_ai shown="No AI inside." source=docs/USER_GUIDE.md found="There is no AI and no LLM in this app."
+§CREDITS LINE licence shown="Open source: MIT licence." source=bim-ootb LICENSE ("MIT License") and the SPDX header of 0 files under erp/ and pdf/ files=MIT License; GPL-2.0-only in 0 files: 
+§CREDITS LINE paper shown="Earlier work, dated: the Spatial Compilation paper, priority date " source=docs/SpatialCompilationPaper.md found="Priority date: 2026-03-30" public https://red1oon.github.io/BIMCompiler/SpatialCompilationPaper/ http=200
+§CREDITS WITNESS W-EDIT-SHEET (live page) file=w_edsheet_live.log line="§EDSHEET-VERDICT PASS judged=62 failed=0"
+§CREDITS WITNESS W-PDF-MOBILE (live page) file=w_pdfm_live.log line="§PDFM-VERDICT PASS judged=36 failed=0"
+§CREDITS PRS bim-ootb found=3498,3500,3509 bim-compiler found=1390
+§CREDITS CREDITS_VERDICT PASS lines_shown=5 dropped=0

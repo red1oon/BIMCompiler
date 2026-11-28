@@ -1,0 +1,21 @@
+§INKFILM still=b1_001.png beat=b1 t=4.29s lower_frame_dark_share=0.00016 median=0.00867 BLANK
+§INKFILM still=b1_017.png beat=b1 t=10.06s lower_frame_dark_share=0.00802 median=0.00867 ok
+§INKFILM still=b2a_001.png beat=b2a t=14.92s lower_frame_dark_share=0.00710 median=0.00867 ok
+§INKFILM still=b2a_013.png beat=b2a t=18.77s lower_frame_dark_share=0.02389 median=0.00867 ok
+§INKFILM still=b2a2_001.png beat=b2a2 t=21.88s lower_frame_dark_share=0.02389 median=0.00867 ok
+§INKFILM still=b2a2_013.png beat=b2a2 t=24.46s lower_frame_dark_share=0.02410 median=0.00867 ok
+§INKFILM still=b2b_001.png beat=b2b t=26.29s lower_frame_dark_share=0.02410 median=0.00867 ok
+§INKFILM still=b2b_026.png beat=b2b t=28.50s lower_frame_dark_share=0.02375 median=0.00867 ok
+§INKFILM still=b2b_027.png beat=b2b t=29.29s lower_frame_dark_share=0.02375 median=0.00867 ok
+§INKFILM still=b2b_043.png beat=b2b t=33.21s lower_frame_dark_share=0.02341 median=0.00867 ok
+§INKFILM still=b2c_001.png beat=b2c t=36.33s lower_frame_dark_share=0.02341 median=0.00867 ok
+§INKFILM still=b2c_009.png beat=b2c t=38.71s lower_frame_dark_share=0.00000 median=0.00867 BLANK
+§INKFILM still=b3_001.png beat=b3 t=40.50s lower_frame_dark_share=0.00000 median=0.00867 BLANK
+§INKFILM still=b3_039.png beat=b3 t=43.25s lower_frame_dark_share=0.00052 median=0.00867 BLANK
+§INKFILM still=b3_040.png beat=b3 t=44.04s lower_frame_dark_share=0.00052 median=0.00867 BLANK
+§INKFILM still=b3_057.png beat=b3 t=45.79s lower_frame_dark_share=0.00867 median=0.00867 ok
+§INKFILM still=b3_058.png beat=b3 t=46.58s lower_frame_dark_share=0.00867 median=0.00867 ok
+§INKFILM still=b3_083.png beat=b3 t=48.67s lower_frame_dark_share=0.00052 median=0.00867 BLANK
+§INKFILM still=b3_084.png beat=b3 t=49.46s lower_frame_dark_share=0.00052 median=0.00867 BLANK
+§INKFILM still=b3_098.png beat=b3 t=54.56s lower_frame_dark_share=0.01801 median=0.00867 ok
+§INKFILM_VERDICT FAIL stills=20 blank=7

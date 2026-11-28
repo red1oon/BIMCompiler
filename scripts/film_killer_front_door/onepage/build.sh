@@ -5,12 +5,12 @@
 # READ every log under $OD/; an exit code is not evidence. Usage: OOTB=<bim-ootb worktree at origin/main (read only)> WITD=<dir of the witness logs from witnesses.sh> [OUTMP4=…] ./build.sh        (SKIP_FACTS=1 keeps $OD/facts.json and $OD/shots/)
 set -e; cd "$(dirname "$0")"
 OD=out; export OUTD=$OD; mkdir -p $OD/work/fm $OD/work/fit
-OUTMP4="${OUTMP4:-$HOME/Videos/PDF_and_Excel_are_killer_apps_ONE_PAGE_EN_rc1.mp4}"; [ -e "$OUTMP4" ] && { echo "§REFUSED $OUTMP4 exists (never overwritten); set OUTMP4="; exit 5; }
+if [ "${FILM:-}" = 1 ]; then OUTMP4="${OUTMP4:-$HOME/Videos/PDF_and_Excel_are_killer_apps_ONE_PAGE_FILM1_EN_rc1.mp4}"; else OUTMP4="${OUTMP4:-$HOME/Videos/PDF_and_Excel_are_killer_apps_ONE_PAGE_EN_rc1.mp4}"; fi; [ -e "$OUTMP4" ] && { echo "§REFUSED $OUTMP4 exists (never overwritten); set OUTMP4="; exit 5; }
 PY=~/.local/share/film_narration/venv/bin/python; FIT=../../film_replication_engine/film6/fit6/fit_kokoro_v3_k.py; MUX=../../film_replication_engine/film6/fit6/mux_two_pass.py; HEAD=../../../prompts/film_narration_ass_head.txt
 export CUDA_VISIBLE_DEVICES=""; FTAG=en; FARG=1.15; KEYVOL="${KEYVOL:-0.8}"
 for f in keys.py k2.py beatlen.js check_film.js record.js tsv.js; do cmp -s $f ../part3/$f && echo "§REUSED_UNCHANGED $f == part3/$f" || echo "§CHANGED $f differs from part3/$f"; done > $OD/reuse.log
 [ -n "$SKIP_FACTS" ] || env -u DBUS_SESSION_BUS_ADDRESS node facts.js > $OD/facts.log 2>&1 || { echo "§FACTS_FAIL see $OD/facts.log"; exit 3; }
-node check_ink.js $OD > $OD/ink.log 2>&1 || { echo "§INK_FAIL see $OD/ink.log"; exit 3; }; tail -1 $OD/ink.log
+node check_ink.js $OD > $OD/ink.log 2>&1 || { echo "§INK_FAIL see $OD/ink.log"; exit 3; }; tail -2 $OD/ink.log
 node links.js > $OD/links.log 2>&1 || { echo "§LINKS_FAIL see $OD/links.log"; exit 3; }
 node credits.js > $OD/credits.log 2>&1 || { echo "§CREDITS_FAIL see $OD/credits.log"; exit 3; }
 node guard.js voice > $OD/guard_voice.log 2>&1 || { echo "§GUARD_FAIL see $OD/guard_voice.log"; exit 3; }

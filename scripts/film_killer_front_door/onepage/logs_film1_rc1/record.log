@@ -1,0 +1,14 @@
+§FILM_CUE beat=cover t=0.000 frames=96 typing=0 answer_hold_frames=96 x1
+§FILM_CUE beat=b1 t=4.000 frames=330 typing=108 answer_hold_frames=111 x2
+§FILM_CUE beat=b2a t=17.750 frames=167 typing=32 answer_hold_frames=135 x1
+§FILM_CUE beat=b2a2 t=24.708 frames=106 typing=32 answer_hold_frames=74 x1
+§FILM_CUE beat=b2b t=29.125 frames=241 typing=105 answer_hold_frames=136 x1
+§FILM_CUE beat=b2c t=39.167 frames=100 typing=28 answer_hold_frames=72 x1
+§FILM_CUE beat=b3 t=43.333 frames=586 typing=252 answer_hold_frames=334 x1
+§FILM_CUE beat=b4 t=67.750 frames=433 typing=185 answer_hold_frames=248 x1
+§FILM_CUE beat=b5 t=85.792 frames=175 typing=25 answer_hold_frames=150 x1
+§FILM_CUE beat=b8 t=93.083 frames=459 typing=89 answer_hold_frames=370 x1
+§FILM_CUE beat=close t=112.208 frames=141 typing=0 answer_hold_frames=141 x1
+§FILM_CUE beat=prior t=118.083 frames=132 typing=0 answer_hold_frames=132 x1
+§FILM_KEYS typed=290 returns=17
+§FILM_DONE dur=123.583 frames=2966 planned=2966

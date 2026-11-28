@@ -1,0 +1,15 @@
+§CARD beat=cover stills=1 overflow_px=0 (full card)
+§CARD beat=b1 stills=47 overflow_px=0 page_picture=2200x1700 typed=30+10
+§CARD beat=b2a stills=13 overflow_px=0 page_picture=2200x968 typed=10
+§CARD beat=b2a2 stills=13 overflow_px=0 page_picture=2200x968 typed=10
+§CARD beat=b2b stills=43 overflow_px=0 page_picture=2200x968 typed=23+14
+§CARD beat=b2c stills=9 overflow_px=0 page_picture=2200x968 typed=6
+§CARD beat=b3 stills=104 overflow_px=0 page_picture=2200x1002 typed=39+18+23+12
+§CARD beat=b4 stills=80 overflow_px=0 page_picture=1920x536 typed=14+34+23
+§CARD beat=b5 stills=6 overflow_px=0 page_picture=500x504 typed=3
+§CARD beat=b8 stills=27 overflow_px=0 page_picture=1170x1167 typed=10+11
+§CARD beat=close stills=1 overflow_px=0 (full card)
+§CARD beat=prior stills=1 overflow_px=0 (full card)
+§T font sizes per class over every still: .cmd=27px .ans=27px .dim=27px .ok=27px .no=27px ; rows cut (overflow_px>0): 0
+§T_VERDICT PASS (the strip uses ONE font size for all its text in every still of the film, never shrunk per beat; no row is cut; there is no terminal emulator here: lines wrap by the page layout)
+§CARDS_DONE beats=12 stills=345 too_tall=0 key_stills=290 return_stills=17
