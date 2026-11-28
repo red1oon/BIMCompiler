@@ -1386,6 +1386,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#site-missions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Site missions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#gi-preview-ao" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4034,6 +4045,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#site-missions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Site missions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#gi-preview-ao" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5170,6 +5192,86 @@ tap to replay</em>. Tap it: the walk's points go on the history bar, and the bar
 to where the phone's camera was at each point.</p>
 <p><em>Written from the code (<code>viewer/issues.js</code>) and the witnesses W-SEND-HQ, W-SEND-HQ-TEAM, W-HQ-VIEW and
 W-ISSUE-LOG-ROUTE (bim-compiler <code>prompts/MOBILE_PERF.md</code> §P5), 2026-11-28. No screenshot yet.</em></p>
+<p><a id="site-missions"></a></p>
+<h4 id="site-missions">Site missions<a class="headerlink" href="#site-missions" title="Permanent link">&para;</a></h4>
+<p>A <strong>site mission</strong> is a short list of jobs that the office issues from the Project Order. A person on site walks the list
+with a phone, does each job and reports it; the office sees the progress in the model. The reports travel the same way as
+<a href="#send-to-hq">Send to HQ</a>, so the phone and the office browser must both be in the same team.</p>
+<p><strong>At the office.</strong></p>
+<ol>
+<li><strong>Make the task.</strong> A task is a <em>Request</em> on the Project Order. The viewer has no button of its own to create one: it
+   is created in the <strong>Request</strong> window of the built-in ERP. Give it the Request Type <strong>Site Task</strong>, the Project Order, and
+   the <strong>Product</strong> it is for: a product that is one element makes a task for that element; a product that is an item class
+   makes a task for every element of that class that was pushed with the Project Order. Keep its status at <strong>New</strong>:
+   only a <strong>New</strong> Request is picked up in step 3.</li>
+<li><strong>Pick the checklist.</strong> In the same window, choose a <strong>Standard Response</strong> on the Request. Each line of its text
+   becomes one tick box on the phone. A Request without one gets a form with no checklist.</li>
+<li>In the <strong>Find</strong> panel, <strong>› ERP</strong> pushes the selection as a Project Order. Next to it, <strong>Prepare site mission</strong> takes
+   every Request of that Project Order that is still <strong>New</strong>, works out where each element is and in what order to visit
+   them, and writes one mission file (one per role, when the Requests have different roles). The Requests move to
+   <strong>Prepared</strong>. A Request that has no element in the open model is left <strong>New</strong>, and the reason is listed under the
+   button. The file is also saved to your computer.</li>
+<li><strong>Send to site</strong> appears under the result. It puts the mission, sealed, in the team folder. With no signal it waits
+   in the outbox and goes when you are online. A browser that is not in a team cannot send; the status line says so.</li>
+</ol>
+<p><strong>On site.</strong></p>
+<ol>
+<li>On the phone, open the <strong>Navigate</strong> drawer and tap <strong>Missions</strong>. Tap <strong>Get</strong> to list the missions HQ sent (each row
+   shows its name, the role, the number of tasks and the date), then tap one to open it. Opening a mission tells HQ that
+   it was picked up.</li>
+<li>A strip at the top of the screen reads <strong>task n of m</strong> with the task's name. The route to the next spot is drawn in the
+   model. <strong>Start walk</strong> begins the walk; the strip also has <strong>I'm here</strong>, <strong>Scan QR</strong>, <strong>Skip</strong> and <strong>Can't proceed</strong>.</li>
+<li><strong>Arrival.</strong> The task's card opens when you tap <strong>I'm here</strong>, or when you scan the task's QR code or type its code
+   (<strong>Scan QR</strong>, then <strong>Check</strong>). The card names the task and offers <strong>Fill in the form</strong>, <strong>Can't proceed</strong> and <strong>Later</strong>.</li>
+<li><strong>The form</strong> has the same shape for every task:</li>
+<li><strong>Outcome</strong>: one pick from the list (required when the list is not empty);</li>
+<li><strong>What I found</strong>: your own words;</li>
+<li><strong>Material used</strong>: a product and the quantity used (optional);</li>
+<li><strong>Photos</strong>: <strong>Take photo</strong> opens the Site Camera;</li>
+<li><strong>Checklist</strong>: one tick per line of the task's Standard Response.</li>
+</ol>
+<p><strong>Done</strong> sends the report. If something required is missing, a red line says what.
+5. <strong>Can't proceed</strong> asks <em>Why can't this be done?</em> and needs a reason. The task stays open at the office with that reason.
+6. The next task comes up by itself. After the last one the strip reads <em>Mission complete</em> with the counts.
+7. <strong>Without signal</strong> the model and the mission are already on the phone. Each report is kept on the phone and goes to the
+   team folder by itself when you are online. The phone also remembers which tasks are finished.</p>
+<p><strong>Back at the office.</strong></p>
+<ol>
+<li>In the Issue Log, <strong>Get from team</strong> reads the phones' reports (the same button as in Send to HQ). A mission that was
+   picked up moves its Requests to <strong>On site</strong>. Each report becomes a row of the Issue Log and an <strong>update</strong> on the
+   Request: the result you typed, the ticks, the names of the photos, the start and end time, and the material and
+   quantity. A report of <strong>Done</strong> moves the Request to <strong>Reported</strong>; a <strong>Can't proceed</strong> report leaves it open, with the
+   reason written on it. The same report is never applied twice.</li>
+<li>A task that covers many elements (an item class) has one report per element. Its task status climbs in steps as the
+   reports come in, and the Request is <strong>Reported</strong> only when every element is done.</li>
+<li><strong>Verify</strong> shows on a task row that is <strong>Reported</strong>, in the Issue Log on a computer. It moves the Request to <strong>Verified</strong>
+   and closes it.</li>
+<li><strong>Show site progress</strong>, in the same Find row, colours the model and lists every line of the Project Order. Press it
+   again (<strong>Hide site progress</strong>) and the model is back as it was. The colours:</li>
+<li><strong>light blue</strong>: Verified, the office has checked it;</li>
+<li><strong>green</strong>: done, the site reported it done;</li>
+<li><strong>orange</strong>: open, the task was issued and has no report yet;</li>
+<li><strong>red</strong>: can't proceed, the latest report says so;</li>
+<li><strong>grey</strong>: new, a Request exists but it has not been prepared.</li>
+</ol>
+<p>The table beside it counts, per line: planned, done, can't proceed, open, new and not issued (planned elements that
+   no Request covers yet). Elements that no Request covers keep their own colour. With the view on, <strong>Get from team</strong>
+   updates it.</p>
+<p><strong>Good to know.</strong></p>
+<ul>
+<li>The route is drawn through the rooms only where the model has compiled rooms. Elsewhere, or when an element sits in no
+  room, the route is a straight line.</li>
+<li>Tasks prepared today have no arrival distance, so the card opens by <strong>I'm here</strong> or by the code, not by walking
+  within a distance.</li>
+<li>A task for an item class covers the elements that were pushed with the Project Order. The Find list pushes at most 50
+  at a time.</li>
+<li>A mission names its model. If you open it in another model, the strip warns you.</li>
+<li><strong>Prepare site mission</strong>, <strong>Send to site</strong>, <strong>Verify</strong> and <strong>Show site progress</strong> are on a computer; <strong>Missions</strong> and the
+  form are on the phone.</li>
+<li>Photos stay in the team folder. The update on the Request names them.</li>
+<li>This runs in the built-in ERP of the viewer. It is not yet sent to an external iDempiere server.</li>
+</ul>
+<p><em>Written from the code and its witnesses, 2026-11-28. No screenshot yet.</em></p>
 <h4 id="gi-preview-ao">GI Preview (AO)<a class="headerlink" href="#gi-preview-ao" title="Permanent link">&para;</a></h4>
 <p><strong>GI Preview (AO)</strong> (<strong>Alt+G</strong>, desktop only) turns on an ambient-occlusion preview using the N8AO effect. The help lists
 it as a research spike, and it is disabled on mobile because of memory. It sits in the
