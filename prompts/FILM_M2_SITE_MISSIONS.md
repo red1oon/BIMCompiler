@@ -5,6 +5,15 @@
 # Read the log after every run when it is recorded; every number and on-screen value below is `TBD at recording — read from the product`
 # unless a source line is given. Written 2026-11-28 against bim-compiler `origin/master` (FILM_NARRATION.md, MOBILE_PERF.md, the archive).
 
+# DECIDED 2026-11-28 (owner: *"decide for me"* — Fable's calls; the owner may overrule any of them):
+# 1. LAYOUT = split LEFT (office, desktop) / RIGHT (phone, portrait). This departs from HOUSE STYLE point 1 ("top and bottom") for THIS film only,
+#    because a portrait phone does not fit a strip; what the rule protects is kept: the real application on screen beside typed lines with real key
+#    sounds, voice after the return key. Scene 5 (the boot-weight command) uses the house top/bottom strip on the LEFT half.
+# 2. COVER = kicker `SITE MISSIONS  ·  CH 0`, title `From the Project Order to the site, and back`, sub-line as drafted in §2.
+# 3. The sample is shown as "Office"; English only; output `Office_site_missions_EN_rc1.mp4`.
+# 4. Scene 4 shows the real delivery (WO-26 is merged: "Send to site" → the phone's "Missions" row), not a link.
+# Still to do before recording: WO-28 (the colour in the model), the BIM User Guide section for site missions (the last card's link), then the owner's go.
+
 ---
 
 ## 1. Premise, length, languages
