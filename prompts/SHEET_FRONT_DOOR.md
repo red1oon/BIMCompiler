@@ -1974,3 +1974,60 @@ Witness: W-EDIT-SHEET H4 gains `number-cell-takes-number`: `12O.50` typed into D
 `text-into-number` the page writes `new="12O.50"` and H4 is FAIL. Also the same day: #3515 plain words (no "slice B" / "in this cut" / "phase P7" in any message
 the page shows; W-PDF-WRITE W14 `plain-words`, 15 found before, 0 after, 78 judged) and the guide rewritten for the one-page editor and the ERP print
 (bim-compiler #1390, live): FILM v2's third prerequisite is met. Guide corrected after the film builder's check: the sample's total is `SUM(D6:D26)`.
+
+## 22. Files with a cross-reference STREAM become writable (PDF 1.5+) - spec 2026-11-28, before code (owner: "yes")
+**Why first:** of the owner's 24 openable PDFs 9 are writable on page 1 and 8 of the other 15 fail for this one reason (§18.4). It is the largest single unlock;
+a designer feature (move a picture, shift a page, move a column - §24) is no use on a file the page cannot write back.
+**Today:** `pdf_write.js` `PdfFile.load` throws `xref-stream` when `startxref` points at an object, and when a classic trailer has `/XRefStm` (hybrid).
+**ISO 32000-2:** §7.5.8 cross-reference streams (`/Type /XRef`, `/W [a b c]`, `/Index`, `/Prev`; entry type 0 free, 1 = offset + generation, 2 = object stream
+number + index in it), §7.5.7 object streams (`/Type /ObjStm`, `/N`, `/First`; no stream object and no generation other than 0 inside one), §7.5.8.4 hybrid
+files, §7.4.4.4 predictors (PNG predictors 10-15 are the usual filter of an xref stream: `/DecodeParms << /Predictor 12 /Columns n >>`).
+### 22.1 Read
+- `load` becomes async (one more await for its callers): it follows `startxref` through classic tables AND xref streams (any mix, `/Prev`, `/XRefStm`), newest
+  entry wins as today. Flate with PNG predictors 10-15 (and none) is decoded for xref and object streams; any other predictor is a named refusal.
+- Every object stream that a live type-2 entry names is decoded once at load; `obj(n)` stays synchronous and answers from it. An object inside an object stream
+  is parsed from the decoded bytes; its raw bytes are kept (22.2).
+- Still refused, by name: encrypted files; an object stream that extends another (`/Extends`, rare) if it cannot be followed.
+### 22.2 Write: the file keeps its own structure (decided here)
+**Every object that need not change keeps its bytes, object streams included.** The output is: the original bytes of every live type-1 object, in place order
+(as today); the object streams UNTOUCHED; each replaced or new object as an ordinary object (`n g obj ... endobj`), also when its old copy lives inside an
+object stream (that copy is then dead data inside the untouched stream - never page content, which cannot be in an object stream); then ONE new cross-reference:
+a classic table when the file has no type-2 entry left to describe, else ONE xref stream (`/W [1 4 2]`, no predictor, Flate) holding types 0, 1 and 2, with the
+trailer keys (`/Root /Info /ID /Size`, never `/Prev`, `/XRefStm`). Not done: unpacking object streams into ordinary objects (the file would grow and every packed
+object would lose its place); writing new object streams.
+`lockOf`, `pageOf`, `plan`, the font and content code do not change: they sit above `PdfFile`.
+### 22.3 Witness - W-PDF-WRITE case W15 (node), fixtures MADE IN THE WITNESS by code that is not the engine
+No tool here writes such files (no qpdf, mutool, pikepdf): the witness holds its own small converter (its own xref / object reading, node zlib): a corpus PDF ->
+the same objects with the non-stream ones packed in object streams and an xref stream with Predictor 12. If this machine's ghostscript writes xref streams at
+`-dCompatibilityLevel=1.7`, that file is a second, independent fixture (else that is stated, not skipped silently).
+- `fixture-valid` poppler (`pdfinfo`, `pdftotext`), pdf.js and ghostscript open each converted file and read the same text as the original. An invalid fixture judges nothing.
+- `reads` `listRuns` on the converted file equals `listRuns` on the original (same runs, boxes, locks) for every corpus file.
+- `sweep` the W13 sweep on the converted corpus: every number cell round-trips in both readers or is refused by name with the bytes unchanged, 0 wrong, and
+  the SAME count of round-trips as on the classic corpus (the unlock must not be a weaker engine).
+- `structure` after an edit: every object stream byte-identical; every untouched type-1 object byte-identical; exactly one cross-reference, a stream; poppler,
+  pdf.js and ghostscript open the result without a message; `/Length` and every offset exact (the witness's own reader).
+- `hybrid` a classic table with `/XRefStm`: read and written.
+- `history` `embedFile` on a converted file: the history is inside, read back by pdf.js, replaced in place on a second save.
+- `refused` a predictor this cut does not know, an encrypted xref-stream file: named, bytes unchanged.
+Mutants (each turns W15 FAIL): the predictor not undone; type-2 entries read as type 1; an object stream rewritten; the new xref stream's offsets not updated.
+W-EDIT-SHEET gains one browser check: a converted trial balance opens with `§EDSHEET-LAYER ... file=writable`, an edit applies, undo is byte-identical.
+Cost: `§PDF_WRITE` gains `xref=table|stream objStreams=n decodedKB=` (PERF BUDGET: decoded object streams are held once, released with the file).
+**The measure that matters, taken by the coordinator after the merge:** writable PDFs among the owner's 24 (by number only, §17 privacy), against 9 today.
+
+## 23. Owner direction 2026-11-28: how a PDF feeds the ERP, and what the page may become (ideas recorded, NOT specced, nothing built)
+Verbatim: *"That if it is fast, is novel enough. Been light, easy, air-gap ops."* · *"Editable where text is."* · *"Offline File it can be so - when we provide user
+option to install it somehow."* · *"Can we drag any images in it around? Readjust margins, column borders etc. I reckon if it gets heavy then some sort of lazy
+load or an 'advanced' button for designer overlay can come on and shed of when off. Playing with ideas."* · on the ERP: *"it can only do so as an unposted source
+doc ie as Create or Update them. It follows same rules as if user is doing so in Kernel ERP proper. It can appear in the unprocessed items under the Activity
+panel of the opening screen. And even as a Request on Calendar so user login in formally is made aware and can be tracked to avoid confusion. This way, is a
+convenient way user begins with a given PDF from customer/supplier and semi-OCR in a way without more steps. Such convenience killers is what attracts me."*
+What follows from it (the coordinator's reading, to be confirmed one detail at a time before any spec):
+- **Selling point = measured speed, lightness, ease, network off** - not novelty. The film carries it as numbers (§P of FILM_KILLER_FRONT_DOOR).
+- **The page's rule:** an edit changes a number already in the file (a text, a place, a size), never re-lays the page. Inside the rule: move / resize a picture;
+  shift a page's content or its box; move a table column with its lines. Outside it: re-wrapping text to a margin or a column width. A "Design" button loads
+  that overlay on demand and drops it when off. Order after §22: picture, page, column.
+- **Into the ERP = an UNPOSTED source document, created or updated by the same generic rules as a user in the window** (AD-layer law: no door-only logic), seen
+  under Activity (unprocessed items) and as a Request (R_Request is core) on the calendar. **This differs from File it today, which COMPLETES the invoice through
+  Import Invoice** - the one question to settle first (below). "Semi-OCR" = P1 "Mark my invoice": mark the fields once per supplier layout, the next PDF from
+  that supplier fills itself.
+- **Install for offline File it** = P4 (a service worker + install prompt over the books engine).
