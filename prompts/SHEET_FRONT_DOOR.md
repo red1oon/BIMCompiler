@@ -2163,3 +2163,44 @@ the machinery, shown. The coordinator's reading (put to the owner, to be confirm
   by our ERP in the first place).
 Also from the owner on rc1: *"from 0:37 sec onwards the sheet seems blank"* (confirmed: two stills taken before the page redrew; the live page measured never
 blank) and *"The first sec doesn't show how it arrived or load the PDF excel"* - both in the rc2 brief, with a new INK check on every PDF-page still.
+
+## 28. The sheet is never shown blank after an edit, undo or redo (found by the owner in FILM v2 rc1; spec + result 2026-11-28)
+The film's cause, found by its builder: after an edit or undo `swapTo` removed the page's canvas and drew again; a still taken in that gap showed a white sheet
+(0:37-0:47 of rc1; the coordinator's frame scan: 21 of 313 samples). Measured on the live page frame by frame: **60-78 ms of white after each edit and undo.**
+Fix (bim-ootb #3527): the old canvas is marked stale and STAYS until the changed page is fully drawn off screen, then it is swapped. W-EDIT-SHEET H11 watches
+every frame through an edit, an undo and a redo: `§EDSHEET-BLANK frames=186 edit: notShownMs=0 undo: 0 redo: 0`; mutant `blank-flash`: 6 frames, FAIL. 62 judged.
+FILM v2 **rc2** (bim-compiler #1407; `~/Videos/..._ONE_PAGE_EN_rc2.mp4`, 2:51): new INK check on every PDF-page still (`§INK_VERDICT PASS stills=18 bad=0`; run
+over rc1 it reports 7 blank), the arrival shown in beat 1 and beat 4, beat 7 on the draft flow, `LIVE_EQ_MAIN` taken at both ends. Coordinator's own scan of
+rc2: 0 blank sheets but the deliberate empty browser at 0:04. **Beat 7 is to be shot again when §29 exists (owner: "Yes reshoot that").**
+
+## 29. SAVE on the PDF page, DRAG INTO iDempiere: the File it page retires (owner 2026-11-28; spec before code - READ-FIRST investigation, then build)
+Owner, verbatim, in order: *"Otherwise it opens the / pdf URL for it to handle to get it sanitized"* · *"or it can remain separate ie save instead of file it. Then
+in iDempiere just drag the file into it. Give your take. This way it is more hassle free in learning curve as it gets intuitive"* · *"Yes reshoot that. It allows
+the PDF handler to spin off as a killer on its own with the ERP drop in as another killer method. While in PDF handling it already has ERP sanitizing handling
+behind it"*. With §27: two products that meet through a FILE - the PDF handler (alone, light, network off) and the ERP drop-in.
+### 29.1 The shape (decided by the owner; the coordinator's additions marked †)
+- **The PDF page never talks to the ERP.** It reads, checks, marks, edits and SAVES. What it saves is a QUALIFIED file: sanitized to our ERP document model.
+- **The ERP has one gesture: a file dragged onto it.** Qualified -> a DRAFT in the standard window, at once, by the same rules as a user entering it (§24: the
+  import's own default, nothing posted; AD-layer law: generic, the template names the table and columns, no `if table===`). Not qualified -> the ERP opens
+  `/pdf` with that file, to be sanitized there; save; drag again.
+- **File it and "Send to ERP" do not exist.** `erp/sheet_addin/file_it.*`, `/file-it`, the Result panel, the engine talk and the hand-over between tabs are
+  deleted (deletion budget) once the drop covers their witnesses.
+- † **The dropped file is attached to the draft record** (iDempiere's own Attachment) as its evidence. With it the ERP answers §25 at the drop: the same file
+  again -> "already drafted as <DocumentNo>", never twice; an edited copy of a still-unprocessed draft -> offered as an UPDATE of that draft; a completed
+  document -> refused. The ERP is the authority; the file needs no lock of its own.
+- † **Qualified** = the file carries our marks (which field is which), every required field is present, its totals add up, its history verifies - the PDF
+  page's own checks, run again by the ERP on the drop (never trusted from the file's say-so).
+- The drop is an add-on OVER the ERP (an overlay, like the report pill); the windows stay the legacy twin and gain no viewer.
+### 29.2 To be READ and answered with file:line before any build (legacy source and ours)
+(1) What does a PDF hold today that could carry the marks? (the workbook has `_door_tags`; a PDF has the embedded-file slot used for its history, §PDF_EDITOR 4.5)
+- propose the ONE format for both. (2) Where can an overlay receive a file drop over `erp/idempiere.html` without host code (how `report_pill.js` and the
+other overlays mount), and how does it know the window / table in front? (3) How does legacy attach a file to a record (AD_Attachment, MAttachment, the
+toolbar's Attachment dialog incl. its drag-and-drop) and is that ported here (model, storage in the SQLite books, the toolbar button)? (4) Can `sheet_door.js`
+run unchanged on values read from a qualified PDF (it takes values of tagged cells, never a file format)? (5) What of `witness_file_it.js` /
+`witness_door_erp*.js` / `witness_sheet_door.js` carries over to the drop, and what dies with the page. (6) "Mark my invoice" on the PDF page (P1): the
+smallest marking UI that makes ONE supplier layout qualified - click a text, pick the field from the window's own field list. Each answer ends with a
+proposed slice order; nothing is built until the coordinator has put the open choices to the owner.
+### 29.3 Witness (shape; details with the build spec)
+Seen from the user's side only: a qualified sample saved by the PDF page, dropped on the ERP -> the standard window holds ONE new draft with those values, the
+file attached, nothing posted; the same file dropped again -> no second draft; an unqualified file dropped -> the PDF page opens with it; an edited copy of the
+draft's file -> update offered; after Complete -> refused. Sweep: every window a template exists for, not one hand-picked route. Mutants for each.
