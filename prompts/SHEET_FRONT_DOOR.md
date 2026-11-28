@@ -2057,3 +2057,20 @@ exists for it; Open in the ERP shows it; pressing Complete there (the window's o
 a `CO` template is refused in words; replay and file-twice are unchanged. Part B: the home screen's unprocessed count rises by one after File it and falls
 after Complete; the Request exists, points at the invoice, and is on the calendar - each read from the page a user sees, not from a table alone. Mutant: the
 door passes `CO` again -> FAIL. The parallel run (`scripts/bridge/run_all.sh`) stays green: this REMOVES a divergence (the door's own DocAction), it adds none.
+
+## 25. Owner direction 2026-11-28 (later): the file knows its ERP state - 'ERP drafted', 'ERP posted' (idea recorded, NOT specced, nothing built)
+Verbatim: *"We can even pass the history to Request-Update/History model and mark as 'ERP drafted' on the PDF/Excel side, so that users do not overwrite event
+consequence other than formatting. THus we have to segregate and isolate 'event' info to be locked when in ERP. And unlock will synch back a draft. A processed
+document cannot be edited and marked as 'posted to ERP'"* · then, on the name: *"or 'ERP posted' to be consistent"* -> the two marks are **ERP drafted** and **ERP posted**.
+The coordinator's reading (put to the owner, not yet confirmed):
+| State on the file | Event fields (partner, date, lines, amounts) | Formatting | Ends by |
+|---|---|---|---|
+| free | editable | editable | File it -> ERP drafted |
+| **ERP drafted** | locked | editable | Unlock -> the edits go back as an UPDATE of the same draft |
+| **ERP posted** | locked for good | editable | never |
+Already there: the event / formatting split is the template (`_door_tags` names the event cells); the mark can ride on the signed ledger line; a processed
+document refuses changes by the ERP's own rules; the Request has its own update log (one summary entry per sync, not one per cell). Limits to state plainly:
+a file is a copy - "locked" means locked in our pages, a change made elsewhere is DETECTED (the history's binding check), not prevented; an offline file learns
+"ERP posted" only when it next meets the ERP. Proposed first rule: the ERP is the authority when file and ERP disagree.
+**⛔ Open, the one question before any spec: who may unlock** - anyone holding the file (works offline; the ERP checks every update and refuses a processed
+document), or only from the ERP side? Coordinator's recommendation: anyone holding the file.
