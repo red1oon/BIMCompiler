@@ -18,6 +18,10 @@ text in a script with no font vanished silently (now counted and said on the pil
 the review, the design calls, the specs — and hands EASIER, well-scoped work to **Sonnet** agents (Agent tool, `model: sonnet`). One bounded task per agent, its own
 `/tmp/wt-*` worktree, the spec section to read named in the brief, the rules of "How to run things" restated (a fresh agent has no memory), and the coordinator
 re-runs the agent's witness itself before believing its report.
+**▶ NEXT (2026-11-28 late; read §26 first):** (1) the owner watches FILM v2 rc1 and confirms the cover; beat 7 is re-shot (File it now stops at a draft). (2) §24 Part B
+waits on five owner decisions (§26.5). (3) §25 (ERP drafted / ERP posted, Unlock = void) waits on one detail: Unlock with the network off - wait, or free with a void
+pending (coordinator: wait). (4) TURNED PAGES are now the largest lock on real files (19 of 128): the next unlock. (5) §23 designer overlay (picture, page, column).
+Done the same day: §21 number cells, plain words, the guide (live), §22 PDF 1.5+ with two real-file defects fixed (§26.2-26.3), §24 Part A (live).
 **Left open by the review (each small, none started):** ⛔ the report takes the LOWEST client id - can the live page's database hold more than one tenant? (§20.6);
 the `_door_text` tab is visible in the .xlsx (hiding it = the Sheet-history reader, three hosts); the undo limit (128 MB) is chosen, not measured on a phone;
 the link row / download helper / 760 px breakpoint are each written 3-4 times; `witness_pdf_mobile.js` rests three gates on the one multi-page corpus file;
@@ -2084,3 +2088,58 @@ void it by the ERP's own rules; when the ERP has done so the event fields are fr
 inactive) - it may be started from the ERP window or from the file. Still to confirm, one at a time: (1) with the network off, does Unlock wait until the file
 meets the ERP, or free the file at once and carry a pending void? (2) is Unlock offered only on **ERP drafted** (the owner: a processed document "cannot be
 edited")? (3) may an edit of a still-linked draft go back as an UPDATE without a void?
+
+## 26. RESULTS 2026-11-28 (late): §22 PDF 1.5+, two defects only REAL files showed, §24 Part A, FILM v2 rc1
+### 26.1 §22 cross-reference streams - bim-ootb #3518 `8924c4d8` (Sonnet builder; **merged by the repo's auto-merge bot before the coordinator's hold**)
+Coordinator's re-run: `§PDFWR-VERDICT PASS judged=88 failed=0`, `§PDFWR-MUTANTS killed=14/14` (W15: 10 checks, M11-M14). Builder's logs: W15 on the old engine
+`verdict=FAIL judged=10 failed=9`; W-EDIT-SHEET 59 judged, 13/13 mutants (H10: a converted file opens `file=writable`, edit, undo byte-identical). Ghostscript
+10.02.1 here writes a classic table at 1.7: **every fixture came from the witness's own converter - no independent writer.** That gap is what 26.2 is about.
+### 26.2 The measure on REAL files (counts only; no name, path or content printed) - and what it found
+128 PDFs under the home folder, each read by the engine before #3518 and after: **32 had a cross-reference stream; 18 are now writable (67 -> 85 of 128), 12 are
+turned pages, 2 encrypted.** Other locks in the 128: 13 with no writable text, 7 turned (classic), 1 filter, 7 not PDFs. **Turned pages (19 of 128) are now the
+largest single lock.** A second set (139 PDFs from program folders): 31 with a stream -> 17 writable, 12 turned, 1 no text, 1 refused (below).
+Each newly writable file then had ONE word shortened by a letter and was read by poppler and ghostscript. **Two defects, neither visible to any made fixture:**
+- **A real hybrid file was written WITHOUT its header and without 13,844 packed objects** (`§REAL-WRONG ... popplerErr="May not be a PDF file" gs="Error ... in obj"`).
+  Its shape: ONE table listing all 18,712 objects, 15,988 of them FREE (generation 65535, a free list), and an `/XRefStm` that is a FULL index (type 2 for the
+  packed ones, plus 273 rows "type 1 at offset 0"). The engine let the table's free entry win, and took offset 0 for an object boundary. The builder's hybrid
+  fixture had the packed objects ABSENT from the table - a shape poppler accepts but real writers do not use.
+- **Word gaps drawn as spacing closed up** (pre-existing, any file): a justified run `[(Hello) -300 (big) ...] TJ` with no space glyph read as ONE word, and a
+  rewrite wrote one string - the words ran together (poppler text 4 and 2 letters shorter for a 1-letter edit).
+**A flaw in the coordinator's own first measure, stated:** the "old engine" was read from `origin/main` AFTER the bot had merged #3518, so new was compared with
+new and showed "no change"; the first sample of 40 files held no stream file at all. Redone against `8924c4d8^`. A comparison must pin the commit of its baseline.
+### 26.3 The fixes - bim-ootb #3521 `fix/pdf-real-files`, #3523 `fix/pdf-word-gaps`
+- §22.4 (#3521): in a hybrid section a table entry marked FREE yields to the stream's live entry; a type-1 row at offset 0 is no object and no boundary; `sound()`
+  - the last word before a file is handed back - refuses a file that does not begin byte for byte as the input does. W15 `zero-offset-rows`,
+  `hybrid-free-in-table`; mutants M15, M16; `§PDFWR-VERDICT PASS judged=90`, 16/16. The real hybrid is now REFUSED by name ("object stream 2652 is missing"),
+  not written wrong - why its object stream is not found is not understood (open).
+- §22.5 (#3523): a move right of at least half the font's space (150/1000 em when it has none - a bound chosen here) between two glyphs reads as a space; a
+  space typed into such a run is written as the run's own gap (median). W14 `word-gaps-kept` (`[<48656c6c6f> -300 <6e6577> -300 <776f726c64> 520] TJ`, poppler
+  "Hello new world"), mutant M17; `judged=92`, 17/17; W-EDIT-SHEET 59, pages 22 / 19, history 56, reader 37.
+- Real files after both: second set `edited=12 popplerOpensSamePages=12 popplerTextOneLetterShorter=12 ghostscriptNoNewMessage=12 wrong=0`; home set 12 / 12 / 11 / 12,
+  the one flag being the check's own artifact (the removed letter's place reads as a space: same length).
+- **Not done:** the `hybrid-free-in-table` fixture's INPUT is refused by poppler and ghostscript (the real free list was not reproduced), so only the engine's
+  output is judged there; no witness in git holds a real hybrid; the pre-existing U6 failure on two real multi-page files ("page 3 on screen, Read as sheet
+  read page 2") seen in `witness_pdf_mobile.js` with a list, on old and new alike, is NOT investigated.
+### 26.4 §24 Part A, File it stops at an unposted document - bim-ootb #3520 `9280770f` (Sonnet builder), live
+Coordinator's re-run: `§SDOOR-VERDICT PASS judged=44`, `§SDOOR-MUTANTS killed=14/14`; `§FILEIT-VERDICT PASS judged=57`; `§DOORERP-VERDICT PASS judged=51`
+(`§DOORERP-ORACLE direct(default DocAction) ... status={"docstatus":"IP","posted":"N"} ... oldOnePress(CO) factRows=6 sameFingerprint=true`). The door sends no
+DocAction: Import Invoice takes its dictionary default PR (legacy `ImportInvoice.java:53`, `MInvoice.java:1811-1814` -> In Progress), nothing is posted, the
+window's own Complete posts the same 6 entries as the old one-press flow. A `CO` template is refused: "this page files a document for review; complete it in the ERP".
+Known after it: a workbook saved from the OLD sample carries `docAction:"CO"` and is now refused; right after Complete the row still says "Not Posted" until
+Refresh (the window's behaviour, twin L&F not checked); `door_handover.js:72` still says "is now in these books"; the bridge `run_all.sh` was not run (only the
+bump's scoped gate).
+### 26.5 §24 Part B - investigated, NOT built. What the read found (file:line in the builder's report, scratchpad `door/`)
+- **Activities already works from the dictionary:** legacy `PA_DocumentStatus` 200005 "Unprocessed Documents" (`RV_Unprocessed`, DocStatus not CO/CL/VO/RE,
+  `CreatedBy=@#AD_User_ID@`); ours shows the same from the same rows (`erp/overlay/dashboard_docstatus.js`, `home.js:149`). **Blocker: the door files as user 100
+  (SuperUser) and the ERP login is GardenAdmin 101, so the count stays 0** (probe: filed by 101 -> 0 before, 1 after).
+- **A Request tied to the record can be made by ONE generic call** (`ML.save` on `r_request`, as `request_email.js:250-262` does; the model rules are ported).
+  **Not ported: the Calendar gadget (`DPCalendar`, `§DASH-UNPORTED id=50004`) and the window's "Requests" toolbar button.**
+- **⛔ Decisions for the owner before a spec:** (1) which user the door acts as - the page asks, or the demo identity becomes GardenAdmin; (2) which request type
+  (GardenWorld has Request for Quotation, Service Request, Warranty; a "Document review" type is a dictionary patch); (3) DateNextAction today or empty; (4) does
+  the Request close when the invoice is completed (legacy does nothing); (5) is porting the Calendar in this lane.
+### 26.6 FILM v2 "ONE PAGE" rc1 - bim-compiler #1402; file `~/Videos/PDF_and_Excel_are_killer_apps_ONE_PAGE_EN_rc1.mp4` (2:36, never pushed)
+All build checks PASS (facts 55, voice guard 38, card guard 370, K2, keys 367/367, Z 22 steps, links, film check 17 beats); result section in
+`FILM_KILLER_FRONT_DOOR.md`. Cover "ONE PAGE / Editable where text is." (owner confirms). Light / fast / easy / network off as measured facts (257,309 bytes;
+an edit in 6 ms; `§FILM_OFFLINE reloadOk=true openOk=true editOk=true`, PDF page only). **To re-shoot: beat 7 (it shows the one-press filing, gone since #3520).**
+The phone time is load-sensitive (median 1,896 ms of five; 1,554 ms in an earlier run). The live site changed DURING the shoot (#3518 deployed 07:27 UTC, the
+last live stage ended 07:29): the phone beat does not edit, so no fact is affected, but the build's `LIVE_EQ_MAIN` was taken at its start only.
