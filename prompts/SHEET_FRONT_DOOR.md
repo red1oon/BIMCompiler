@@ -1962,3 +1962,15 @@ glyph clusters too, and only that kills M3. **Changes of behaviour to know:** `c
 not at Download PDF (PDFKit and the fonts still load only at Download PDF; N5 reworded); a NUMBER cell never wraps now; `#` fill is for numbers only.
 **Not done:** the ⛔ tenant question; no header row repeated on later pages; a merge taller than a page is still split; N7 has no "fails before" run;
 N4 still trusts any `run_all.sh` log it is handed (needs `OOTB_WT` set, or W40 / W41 read as missing).
+
+## 21. A number cell on the page takes a number only (owner 2026-11-28: "Yes"; spec before code)
+Found while the guide was checked against the page: the GRID refuses a non-number typed into a number cell ("is not a number"), the PAGE wrote it as text
+(`index.html` `layerEdit`: `else if (f.reason !== 'not-a-number') return refuse(...)`). The common case is a slip (`12O.50` with a letter O): the column's total
+then stops adding up or is no longer judged. **Rule: one answer for both ways of working - a cell the reader holds as a number takes a number; anything else is
+refused in words, the bytes unchanged.** A cell that is text stays freely editable; a dash for zero is still written where the column prints dashes (`formatLike`).
+Witness: W-EDIT-SHEET H4 gains `number-cell-takes-number`: `12O.50` typed into D10 on the page -> `§EDSHEET-EDIT ... ok=false reason=not-a-number`, the status says
+`D10 was not changed: "12O.50" is not a number.`, bytes identical. Mutant `text-into-number` (the old exemption back) must turn H4 FAIL.
+**RESULT (2026-11-28):** bim-ootb #3516. `§EDSHEET-CHECK case=H4 key=number-cell-takes-number OK`, `§EDSHEET-VERDICT PASS judged=56 failed=0`; with the mutant
+`text-into-number` the page writes `new="12O.50"` and H4 is FAIL. Also the same day: #3515 plain words (no "slice B" / "in this cut" / "phase P7" in any message
+the page shows; W-PDF-WRITE W14 `plain-words`, 15 found before, 0 after, 78 judged) and the guide rewritten for the one-page editor and the ERP print
+(bim-compiler #1390, live): FILM v2's third prerequisite is met. Guide corrected after the film builder's check: the sample's total is `SUM(D6:D26)`.
