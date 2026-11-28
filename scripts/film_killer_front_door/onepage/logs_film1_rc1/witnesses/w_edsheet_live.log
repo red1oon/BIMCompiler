@@ -1,0 +1,103 @@
+§EDSHEET-SITE LIVE https://red1oon.github.io/bim-ootb/pdf/ poppler=true ghostscript=true
+  §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=30 heapMB=6
+  §EDSHEET-CHECK case=H1 key=writable-covered OK rule="every writable run of page 1 (139 by the engine's own lockOf) lies inside a writable target on the page"
+  §EDSHEET-CHECK case=H1 key=locked-not-offered OK rule="no locked run (46) lies inside a writable target"
+  §EDSHEET-CHECK case=H1 key=locked-say-why OK rule="every locked target carries its reason in words (46 locked targets)"
+  §EDSHEET-CHECK case=H1 key=tap-says-why OK rule="a click on a Thai run says why it is locked, in words ("Locked: Thai text ...")"
+  §EDSHEET-CHECK case=E3 key=marks-at-open OK rule="at open every total the reader found is marked on the page and adds up (4 marks)"
+  §EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old="498.09" new="499.09" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74939 edits=1
+  §PDFWR-HISTORY entries=1 ops=144 genesis=true page=1 | §PDFWR-HISTORY entries=2 ops=1 cell=D10 before=498.09 after=499.09 typedOverFormula=false actor=you sheet=Report
+  §EDSHEET-CHECK case=E3 key=edit-applies OK rule="D10 498.09 -> 499.09 typed on the page: §EDSHEET-EDIT ok=true"
+  §EDSHEET-CHECK case=E3 key=total-recomputed OK rule="D28 is marked "does not add up": rows sum 40393.44 against the printed 40,392.44, gap 1.00"
+  §EDSHEET-CHECK case=E3 key=one-entry OK rule="the edit is ONE history entry after the genesis (entries 0 -> 2)"
+  §EDSHEET-CHECK case=E3 key=total-formula OK rule="a click on the total D28 says its formula and lights its rows (the reader found SUM(D6:D26): 21 rows; 21 lit)"
+  §EDSHEET-CHECK case=E3 key=drag-sum OK rule="a mouse drag over D6..D9 gives their sum and count (§EDSHEET-SELECT count=4 sum=0)"
+  §EDSHEET-CHECK case=E3 key=consistent-adds-up OK rule="after the consistent four every mark adds up again (4 marks) and the status says it adds up"
+  §EDSHEET-CHECK case=E3 key=entry-per-edit OK rule="five edits = five entries after the genesis (entries=6)"
+  §EDSHEET-EDIT id=cB10 cell=B10 kind=cell ok=true old="Accounts Receivable - Trade" new="Accounts Receivable" font=LiberationSans sub=none verdict=ADDS_UP entries=7 bytes=74899 edits=6
+  §EDSHEET-CHECK case=H2 key=text-edit OK rule="a TEXT cell (B10, an account name) changed on the page: §EDSHEET-EDIT ok=true new="Accounts Receivable" sub=none"
+  §EDSHEET-EDIT id=r1 cell=A1 kind=run ok=true old="(Trial Balance)" new="(Trial 2003)" font=LiberationSans-Bold sub=none verdict=ADDS_UP entries=8 bytes=74881 edits=7
+  §EDSHEET-FONT cell=B12 page=1 from=LiberationSans to=Helvetica standard=true why="no face of LiberationSans in this file holds them; closest standard PDF font: described as sans-serif, old text width 1.00 of the original"
+  §EDSHEET-EDIT id=cB12 cell=B12 kind=cell ok=true old="Product asset" new="Quiz Zebra" font=LiberationSans sub=LiberationSans>Helvetica(standard) verdict=ADDS_UP entries=9 bytes=75015 edits=8
+  §EDSHEET-EXPORT bytes=77953 edits=8 substituted=1 list=["B12:LiberationSans>Helvetica"]
+  §EDSHEET-CHECK case=H2 key=same-addresses OK rule="the edited PDF re-read by our reader: the same 144 cell addresses"
+  §EDSHEET-CHECK case=H2 key=run-in-mixed-cell OK rule="in A1 (Thai locked + a Latin run) the Latin run alone is offered and edited: §EDSHEET-EDIT kind=run ok=true new="(Trial 2003)" (no wider than the old run: the title already overflows its clip, a wider text is refused does-not-fit); A1 re-reads with it"
+  §EDSHEET-CHECK case=H2 key=new-text-read OK rule="our reader reads the new texts at their cells (B10, B12, D10, F10, D28, F28) and every other cell unchanged"
+  §EDSHEET-CHECK case=H2 key=same-boxes OK rule="the boxes stay: B10 left edge moved 0.000 pt, D10 right edge 0.000 pt (both <= 0.01)"
+  §EDSHEET-CHECK case=H2 key=adds-up OK rule="the re-read verdict is ADDS_UP (the consistent edits)"
+  §EDSHEET-CHECK case=H2 key=poppler-new OK rule="poppler (pdftotext -raw) reads "12110 Accounts Receivable 520.07 500.09" and "Quiz Zebra"; "Receivable - Trade" 0 times, "498.09" 0 times"
+  §EDSHEET-CHECK case=H2 key=poppler-box OK rule="poppler -bbox: "Quiz" starts where "Product" started (|dx| <= 0.05 pt)"
+  §EDSHEET-CHECK case=H2 key=pdfinfo OK rule="pdfinfo on the downloaded file: exit 0, no message, 1 page"
+  §EDSHEET-CHECK case=H5 key=logged OK rule="B12 "Quiz Zebra": LiberationSans has no Q, z, Z -> the closest standard font, logged §EDSHEET-FONT from=LiberationSans to=Helvetica standard=true with why"
+  §EDSHEET-CHECK case=H5 key=red-box OK rule="a red box on the page says "font not same: LiberationSans → Helvetica""
+  §EDSHEET-CHECK case=H5 key=font-in-file OK rule="the edited PDF holds the added standard Helvetica (pdffonts)"
+  §EDSHEET-CHECK case=H5 key=not-in-pdf OK rule="the red box is NOT in the exported PDF: no "font not same" text (poppler), the page stream draws the same number of rectangles (146 -> 146) and stroke colours (0 -> 0)"
+  §EDSHEET-CHECK case=H5 key=export-lists OK rule="the export lists the substitution (§EDSHEET-EXPORT substituted=1 list=["B12:LiberationSans>Helvetica"])"
+  §EDSHEET-CHECK case=H7 key=accept OK rule="Accept removes the red box (§EDSHEET-ACCEPT redBoxes=0) and the substitution stays: "Quiz Zebra" is still drawn in Helvetica"
+  §EDSHEET-CHECK case=H3 key=objects OK rule="every object not holding an edited run is byte-identical: changed = the page content stream (5) + the ONE font dictionary that names the added Helvetica (6); added = that font (32); nothing else (31 objects)"
+  §EDSHEET-RASTER {"same":true,"w":681,"h":527,"inside":696,"outside":0,"firstOut":null} boxes=8
+  §EDSHEET-CHECK case=H3 key=raster OK rule="poppler raster (72 dpi): pixels changed inside the 8 edited boxes (> 0), 0 outside them"
+  §EDSHEET-CHECK case=H4 key=thai-refused OK rule="Thai typed into B11 is REFUSED by name (script-not-supported), said in words, the PDF bytes unchanged"
+  §EDSHEET-CHECK case=H4 key=no-font-refused OK rule="a character no font here can show ("→": not in the subset, not in WinAnsi) is REFUSED glyph-missing naming it, bytes unchanged"
+  §EDSHEET-CHECK case=H4 key=number-cell-takes-number OK rule=""12O.50" (a letter O) typed into the number cell D10 on the page is REFUSED not-a-number, said in words, the PDF bytes unchanged (§21)"
+  §EDSHEET-CHECK case=E5 key=same-cells OK rule="the .xlsx holds every cell the edited PDF re-reads to (144), same values"
+  §EDSHEET-CHECK case=E5 key=sum-formulas OK rule="every total (C28,D28,E28,F28) carries its SUM formula in the .xlsx"
+  §EDSHEET-CHECK case=E5 key=history OK rule="the Excel menu's own reader (host_shim.js) says the history is OK with the page's 9 entries"
+  §EDSHEET-CHECK case=H6 key=undo-original OK rule="Ctrl+Z: §EDSHEET-UNDO; the PDF is the original again: byte-identical; B11 reads "Intercompany Due From""
+  §EDSHEET-CHECK case=H6 key=redo OK rule="Redo (button): the edit is back, bytes equal the edited bytes, B11 reads "Intercompany Due""
+  §EDSHEET-CHECK case=H6 key=history OK rule="the history is genesis, edit, undo, redo, undo (actors ["report-reader","you","you (undo)","you (redo)","you (undo)"]), SheetHistory.verify ok, the last undo sets B11 back to "Intercompany Due From""
+  §EDSHEET-CHECK case=H6 key=export-after-undo OK rule="the PDF downloaded after the undo: page content and fonts byte-identical to the original (0 touched), its history (5 entries) verifies; the only objects that differ hold the history (2 changed, 2 added)"
+  §EDSHEET-UNDO-MEM steps=3 withBytes=1 heldMB=0.07 budgetMB=0.07 dropped=1 heapMB=12
+  §PDFED-REOPEN page=1 pagesRead=1 of=1 ms=170
+  §EDSHEET-CHECK case=H8 key=bounded OK rule="with room for one earlier copy, three edits leave 3 steps on record and 1 with its bytes (the newest): [false,false,true]"
+  §EDSHEET-CHECK case=H8 key=reopen-cost-said OK rule="each edit says what its reopen cost (§PDFED-REOPEN pagesRead=1 of=1)"
+  §EDSHEET-CHECK case=H8 key=newest-undone-then-stops OK rule="the newest step undoes byte-identically; then Undo is disabled, a further undo is refused in words ("Undo stops here ...") and the bytes stay"
+  §EDSHEET-CHECK case=H8 key=redo-after OK rule="Redo brings the third edit back byte-identically"
+  §EDSHEET-CHECK case=H8 key=drag-left-the-page OK rule="a mouse drag that leaves the page: the box was there (1), is gone after (0), nothing summed (0); the same drag kept inside sums 4 cells"
+  §EDSHEET-CHECK case=H9 key=overlapping-opens OK rule="a 12-page file and a 1-page file opened without waiting: name, bytes, document and page count are all the LAST file's (1 page)"
+  §EDSHEET-CHECK case=H9 key=failed-open-dress OK rule="after a good file, a file that is not a PDF: the page is no longer in its "open" dress and the sample button is back"
+  §PDFED-RELAYOUT width=580->366 phone=true page=1 pages=12
+  §EDSHEET-CHECK case=H9 key=phone-turned OK rule="the 12-page report, 844 px wide then 390: at most 6 of 12 pages drawn (3), no page wider than the window (366 of 390 px), the edit layer still on page 1"
+  §EDSHEET-EDIT id=r32 cell=A33 kind=run ok=true old="TOTAL" new="TOTA" font=LiberationSans-Bold sub=none verdict=INCONCLUSIVE entries=1 bytes=54235 edits=1
+  §PDFXLSX-SHEETS page="Report" alsoFromHistory=["_door_text:1"] historySheets=2
+  §SHIST-PAGE-BIND state=intact entries=2 cells=37 pending=0
+  §EDSHEET-CHECK case=H9 key=prose-no-phantom OK rule=""TOTAL" (outside the table of 36 cells) edited on the page, Download .xlsx, opened on Sheet history: verified, state=intact, 0 changes nobody made"
+  §EDSHEET-BLANK frames=189 edit: notShownMs=0 undo: 0 redo: 0 states={"shown":189} after: {"canvases":1,"stale":false,"drawn":"1","ink":0.0586}
+  §EDSHEET-CHECK case=H11 key=population OK rule="the page was watched every frame through an edit, an undo and a redo (187 frames, 100 or more)"
+  §EDSHEET-CHECK case=H11 key=never-blank OK rule="in no frame is page 1 without a canvas or showing a canvas not yet drawn: edit 0, undo 0, redo 0 such frames"
+  §EDSHEET-CHECK case=H11 key=one-fresh-canvas-after OK rule="afterwards page 1 holds ONE canvas, not a stale one, drawn, with ink on it (0.0586)"
+  §EDSHEET-LAYER page=1 runs=158 writableRuns=139 lockedRuns=19 cells=144 cellTargets=133 runTargets=6 locked=20 images=1 reasons={"script-not-supported":19,"image":1} file=writable forms=1 table=ADDS_UP redBoxes=0 ms=15 heapMB=18
+  §EDSHEET-CHECK case=H1 key=picture-locked OK rule="on the picture page the picture is a LOCKED target and a click says why ("Locked: a picture ...")"
+  §EDSHEET-CHECK case=H3 key=picture-identical OK rule="after two edits on the picture page: every image stream byte-identical (1 image object(s)), only the page content stream changed (5), nothing added"
+  §EDSHEET-RASTER picture {"same":true,"w":681,"h":527,"inside":149,"outside":0,"firstOut":null}
+  §EDSHEET-CHECK case=H3 key=picture-raster OK rule="poppler raster of the picture page: 0 pixels changed outside the 2 edited boxes (the picture included)"
+  §EDSHEET-LAYER page=1 runs=16 writableRuns=16 lockedRuns=0 cells=0 cellTargets=0 runTargets=16 locked=0 images=0 reasons={} file=writable forms=0 table=INCONCLUSIVE redBoxes=0 ms=4 heapMB=14
+  §EDSHEET-EDIT id=r4 cell=A5 kind=run ok=true old="Date: March 2026" new="Date: April 2026" font=LiberationSans sub=none verdict=INCONCLUSIVE entries=1 bytes=183869 edits=1
+  §PDFWR-HISTORY entries=1 ops=1 cell=A5 before= after=Date: April 2026 typedOverFormula=false actor=you sheet=_door_text
+  §EDSHEET-CHECK case=H2 key=one-byte-font OK rule="the report (TrueType WinAnsi fonts, no table, 16 writable runs on page 1): "Date: March 2026" -> April; poppler reads "April 2026", not "March 2026", on page 1; the history records it under _door_text"
+  §EDSHEET-CHECK case=H3 key=report-objects OK rule="on the 12-page report (734 objects) only page 1's content stream changed (+ a font holder if a standard font was added): changed=2 added=0"
+  §EDSHEET-PHONE layerMs=510 §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=71 heapMB=6
+  §EDSHEET-CHECK case=E7 key=fits OK rule="at 390 px the page with its edit layer fits the width (document 390 px, page 366 px) and the toolbar stays <= 100 px (99)"
+  §EDSHEET-CHECK case=E7 key=tap-opens OK rule="a tap on D10 opens its editor in place, the page does not scroll (scrollY 0 -> 0), the field is on screen, 16px text"
+  §EDSHEET-CHECK case=E7 key=edit-on-phone OK rule="typed and Enter on the phone: §EDSHEET-EDIT ok=true new="499.09""
+  §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=15 heapMB=10
+  §EDSHEET-CHECK case=H10 key=opens-writable OK rule="a converted trial balance (2 object streams, 22 packed objects, xref stream: 1, tables: 0) opens with §EDSHEET-LAYER file=writable and its writable runs offered"
+  §EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old="498.09" new="499.09" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=73789 edits=1
+  §EDSHEET-CHECK case=H10 key=edit-applies OK rule="D10 498.09 -> 499.09 typed on the page: §EDSHEET-EDIT ok=true; the saved bytes keep ONE xref stream (no table, no /Prev), every offset and /Length exact in the witness's own reader (22 type-2 entries kept), re-read D10 = 499.09, pdfinfo exit 0 and silent"
+  §EDSHEET-CHECK case=H10 key=undo-identical OK rule="Undo gives the converted file back byte for byte (73859 bytes) and the edited copy differs from it"
+§EDSHEET-COST layerBuilds=36 layerMsMax=31 layerHeapMB=17 witnessHeapMB=20
+§EDSHEET-H1 PASS judged=5 failed=0 writableRuns=139 lockedRuns=46 writableTargets=139 lockedTargets=46 uncovered=0 wronglyOffered=0
+§EDSHEET-E3 PASS judged=8 failed=0 D28 gap=1 computed=40393.44 lit=21 entries=6 marksOk=4/4
+§EDSHEET-H2 PASS judged=10 failed=0 cells=144 B10dx=0.000 D10dr=0.000 verdict=ADDS_UP
+§EDSHEET-H3 PASS judged=5 failed=0 changed=5,6 added=32 of 31 objects; raster inside=696 outside=0
+§EDSHEET-H4 PASS judged=3 failed=0 thai:script-not-supported typed="รวม" me · arrow:glyph-missing typed="Due
+§EDSHEET-H5 PASS judged=5 failed=0 cell=B12 page=1 from=LiberationSans to=Helvetica standard=true why="no face of LiberationSans in this file holds them; closest standard PDF font: described as sans-serif, old text width 1.00 of the original"
+§EDSHEET-H6 PASS judged=4 failed=0 undo=byte-identical redo=byte-identical entries=5 verify=true actors=report-reader|you|you (undo)|you (redo)|you (undo)
+§EDSHEET-H7 PASS judged=1 failed=0 key=u8 cell=B12 font=Helvetica redBoxes=0
+§EDSHEET-H8 PASS judged=5 failed=0 steps=3 withBytes=1 heldMB=0.07 budgetMB=0.07 dropped=1 · stop=true · dragOutside box=0
+§EDSHEET-H9 PASS judged=4 failed=0 opens=small1.pdf/1p · turned alive=3 widest=366/390 · prose 0 pending
+§EDSHEET-H11 PASS judged=3 failed=0 frames=187 notShown=0 ink=0.0586
+§EDSHEET-E5 PASS judged=3 failed=0 cells=144 sums=4 history=OK/9
+§EDSHEET-E7 PASS judged=3 failed=0 layerMs=510 doc=390px header=99px scrolled=0 input=16px
+§EDSHEET-H10 PASS judged=3 failed=0 objStreams=2 packed=22 editedBytes=73789 type2Kept=22 xrefStreams=1
+§EDSHEET-VERDICT PASS judged=62 failed=0

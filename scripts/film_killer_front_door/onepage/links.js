@@ -3,7 +3,7 @@
 const fs = require('fs'), path = require('path'), cp = require('child_process'), OD = process.env.OUTD || 'out';
 const L = [
   { id: 'pdf', url: 'https://red1oon.github.io/bim-ootb/pdf/', shown: 'red1oon.github.io/bim-ootb/pdf' },
-  { id: 'fileit', url: 'https://red1oon.github.io/bim-ootb/file-it/', shown: 'red1oon.github.io/bim-ootb/file-it' },
+  ...(process.env.FILM === '1' ? [{ id: 'history', url: 'https://red1oon.github.io/bim-ootb/history/', shown: 'red1oon.github.io/bim-ootb/history' }] : [{ id: 'fileit', url: 'https://red1oon.github.io/bim-ootb/file-it/', shown: 'red1oon.github.io/bim-ootb/file-it' }]),
   // the guide is linked only if it answers 200, carries the anchor of the section the film shows, and its text covers the one-page editor and the ERP report print
   { id: 'guide', url: 'https://red1oon.github.io/BIMCompiler/PdfPageGuide/', anchor: '2-pdf-change-text-or-a-number-right-on-the-page', needs: /font not same[\s\S]*A report printed by the ERP/, shown: 'red1oon.github.io/BIMCompiler/PdfPageGuide' }
 ], out = { links: [], dropped: [] };

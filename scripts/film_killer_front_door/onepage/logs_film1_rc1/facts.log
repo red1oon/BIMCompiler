@@ -1,0 +1,319 @@
+§FACTS LIVE_EQ_MAIN start (erp overlay files are minified on the site: markers {"file_it_draft":true,"report_pill":true,"ninja_pdf":true}) ootb=ccdd4b2c files=7 differ=[] at=2026-11-28T13:17:35.190Z equal
+§FACTS §FILM_BANNER_MADE {"maker":"make_letterhead.py (PIL), generated at build time, not committed","pixels":[1827,216],"pointsOnPage":[609,72],"pdfimages":{"images":1,"width":1827,"height":216,"type":"image","color":"rgb"},"pageSize":"681 x 606.5 pts"}
+§FACTS INPUTS {"picture":"a letterhead banner (GardenWorld, 1827 x 216 pixels, 609 x 72 pt) generated for this film and drawn above the corpus trial balance by ghostscript","pictureExit":0,"longExit":0,"longPages":2400,"longBytes":19636050,"longSource":"the 12-page corpus report joined 200 times (pdfunite)"}
+  PG[pdf] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[pdf] §PDFED-OFFLINE ready=true
+§FACTS shot b1_blank a browser with nothing open
+§FACTS b1 the empty page: {"drop":["Open a PDF, or drop one here.","Change its text right on the page: tables add up as you type.","Pictures and fonts that cannot be written stay exactly as they are.","No PDF to hand? Press Try a sample report."],"openLabel":"Open a PDF","sampleLabel":"Try a sample report","q":"Find text"} | page says "Nothing is uploaded: the file stays on this device."
+§FACTS shot b1_empty the PDF page, empty: Open a PDF, or drop one here. clip=0,0,1500,419
+§FACTS b1 pressed Open a PDF and chose {"name":"trial_balance_th.pdf","bytes":74945}
+  PG[pdf] §PDFED-LAYOUT pages=1 observedAgainst=window
+  PG[pdf] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=1 releases=0 heapMB=5
+  PG[pdf] §PDFED-FIRST page=1 drawn=true ms=222 pages=1 canvasesAlive=1
+  PG[pdf] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[pdf] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[pdf] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=5 reason="4 totals agree with their rows"
+  PG[pdf] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=24 heapMB=7
+  PG[pdf] §PDFED-OPEN ok=true file="trial_balance_th.pdf" bytes=74945 pages=1 chars=1017 outline=0 ms=261
+§FACTS b1 open: §PDFED-OPEN ok=true file="trial_balance_th.pdf" bytes=74945 pages=1 chars=1017 outline=0 ms=261 | §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=5 reason="4 totals agree with their rows" | §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=24 heapMB=7 | page says "trial_balance_th.pdf: 1 page"
+§FACTS §FILM_INK still=b1_full page=1 drawn=true ink=0.04301 ref=0.04301 picture_ink=0.02702 picture_ref=0.02702 ok=true waitedMs=817
+§FACTS shot b1_full the whole page as it loads: trial_balance_th.pdf: 1 page clip=0,0,1500,940
+§FACTS §FILM_INK still=b1_open page=1 drawn=true ink=0.04301 ref=0.04301 picture_ink=0.03821 picture_ref=0.03821 ok=true waitedMs=551
+§FACTS shot b1_open the report, zoomed to the page: trial_balance_th.pdf: 1 page clip=320,63,1100,850
+  PG[pdf2a] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[pdf2a] §PDFED-OFFLINE ready=true
+  PG[pdf2a] §PDFED-LAYOUT pages=1 observedAgainst=window
+  PG[pdf2a] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=1 releases=0 heapMB=5
+  PG[pdf2a] §PDFED-FIRST page=1 drawn=true ms=320 pages=1 canvasesAlive=1
+  PG[pdf2a] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[pdf2a] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[pdf2a] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=4 reason="4 totals agree with their rows"
+  PG[pdf2a] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=29 heapMB=6
+  PG[pdf2a] §PDFED-OPEN ok=true file="trial_balance_th.pdf" bytes=74945 pages=1 chars=1017 outline=0 ms=371
+  PG[pdf2a] §EDSHEET-EDITOR id=cD10 cell=D10 kind=cell windowScrolled=0
+  PG[pdf2a] §PDFWR-HISTORY entries=1 ops=144 genesis=true page=1
+  PG[pdf2a] §PDFHIST-STATE entries=1 verified=true carried=none restarted=false text="History: 1 entry, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[pdf2a] §PDF_WRITE ok=true edits=1 applied=1 refused=0 bytesIn=74945 bytesOut=74939 ms=5 xref=table objStreams=0 decodedKB=0.0 cells=D10:"498.09"->"499.09"
+  PG[pdf2a] §PDFED-REOPEN page=1 pagesRead=1 of=1 ms=170
+  PG[pdf2a] §EDSHEET-UNDO-MEM steps=1 withBytes=1 heldMB=0.07 budgetMB=128.00 dropped=0 heapMB=7
+  PG[pdf2a] §SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=3 reason="D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16"
+  PG[pdf2a] §PDFHIST-STATE entries=2 verified=true carried=none restarted=false text="History: 2 entries, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[pdf2a] §PDFWR-HISTORY entries=2 ops=1 cell=D10 before=498.09 after=499.09 typedOverFormula=false actor=you sheet=Report
+  PG[pdf2a] §SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=1 reason="D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16"
+  PG[pdf2a] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=DOES_NOT_ADD_UP redBoxes=0 ms=23 heapMB=7
+  PG[pdf2a] §EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old="498.09" new="499.09" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74939 edits=1
+  PG[pdf2a] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=2 releases=1 heapMB=8
+§FACTS b2a red: §EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old="498.09" new="499.09" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74939 edits=1 | §SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=1 reason="D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16" | marks [{"cell":"D28","ok":false,"gap":1,"label":"rows 40,393.44, gap 1.00"},{"cell":"F10","ok":false,"gap":1,"label":"F = C + D - E gives 1,019.16, gap 1.00"}]
+§FACTS §FILM_INK still=b2a_red page=1 drawn=true ink=0.04301 ref=0.04301 picture_ink=0.05888 picture_ref=0.05888 ok=true waitedMs=851
+§FACTS shot b2a_red D10 499.09: D10 is now "499.09". Page 1 does NOT add up: D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16. Ctrl+Z undoes it. clip=320,278,1100,484
+  PG[pdf2a] §PDFHIST-STORY cell=D10 sheet="Report" values=2 text="#1 2026-11-28 13:17 report-reader: (empty) -> 498.09 | #2 2026-11-28 13:17 you: 498.09 -> 499.09"
+  PG[pdf2a] §EDSHEET-EDITOR id=cD10 cell=D10 kind=cell windowScrolled=0
+  PG[pdf2a] §PDFHIST-CONTINUE entries=2 page=1 recorded=nothing
+  PG[pdf2a] §PDF_WRITE ok=true edits=1 applied=1 refused=0 bytesIn=74939 bytesOut=74939 ms=4 xref=table objStreams=0 decodedKB=0.0 cells=D10:"499.09"->"498.09"
+  PG[pdf2a] §PDFED-REOPEN page=1 pagesRead=1 of=1 ms=161
+  PG[pdf2a] §EDSHEET-UNDO-MEM steps=2 withBytes=2 heldMB=0.14 budgetMB=128.00 dropped=0 heapMB=21
+  PG[pdf2a] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=2 reason="4 totals agree with their rows"
+  PG[pdf2a] §PDFHIST-STATE entries=3 verified=true carried=none restarted=false text="History: 3 entries, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[pdf2a] §PDFWR-HISTORY entries=3 ops=1 cell=D10 before=499.09 after=498.09 typedOverFormula=false actor=you sheet=Report
+  PG[pdf2a] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=1 reason="4 totals agree with their rows"
+  PG[pdf2a] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=37 heapMB=22
+  PG[pdf2a] §EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old="499.09" new="498.09" font=LiberationSans sub=none verdict=ADDS_UP entries=3 bytes=74939 edits=2
+  PG[pdf2a] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=3 releases=2 heapMB=22
+§FACTS b2a green: §EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old="499.09" new="498.09" font=LiberationSans sub=none verdict=ADDS_UP entries=3 bytes=74939 edits=2 | §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=1 reason="4 totals agree with their rows"
+§FACTS §FILM_INK still=b2a_green page=1 drawn=true ink=0.04301 ref=0.04301 picture_ink=0.05954 picture_ref=0.05888 ok=true waitedMs=560
+§FACTS shot b2a_green D10 498.09: D10 is now "498.09". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it. clip=320,278,1100,484
+  PG[pdf2b] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[pdf2b] §PDFED-OFFLINE ready=true
+  PG[pdf2b] §PDFED-LAYOUT pages=1 observedAgainst=window
+  PG[pdf2b] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=1 releases=0 heapMB=5
+  PG[pdf2b] §PDFED-FIRST page=1 drawn=true ms=238 pages=1 canvasesAlive=1
+  PG[pdf2b] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[pdf2b] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[pdf2b] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=4 reason="4 totals agree with their rows"
+  PG[pdf2b] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=23 heapMB=5
+  PG[pdf2b] §PDFED-OPEN ok=true file="trial_balance_th.pdf" bytes=74945 pages=1 chars=1017 outline=0 ms=273
+  PG[pdf2b] §EDSHEET-EDITOR id=cB10 cell=B10 kind=cell windowScrolled=0
+  PG[pdf2b] §PDFWR-HISTORY entries=1 ops=144 genesis=true page=1
+  PG[pdf2b] §PDFHIST-STATE entries=1 verified=true carried=none restarted=false text="History: 1 entry, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[pdf2b] §PDF_WRITE ok=true edits=1 applied=1 refused=0 bytesIn=74945 bytesOut=74907 ms=7 xref=table objStreams=0 decodedKB=0.0 cells=B10:"Accounts Receivable - Trade"->"Accounts Receivable"
+  PG[pdf2b] §PDFED-REOPEN page=1 pagesRead=1 of=1 ms=258
+  PG[pdf2b] §EDSHEET-UNDO-MEM steps=1 withBytes=1 heldMB=0.07 budgetMB=128.00 dropped=0 heapMB=6
+  PG[pdf2b] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=1 reason="4 totals agree with their rows"
+  PG[pdf2b] §PDFHIST-STATE entries=2 verified=true carried=none restarted=false text="History: 2 entries, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[pdf2b] §PDFWR-HISTORY entries=2 ops=1 cell=B10 before=Accounts Receivable - Trade after=Accounts Receivable typedOverFormula=false actor=you sheet=Report
+  PG[pdf2b] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=2 reason="4 totals agree with their rows"
+  PG[pdf2b] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=24 heapMB=7
+  PG[pdf2b] §EDSHEET-EDIT id=cB10 cell=B10 kind=cell ok=true old="Accounts Receivable - Trade" new="Accounts Receivable" font=LiberationSans sub=none verdict=ADDS_UP entries=2 bytes=74907 edits=1
+  PG[pdf2b] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=2 releases=1 heapMB=7
+§FACTS b2b word: §EDSHEET-EDIT id=cB10 cell=B10 kind=cell ok=true old="Accounts Receivable - Trade" new="Accounts Receivable" font=LiberationSans sub=none verdict=ADDS_UP entries=2 bytes=74907 edits=1
+§FACTS §FILM_INK still=b2b_word page=1 drawn=true ink=0.04288 ref=0.04288 picture_ink=0.05926 picture_ref=0.05926 ok=true waitedMs=815
+§FACTS shot b2b_word B10: B10 is now "Accounts Receivable". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it. clip=320,278,1100,484
+  PG[pdf2b] §PDFHIST-STORY cell=B12 sheet="Report" values=1 text="#1 2026-11-28 13:18 report-reader: (empty) -> Product asset"
+  PG[pdf2b] §EDSHEET-EDITOR id=cB12 cell=B12 kind=cell windowScrolled=0
+  PG[pdf2b] §PDFHIST-CONTINUE entries=2 page=1 recorded=nothing
+  PG[pdf2b] §PDFED-FONT-SUB cell=B12 page=1 from=LiberationSans to=Helvetica missing="QzZ" new="Quiz Zebra" stated=true
+  PG[pdf2b] §EDSHEET-FONT cell=B12 page=1 from=LiberationSans to=Helvetica standard=true why="no face of LiberationSans in this file holds them; closest standard PDF font: described as sans-serif, old text width 1.00 of the original"
+  PG[pdf2b] §PDF_WRITE-FONT-ADDED page=1 fonts=DoorStd1:Helvetica holder=6
+  PG[pdf2b] §PDF_WRITE ok=true edits=1 applied=1 refused=0 bytesIn=74907 bytesOut=75041 ms=6 xref=table objStreams=0 decodedKB=0.0 cells=B12:"Product asset"->"Quiz Zebra"
+  PG[pdf2b] §PDFED-REOPEN page=1 pagesRead=1 of=1 ms=159
+  PG[pdf2b] §EDSHEET-UNDO-MEM steps=2 withBytes=2 heldMB=0.14 budgetMB=128.00 dropped=0 heapMB=21
+  PG[pdf2b] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=2 reason="4 totals agree with their rows"
+  PG[pdf2b] §PDFHIST-STATE entries=3 verified=true carried=none restarted=false text="History: 3 entries, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[pdf2b] §PDFWR-HISTORY entries=3 ops=1 cell=B12 before=Product asset after=Quiz Zebra typedOverFormula=false actor=you sheet=Report
+  PG[pdf2b] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=1 reason="4 totals agree with their rows"
+  PG[pdf2b] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=1 ms=36 heapMB=22
+  PG[pdf2b] §EDSHEET-EDIT id=cB12 cell=B12 kind=cell ok=true old="Product asset" new="Quiz Zebra" font=LiberationSans sub=LiberationSans>Helvetica(standard) verdict=ADDS_UP entries=3 bytes=75041 edits=2
+  PG[pdf2b] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=3 releases=2 heapMB=22
+§FACTS b2b font: §EDSHEET-FONT cell=B12 page=1 from=LiberationSans to=Helvetica standard=true why="no face of LiberationSans in this file holds them; closest standard PDF font: described as sans-serif, old text width 1.00 of the original" | subs ["font not same: LiberationSans → Helvetica Accept"] | §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=1 ms=36 heapMB=22
+§FACTS §FILM_INK still=b2b_font page=1 drawn=true ink=0.04282 ref=0.04288 picture_ink=0.05796 picture_ref=0.05926 ok=true waitedMs=549
+§FACTS shot b2b_font B12 Quiz Zebra: B12 is now "Quiz Zebra", in Helvetica (font not same: LiberationSans has no "Q" "z" "Z"). Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it. clip=320,278,1100,484
+  PG[pdf2b] §PDFED-REOPEN page=1 pagesRead=1 of=1 ms=172
+  PG[pdf2b] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=1 reason="4 totals agree with their rows"
+  PG[pdf2b] §PDFHIST-STATE entries=4 verified=true carried=none restarted=false text="History: 4 entries, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[pdf2b] §PDFWR-HISTORY entries=4 ops=1 cell=B12 before=Quiz Zebra after=Product asset typedOverFormula=false actor=you (undo) sheet=Report
+  PG[pdf2b] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=1 reason="4 totals agree with their rows"
+  PG[pdf2b] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=21 heapMB=35
+  PG[pdf2b] §EDSHEET-UNDO cell=B12 text="Product asset" bytes=74907 undo=1 redo=1 entries=4 verdict=ADDS_UP
+  PG[pdf2b] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=4 releases=3 heapMB=35
+§FACTS b2b undo: §EDSHEET-UNDO cell=B12 text="Product asset" bytes=74907 undo=1 redo=1 entries=4 verdict=ADDS_UP | §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=21 heapMB=35
+§FACTS §FILM_INK still=b2b_undo page=1 drawn=true ink=0.04288 ref=0.04288 picture_ink=0.05928 picture_ref=0.05926 ok=true waitedMs=556
+§FACTS shot b2b_undo Ctrl+Z: B12 is "Product asset" again (undo). Page 1 adds up: 4 totals agree with their rows. clip=320,278,1100,484
+  PG[pic] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[pic] §PDFED-OFFLINE ready=true
+  PG[pic] §PDFED-LAYOUT pages=1 observedAgainst=window
+  PG[pic] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=1 releases=0 heapMB=5
+  PG[pic] §PDFED-FIRST page=1 drawn=true ms=248 pages=1 canvasesAlive=1
+  PG[pic] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[pic] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[pic] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=2 reason="4 totals agree with their rows"
+  PG[pic] §EDSHEET-LAYER page=1 runs=158 writableRuns=139 lockedRuns=19 cells=144 cellTargets=133 runTargets=6 locked=20 images=1 reasons={"script-not-supported":19,"image":1} file=writable forms=1 table=ADDS_UP redBoxes=0 ms=35 heapMB=6
+  PG[pic] §PDFED-OPEN ok=true file="report_with_letterhead.pdf" bytes=78165 pages=1 chars=1017 outline=0 ms=296
+§FACTS §FILM_BANNER_VALID pdfimages=1 size=1827x216 | reader: cells=144 verdict=ADDS_UP | edit layer: images=1 | banner targets=1 kind=image lock=image => ok=true
+§FACTS banner reference (the page first drawn): mean colour [61.9,92,84.6] box {"x":378.140625,"y":72.6875,"width":983.6875,"height":116.328125}
+§FACTS b3 open: §EDSHEET-LAYER page=1 runs=158 writableRuns=139 lockedRuns=19 cells=144 cellTargets=133 runTargets=6 locked=20 images=1 reasons={"script-not-supported":19,"image":1} file=writable forms=1 table=ADDS_UP redBoxes=0 ms=35 heapMB=6
+§FACTS §FILM_INK still=b3_open page=1 drawn=true ink=0.12599 ref=0.12599 picture_ink=0.03884 picture_ref=0.03884 ok=true waitedMs=551
+§FACTS §FILM_BANNER still=b3_open visible=true match=true png_match=true mean=[61.9,92,84.6] ref=[61.9,92,84.6] picture_mean=[61,92,84]
+§FACTS shot b3_open the report with a letterhead picture made for this film: report_with_letterhead.pdf: 1 page clip=320,63,1100,980
+  PG[pic] §EDSHEET-LOCKED id=m0 kind=image lock=image why="a picture: its pixels are kept exactly as they are (text inside a picture is pixels, not editable)"
+§FACTS b3 tap on the picture: §EDSHEET-LOCKED id=m0 kind=image lock=image why="a picture: its pixels are kept exactly as they are (text inside a picture is pixels, not editable)" | page says "Locked: a picture: its pixels are kept exactly as they are (text inside a picture is pixels, not editable)."
+§FACTS §FILM_INK still=b3_locked page=1 drawn=true ink=0.12599 ref=0.12599 picture_ink=0.03579 picture_ref=0.03579 ok=true waitedMs=574
+§FACTS §FILM_BANNER still=b3_locked visible=true match=true png_match=true mean=[61.9,92,84.6] ref=[61.9,92,84.6] picture_mean=[74,93,72]
+§FACTS shot b3_locked Locked: a picture: its pixels are kept exactly as they are (text inside a picture is pixels, not editable). clip=320,63,1100,501
+  PG[pic] §EDSHEET-EDITOR id=cB10 cell=B10 kind=cell windowScrolled=0
+  PG[pic] §PDFWR-HISTORY entries=1 ops=144 genesis=true page=1
+  PG[pic] §PDFHIST-STATE entries=1 verified=true carried=none restarted=false text="History: 1 entry, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[pic] §PDF_WRITE ok=true edits=1 applied=1 refused=0 bytesIn=78165 bytesOut=78199 ms=14 xref=table objStreams=0 decodedKB=0.0 cells=B10:"Accounts Receivable - Trade"->"Accounts Receivable"
+  PG[pic] §PDFED-REOPEN page=1 pagesRead=1 of=1 ms=181
+  PG[pic] §EDSHEET-UNDO-MEM steps=1 withBytes=1 heldMB=0.07 budgetMB=128.00 dropped=0 heapMB=57
+  PG[pic] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=2 reason="4 totals agree with their rows"
+  PG[pic] §PDFHIST-STATE entries=2 verified=true carried=none restarted=false text="History: 2 entries, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[pic] §PDFWR-HISTORY entries=2 ops=1 cell=B10 before=Accounts Receivable - Trade after=Accounts Receivable typedOverFormula=false actor=you sheet=Report
+  PG[pic] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=2 reason="4 totals agree with their rows"
+  PG[pic] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=2 releases=1 heapMB=59
+  PG[pic] §EDSHEET-LAYER page=1 runs=158 writableRuns=139 lockedRuns=19 cells=144 cellTargets=133 runTargets=6 locked=20 images=1 reasons={"script-not-supported":19,"image":1} file=writable forms=1 table=ADDS_UP redBoxes=0 ms=74 heapMB=5
+  PG[pic] §EDSHEET-EDIT id=cB10 cell=B10 kind=cell ok=true old="Accounts Receivable - Trade" new="Accounts Receivable" font=LiberationSans sub=none verdict=ADDS_UP entries=2 bytes=78199 edits=1
+§FACTS b3 edit: §EDSHEET-EDIT id=cB10 cell=B10 kind=cell ok=true old="Accounts Receivable - Trade" new="Accounts Receivable" font=LiberationSans sub=none verdict=ADDS_UP entries=2 bytes=78199 edits=1
+§FACTS §FILM_INK still=b3_edit page=1 drawn=true ink=0.12589 ref=0.12599 picture_ink=0.0354 picture_ref=0.03579 ok=true waitedMs=565
+§FACTS §FILM_BANNER still=b3_edit visible=true match=true png_match=true mean=[61.9,92,84.6] ref=[61.9,92,84.6] picture_mean=[61,92,84]
+§FACTS shot b3_edit B10 Accounts Receivable on the letterhead report: B10 is now "Accounts Receivable". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it. clip=320,63,1100,501
+  PG[pic] §PDF_EMBED ok=true name=_door_history.jsonl bytesIn=78199 bytesOut=80339 data=15282 stored=1751 replaced=false
+  PG[pic] §PDFHIST-SAVE ok=true entries=2 lineBytes=15282 bytesIn=78199 bytesOut=80339 added=2140 replaced=false
+  PG[pic] §PDFWR-DOWNLOAD file="report_with_letterhead_edited.pdf" bytes=80339 edits=1 historyEntries=2 verdict= historyInFile=true
+  PG[pic] §EDSHEET-EXPORT bytes=80339 edits=1 substituted=0 list=[]
+§FACTS §FILM_H3 objects=40 identical=38 changed=1:catalog,5:page-content added=41,42 removed=0 imageObjects=1 imageBytesIdentical=true rasterInside=116 rasterOutside=0 | §PDFWR-DOWNLOAD file="report_with_letterhead_edited.pdf" bytes=80339 edits=1 historyEntries=2 verdict= historyInFile=true | pdfdetach: ["1: _door_history.jsonl"]
+§FACTS §FILM_INK still=b3_dl page=1 drawn=true ink=0.12589 ref=0.12599 picture_ink=0.03553 picture_ref=0.03579 ok=true waitedMs=560
+§FACTS §FILM_BANNER still=b3_dl visible=true match=true png_match=true mean=[61.9,92,84.6] ref=[61.9,92,84.6] picture_mean=[61,92,84]
+§FACTS shot b3_dl Download PDF: B10 is now "Accounts Receivable". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it. clip=320,63,1100,501
+  PG[pic] §PDFXLSX-FORMULAS aligned=0 from=history
+  PG[pic] §PDFXLSX-SHEETS page="Report" alsoFromHistory=[] historySheets=1
+  PG[pic] §PDFHIST-XLSX entries=2 sheet="_door_history" rows=2 longestLine=14586 cellLimit=32767
+  PG[pic] §PDFED-XLSX file="report_with_letterhead_page1.xlsx" bytes=32555 cells=144 verdict=ADDS_UP
+§FACTS b4 xlsx: §PDFED-XLSX file="report_with_letterhead_page1.xlsx" bytes=32555 cells=144 verdict=ADDS_UP | §PDFHIST-XLSX entries=2 sheet="_door_history" rows=2 longestLine=14586 cellLimit=32767 | sheets ["Report","_door_source","_door_history"] hidden [0,1,2] | C28=SUM(C6:C26) ; D28=SUM(D6:D26) ; E28=SUM(E6:E26) ; F28=SUM(F6:F26) | _door_text present=false
+§FACTS §FILM_INK still=b4_xlsx page=1 drawn=true ink=0.12589 ref=0.12599 picture_ink=0 picture_ref=null ok=true waitedMs=557
+§FACTS shot b4_xlsx the press on Download .xlsx (the page shows nothing else when a file is downloaded; its own log line is in the strip): B10 is now "Accounts Receivable". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it. clip=420,0,1080,303
+  PG[history] §SHIST-PAGE-COST requests=6 bytes=96327 readyMs=61 heapMB=3 kernelLoaded=false scripts=5
+§FACTS b4 the empty Sheet history page (reached by its short address /history/): {"openLabel":"Open a workbook (.xlsx)","opened":"No workbook opened yet.","status":"Open a workbook to see its history.","url":"/bim-ootb/erp/sheet_addin/history.html"}
+§FACTS shot h0_page the Sheet history page, empty
+  PG[history] §SHIST-PAGE-BIND state=intact entries=2 cells=144 pending=0
+  PG[history] §SHIST-PAGE-OPEN name=pic_report_with_letterhead_page1.xlsx bytes=32555 sheets=1 cells=144 state=intact ms=27 heapMB=4
+§FACTS b4 on Sheet history: §SHIST-PAGE-OPEN name=pic_report_with_letterhead_page1.xlsx bytes=32555 sheets=1 cells=144 state=intact ms=27 heapMB=4 | §SHIST-PAGE-BIND state=intact entries=2 cells=144 pending=0 | page says "History: 2 entries, verified. The sheet matches the last stamp (you, 2026-11-28 13:18 UTC): nothing has changed since." state=intact
+§FACTS shot h1_xlsx the .xlsx opened on Sheet history: History: 2 entries, verified. The sheet matches the last stamp (you, 2026-11-28 13:18 UTC): nothing has changed since.
+  PG[pic] §PDFHIST-STORY cell=B10 sheet="Report" values=2 text="#1 2026-11-28 13:18 report-reader: (empty) -> Accounts Receivable - Trade | #2 2026-11-28 13:18 you: Accounts Receivable - Trade -> Accounts Receivable"
+§FACTS b5 story: §PDFHIST-STORY cell=B10 sheet="Report" values=2 text="#1 2026-11-28 13:18 report-reader: (empty) -> Accounts Receivable - Trade | #2 2026-11-28 13:18 you: Accounts Receivable - Trade -> Accounts Receivable"
+  PG[pic] §PDFED-COST why=release-p1 pages=1 canvasesAlive=0 renders=2 releases=2 heapMB=72
+  PG[pic] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=3 releases=2 heapMB=73
+§FACTS shot b5_story the story of B10 clip=0,176,250,253
+  PG[offline] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[offline] §PDFED-OFFLINE ready=true
+§FACTS §FILM_FIRSTVISIT bytes=261284 requests=11 msToUsable=216 bytesAfterPrecache=261284 serviceWorkerActive=true | §PDFED-OFFLINE ready=true
+  PG[offline] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[offline] §PDFED-OFFLINE ready=true
+  PG[offline] §PDFED-LAYOUT pages=1 observedAgainst=window
+  PG[offline] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=1 releases=0 heapMB=6
+  PG[offline] §PDFED-FIRST page=1 drawn=true ms=225 pages=1 canvasesAlive=1
+  PG[offline] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[offline] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[offline] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=5 reason="4 totals agree with their rows"
+  PG[offline] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=34 heapMB=7
+  PG[offline] §PDFED-OPEN ok=true file="trial_balance_th.pdf" bytes=74945 pages=1 chars=1017 outline=0 ms=285
+  PG[offline] §EDSHEET-EDITOR id=cD10 cell=D10 kind=cell windowScrolled=0
+  PG[offline] §PDFWR-HISTORY entries=1 ops=144 genesis=true page=1
+  PG[offline] §PDFHIST-STATE entries=1 verified=true carried=none restarted=false text="History: 1 entry, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[offline] §PDF_WRITE ok=true edits=1 applied=1 refused=0 bytesIn=74945 bytesOut=74939 ms=5 xref=table objStreams=0 decodedKB=0.0 cells=D10:"498.09"->"499.09"
+  PG[offline] §PDFED-REOPEN page=1 pagesRead=1 of=1 ms=165
+  PG[offline] §EDSHEET-UNDO-MEM steps=1 withBytes=1 heldMB=0.07 budgetMB=128.00 dropped=0 heapMB=7
+  PG[offline] §SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=2 reason="D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16"
+  PG[offline] §PDFHIST-STATE entries=2 verified=true carried=none restarted=false text="History: 2 entries, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[offline] §PDFWR-HISTORY entries=2 ops=1 cell=D10 before=498.09 after=499.09 typedOverFormula=false actor=you sheet=Report
+  PG[offline] §SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=1 reason="D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16"
+  PG[offline] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=DOES_NOT_ADD_UP redBoxes=0 ms=31 heapMB=9
+  PG[offline] §EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old="498.09" new="499.09" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74939 edits=1
+  PG[offline] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=2 releases=1 heapMB=10
+§FACTS §FILM_OFFLINE reloadOk=true openOk=true editOk=true requestsWhileOffline=13 failedWhileOffline=0
+  PG[phone] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[phone] §PDFED-LAYOUT pages=1 observedAgainst=window
+  PG[phone] §PDFED-OFFLINE ready=true
+  PG[phone] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=1 releases=0 heapMB=5
+  PG[phone] §PDFED-FIRST page=1 drawn=true ms=280 pages=1 canvasesAlive=1
+  PG[phone] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[phone] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[phone] §SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=14 reason="4 totals agree with their rows"
+  PG[phone] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=76 heapMB=6
+  PG[phone] §PDFED-OPEN ok=true file="trial_balance_th.pdf" bytes=74945 pages=1 chars=1017 outline=0 ms=374
+§FACTS §FILM_INK still=p0_trial page=1 drawn=true ink=0.06386 ref=0.06386 picture_ink=0.03138 picture_ref=0.03138 ok=true waitedMs=811
+§FACTS darkshare p0_trial 0.02521 retakes=0
+§FACTS shot p0_trial on an emulated phone: the report opened clip=0,0,390,389
+  PG[phone] §EDSHEET-EDITOR id=cD10 cell=D10 kind=cell windowScrolled=0
+  PG[phone] §PDFWR-HISTORY entries=1 ops=144 genesis=true page=1
+  PG[phone] §PDFHIST-STATE entries=1 verified=true carried=none restarted=false text="History: 1 entry, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[phone] §PDF_WRITE ok=true edits=1 applied=1 refused=0 bytesIn=74945 bytesOut=74939 ms=17 xref=table objStreams=0 decodedKB=0.0 cells=D10:"498.09"->"499.09"
+  PG[phone] §PDFED-REOPEN page=1 pagesRead=1 of=1 ms=169
+  PG[phone] §EDSHEET-UNDO-MEM steps=1 withBytes=1 heldMB=0.07 budgetMB=128.00 dropped=0 heapMB=15
+  PG[phone] §SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=6 reason="D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16"
+  PG[phone] §PDFHIST-STATE entries=2 verified=true carried=none restarted=false text="History: 2 entries, verified. It is kept inside the PDF and the .xlsx you download."
+  PG[phone] §PDFWR-HISTORY entries=2 ops=1 cell=D10 before=498.09 after=499.09 typedOverFormula=false actor=you sheet=Report
+  PG[phone] §SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=3 reason="D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16"
+  PG[phone] §PDFED-COST why=draw-p1 pages=1 canvasesAlive=1 renders=2 releases=1 heapMB=16
+  PG[phone] §EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={"script-not-supported":46} file=writable forms=0 table=DOES_NOT_ADD_UP redBoxes=0 ms=104 heapMB=15
+  PG[phone] §EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old="498.09" new="499.09" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74939 edits=1
+§FACTS phone tap edit: §EDSHEET-EDITOR id=cD10 cell=D10 kind=cell windowScrolled=0 | §EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old="498.09" new="499.09" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74939 edits=1 | docWidth=390
+§FACTS §FILM_INK still=p1_trial page=1 drawn=true ink=0.06385 ref=0.06386 picture_ink=0.03299 picture_ref=0.03138 ok=true waitedMs=556
+§FACTS darkshare p1_trial 0.03196 retakes=0
+§FACTS shot p1_trial on an emulated phone: D10 is now "499.09". Page 1 does NOT add up: D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16. Ctrl+Z undoes it. clip=0,0,390,389
+§FACTS quiet? before long-file run 1 loadavg1=5.77 waitedMs=70067 cpus=20
+  PG[phone] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[phone] §PDFED-OFFLINE ready=true
+  PG[phone] §PDFED-LAYOUT pages=2400 observedAgainst=window
+  PG[phone] §PDFED-COST why=draw-p1 pages=2400 canvasesAlive=1 renders=1 releases=0 heapMB=24
+  PG[phone] §PDFED-FIRST page=1 drawn=true ms=2231 pages=2400 canvasesAlive=2
+  PG[phone] §PDFED-COST why=draw-p2 pages=2400 canvasesAlive=2 renders=2 releases=0 heapMB=24
+  PG[phone] §PDFED-COST why=draw-p3 pages=2400 canvasesAlive=3 renders=3 releases=0 heapMB=24
+  PG[phone] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[phone] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[phone] §SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=12 lines=12 cols=0 cells=0 blankRows=0 edgeSplits=0 bandsMerged=0 boxesTrimmed=0 collisions=0 checks=0 ms=3 reason="no table found (fewer than 2 lines with 3 or more cells)"
+  PG[phone] §EDSHEET-LAYER page=1 runs=16 writableRuns=16 lockedRuns=0 cells=0 cellTargets=0 runTargets=16 locked=0 images=0 reasons={} file=writable forms=0 table=INCONCLUSIVE redBoxes=0 ms=667 heapMB=93
+  PG[phone] §PDFED-OPEN ok=true file="long_report_2400_pages.pdf" bytes=19636050 pages=2400 chars=3368400 outline=0 ms=10811
+§FACTS phone long file run 1: firstPagePaintedMs=2448 | §PDFED-FIRST page=1 drawn=true ms=2231 pages=2400 canvasesAlive=2 | §PDFED-OPEN ok=true  bytes=19636050 pages=2400 chars=3368400 outline=0 ms=10811 | canvases=3 | loadavg1=6.08 cpus=20
+§FACTS quiet? before long-file run 2 loadavg1=5.84 waitedMs=5005 cpus=20
+  PG[phone] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[phone] §PDFED-OFFLINE ready=true
+  PG[phone] §PDFED-LAYOUT pages=2400 observedAgainst=window
+  PG[phone] §PDFED-COST why=draw-p1 pages=2400 canvasesAlive=1 renders=1 releases=0 heapMB=24
+  PG[phone] §PDFED-FIRST page=1 drawn=true ms=2274 pages=2400 canvasesAlive=2
+  PG[phone] §PDFED-COST why=draw-p2 pages=2400 canvasesAlive=2 renders=2 releases=0 heapMB=24
+  PG[phone] §PDFED-COST why=draw-p3 pages=2400 canvasesAlive=3 renders=3 releases=0 heapMB=24
+  PG[phone] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[phone] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[phone] §SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=12 lines=12 cols=0 cells=0 blankRows=0 edgeSplits=0 bandsMerged=0 boxesTrimmed=0 collisions=0 checks=0 ms=3 reason="no table found (fewer than 2 lines with 3 or more cells)"
+  PG[phone] §EDSHEET-LAYER page=1 runs=16 writableRuns=16 lockedRuns=0 cells=0 cellTargets=0 runTargets=16 locked=0 images=0 reasons={} file=writable forms=0 table=INCONCLUSIVE redBoxes=0 ms=695 heapMB=93
+  PG[phone] §PDFED-OPEN ok=true file="long_report_2400_pages.pdf" bytes=19636050 pages=2400 chars=3368400 outline=0 ms=10753
+§FACTS phone long file run 2: firstPagePaintedMs=2403 | §PDFED-FIRST page=1 drawn=true ms=2274 pages=2400 canvasesAlive=2 | §PDFED-OPEN ok=true  bytes=19636050 pages=2400 chars=3368400 outline=0 ms=10753 | canvases=3 | loadavg1=6.23 cpus=20
+§FACTS quiet? before long-file run 3 loadavg1=5.95 waitedMs=10010 cpus=20
+  PG[phone] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[phone] §PDFED-OFFLINE ready=true
+  PG[phone] §PDFED-LAYOUT pages=2400 observedAgainst=window
+  PG[phone] §PDFED-COST why=draw-p1 pages=2400 canvasesAlive=1 renders=1 releases=0 heapMB=24
+  PG[phone] §PDFED-FIRST page=1 drawn=true ms=2222 pages=2400 canvasesAlive=2
+  PG[phone] §PDFED-COST why=draw-p2 pages=2400 canvasesAlive=2 renders=2 releases=0 heapMB=24
+  PG[phone] §PDFED-COST why=draw-p3 pages=2400 canvasesAlive=3 renders=3 releases=0 heapMB=24
+  PG[phone] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[phone] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[phone] §SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=12 lines=12 cols=0 cells=0 blankRows=0 edgeSplits=0 bandsMerged=0 boxesTrimmed=0 collisions=0 checks=0 ms=4 reason="no table found (fewer than 2 lines with 3 or more cells)"
+  PG[phone] §EDSHEET-LAYER page=1 runs=16 writableRuns=16 lockedRuns=0 cells=0 cellTargets=0 runTargets=16 locked=0 images=0 reasons={} file=writable forms=0 table=INCONCLUSIVE redBoxes=0 ms=657 heapMB=93
+  PG[phone] §PDFED-OPEN ok=true file="long_report_2400_pages.pdf" bytes=19636050 pages=2400 chars=3368400 outline=0 ms=11578
+§FACTS phone long file run 3: firstPagePaintedMs=2349 | §PDFED-FIRST page=1 drawn=true ms=2222 pages=2400 canvasesAlive=2 | §PDFED-OPEN ok=true  bytes=19636050 pages=2400 chars=3368400 outline=0 ms=11578 | canvases=3 | loadavg1=6.41 cpus=20
+§FACTS quiet? before long-file run 4 loadavg1=5.72 waitedMs=15015 cpus=20
+  PG[phone] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[phone] §PDFED-OFFLINE ready=true
+  PG[phone] §PDFED-LAYOUT pages=2400 observedAgainst=window
+  PG[phone] §PDFED-COST why=draw-p1 pages=2400 canvasesAlive=1 renders=1 releases=0 heapMB=24
+  PG[phone] §PDFED-FIRST page=1 drawn=true ms=2211 pages=2400 canvasesAlive=2
+  PG[phone] §PDFED-COST why=draw-p2 pages=2400 canvasesAlive=2 renders=2 releases=0 heapMB=24
+  PG[phone] §PDFED-COST why=draw-p3 pages=2400 canvasesAlive=3 renders=3 releases=0 heapMB=24
+  PG[phone] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[phone] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[phone] §SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=12 lines=12 cols=0 cells=0 blankRows=0 edgeSplits=0 bandsMerged=0 boxesTrimmed=0 collisions=0 checks=0 ms=3 reason="no table found (fewer than 2 lines with 3 or more cells)"
+  PG[phone] §EDSHEET-LAYER page=1 runs=16 writableRuns=16 lockedRuns=0 cells=0 cellTargets=0 runTargets=16 locked=0 images=0 reasons={} file=writable forms=0 table=INCONCLUSIVE redBoxes=0 ms=641 heapMB=93
+  PG[phone] §PDFED-OPEN ok=true file="long_report_2400_pages.pdf" bytes=19636050 pages=2400 chars=3368400 outline=0 ms=10601
+§FACTS phone long file run 4: firstPagePaintedMs=2357 | §PDFED-FIRST page=1 drawn=true ms=2211 pages=2400 canvasesAlive=2 | §PDFED-OPEN ok=true  bytes=19636050 pages=2400 chars=3368400 outline=0 ms=10601 | canvases=3 | loadavg1=6.13 cpus=20
+§FACTS quiet? before long-file run 5 loadavg1=5.86 waitedMs=10009 cpus=20
+  PG[phone] §PDFED-BOOT pdfjs=3.11.174 reader=function sheetjs=0.18.5 writer=function history=function inFile=function chunks=function
+  PG[phone] §PDFED-OFFLINE ready=true
+  PG[phone] §PDFED-LAYOUT pages=2400 observedAgainst=window
+  PG[phone] §PDFED-COST why=draw-p1 pages=2400 canvasesAlive=1 renders=1 releases=0 heapMB=24
+  PG[phone] §PDFED-FIRST page=1 drawn=true ms=1885 pages=2400 canvasesAlive=2
+  PG[phone] §PDFED-COST why=draw-p2 pages=2400 canvasesAlive=2 renders=2 releases=0 heapMB=24
+  PG[phone] §PDFED-COST why=draw-p3 pages=2400 canvasesAlive=3 renders=3 releases=0 heapMB=24
+  PG[phone] §PDFHIST-OPEN state=none entries=0 continued=false
+  PG[phone] §PDFHIST-STATE entries=0 verified=nothing-to-verify carried=none restarted=false text="No history yet. Your first change, or Show grid, starts one; it is kept inside the PDF and the .xlsx you download."
+  PG[phone] §SHEET_READER verdict=INCONCLUSIVE ok=false page=1 items=12 lines=12 cols=0 cells=0 blankRows=0 edgeSplits=0 bandsMerged=0 boxesTrimmed=0 collisions=0 checks=0 ms=4 reason="no table found (fewer than 2 lines with 3 or more cells)"
+  PG[phone] §EDSHEET-LAYER page=1 runs=16 writableRuns=16 lockedRuns=0 cells=0 cellTargets=0 runTargets=16 locked=0 images=0 reasons={} file=writable forms=0 table=INCONCLUSIVE redBoxes=0 ms=588 heapMB=93
+  PG[phone] §PDFED-OPEN ok=true file="long_report_2400_pages.pdf" bytes=19636050 pages=2400 chars=3368400 outline=0 ms=10058
+§FACTS phone long file run 5: firstPagePaintedMs=2065 | §PDFED-FIRST page=1 drawn=true ms=1885 pages=2400 canvasesAlive=2 | §PDFED-OPEN ok=true  bytes=19636050 pages=2400 chars=3368400 outline=0 ms=10058 | canvases=3 | loadavg1=5.89 cpus=20
+§FACTS §FILM_INK still=p2_long page=1 drawn=true ink=0.00825 ref=0.00825 picture_ink=0.0073 picture_ref=0.0073 ok=true waitedMs=810
+§FACTS darkshare p2_long 0.00359 retakes=0
+§FACTS shot p2_long a long file on an emulated phone: long_report_2400_pages.pdf: 2400 pages clip=0,0,390,389
+§FACTS phone long file: runs ms=[2065,2349,2357,2403,2448] median=2357 ms (pages=2400)
+§FACTS LIVE_EQ_MAIN end differ=[] at=2026-11-28T13:22:05.219Z equal; unchanged since the start of the recording: true
+§FACTS DERIVED {"cells":144,"addsUp":true,"cellTargets":133,"lockedRuns":46,"writableRuns":139,"noUpload":true,"gap":1,"redTotal":true,"greenAgain":true,"wordEdited":true,"fontBox":true,"undoClears":true,"bannerValid":true,"bannerShown":true,"pictureLocked":true,"objectsInOriginal":40,"objectsIdentical":38,"objectsChanged":2,"changedAreCatalogAndPage":true,"objectsAdded":2,"imageSame":true,"rasterOutside":0,"rasterInside":116,"integrity":true,"sumFormulas":4,"noDoorText":true,"historyInBoth":true,"historyEntries":2,"xlsxCells":144,"historyOnSheetPage":true,"storyValues":2,"storyOk":true,"firstVisitBytes":261284,"firstVisitMs":216,"pageOneMs":222,"rewriteMs":5,"offlineOk":true,"phoneTapOk":true,"longPages":2400,"longFirstMs":2357,"longCanvases":3,"longOk":true}
+§FACTS FACTS_VERDICT PASS (judged: 42 derived facts)

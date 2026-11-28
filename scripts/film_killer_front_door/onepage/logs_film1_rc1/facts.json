@@ -1,0 +1,895 @@
+{
+ "states": {
+  "b1_blank": {
+   "file": "shots/b1_blank.png",
+   "note": "a browser with nothing open",
+   "clip": "viewport"
+  },
+  "b1_empty": {
+   "file": "shots/b1_empty.png",
+   "note": "the PDF page, empty: Open a PDF, or drop one here.",
+   "clip": {
+    "x": 0,
+    "y": 0,
+    "width": 1500,
+    "height": 419
+   }
+  },
+  "b1_full": {
+   "file": "shots/b1_full.png",
+   "note": "the whole page as it loads: trial_balance_th.pdf: 1 page",
+   "clip": {
+    "x": 0,
+    "y": 0,
+    "width": 1500,
+    "height": 940
+   }
+  },
+  "b1_open": {
+   "file": "shots/b1_open.png",
+   "note": "the report, zoomed to the page: trial_balance_th.pdf: 1 page",
+   "clip": {
+    "x": 320,
+    "y": 63,
+    "width": 1100,
+    "height": 850
+   }
+  },
+  "b2a_red": {
+   "file": "shots/b2a_red.png",
+   "note": "D10 499.09: D10 is now \"499.09\". Page 1 does NOT add up: D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16. Ctrl+Z undoes it.",
+   "clip": {
+    "x": 320,
+    "y": 277.640625,
+    "width": 1100,
+    "height": 484.0625
+   }
+  },
+  "b2a_green": {
+   "file": "shots/b2a_green.png",
+   "note": "D10 498.09: D10 is now \"498.09\". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it.",
+   "clip": {
+    "x": 320,
+    "y": 277.640625,
+    "width": 1100,
+    "height": 484.0625
+   }
+  },
+  "b2b_word": {
+   "file": "shots/b2b_word.png",
+   "note": "B10: B10 is now \"Accounts Receivable\". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it.",
+   "clip": {
+    "x": 320,
+    "y": 277.640625,
+    "width": 1100,
+    "height": 484.0625
+   }
+  },
+  "b2b_font": {
+   "file": "shots/b2b_font.png",
+   "note": "B12 Quiz Zebra: B12 is now \"Quiz Zebra\", in Helvetica (font not same: LiberationSans has no \"Q\" \"z\" \"Z\"). Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it.",
+   "clip": {
+    "x": 320,
+    "y": 277.640625,
+    "width": 1100,
+    "height": 484.0625
+   }
+  },
+  "b2b_undo": {
+   "file": "shots/b2b_undo.png",
+   "note": "Ctrl+Z: B12 is \"Product asset\" again (undo). Page 1 adds up: 4 totals agree with their rows.",
+   "clip": {
+    "x": 320,
+    "y": 277.640625,
+    "width": 1100,
+    "height": 484.0625
+   }
+  },
+  "b3_open": {
+   "file": "shots/b3_open.png",
+   "note": "the report with a letterhead picture made for this film: report_with_letterhead.pdf: 1 page",
+   "clip": {
+    "x": 320,
+    "y": 63,
+    "width": 1100,
+    "height": 980
+   }
+  },
+  "b3_locked": {
+   "file": "shots/b3_locked.png",
+   "note": "Locked: a picture: its pixels are kept exactly as they are (text inside a picture is pixels, not editable).",
+   "clip": {
+    "x": 320,
+    "y": 63,
+    "width": 1100,
+    "height": 500.953125
+   }
+  },
+  "b3_edit": {
+   "file": "shots/b3_edit.png",
+   "note": "B10 Accounts Receivable on the letterhead report: B10 is now \"Accounts Receivable\". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it.",
+   "clip": {
+    "x": 320,
+    "y": 63,
+    "width": 1100,
+    "height": 500.953125
+   }
+  },
+  "b3_dl": {
+   "file": "shots/b3_dl.png",
+   "note": "Download PDF: B10 is now \"Accounts Receivable\". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it.",
+   "clip": {
+    "x": 320,
+    "y": 63,
+    "width": 1100,
+    "height": 500.953125
+   }
+  },
+  "b4_xlsx": {
+   "file": "shots/b4_xlsx.png",
+   "note": "the press on Download .xlsx (the page shows nothing else when a file is downloaded; its own log line is in the strip): B10 is now \"Accounts Receivable\". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it.",
+   "clip": {
+    "x": 420,
+    "y": 0,
+    "width": 1080,
+    "height": 303
+   }
+  },
+  "h0_page": {
+   "file": "shots/h0_page.png",
+   "note": "the Sheet history page, empty",
+   "clip": "viewport"
+  },
+  "h1_xlsx": {
+   "file": "shots/h1_xlsx.png",
+   "note": "the .xlsx opened on Sheet history: History: 2 entries, verified. The sheet matches the last stamp (you, 2026-11-28 13:18 UTC): nothing has changed since.",
+   "clip": "viewport"
+  },
+  "b5_story": {
+   "file": "shots/b5_story.png",
+   "note": "the story of B10",
+   "clip": {
+    "x": 0,
+    "y": 175.78125,
+    "width": 250,
+    "height": 252.578125
+   }
+  },
+  "p0_trial": {
+   "file": "shots/p0_trial.png",
+   "note": "on an emulated phone: the report opened",
+   "clip": {
+    "x": 0,
+    "y": 0,
+    "width": 390,
+    "height": 389
+   }
+  },
+  "p1_trial": {
+   "file": "shots/p1_trial.png",
+   "note": "on an emulated phone: D10 is now \"499.09\". Page 1 does NOT add up: D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16. Ctrl+Z undoes it.",
+   "clip": {
+    "x": 0,
+    "y": 0,
+    "width": 390,
+    "height": 389
+   }
+  },
+  "p2_long": {
+   "file": "shots/p2_long.png",
+   "note": "a long file on an emulated phone: long_report_2400_pages.pdf: 2400 pages",
+   "clip": {
+    "x": 0,
+    "y": 0,
+    "width": 390,
+    "height": 389
+   }
+  }
+ },
+ "net": {
+  "pdfPages": {
+   "requestsAfterReady": [
+    "GET https://red1oon.github.io/bim-ootb/modeller/lib/pdfjs/pdf.worker.min.js"
+   ]
+  },
+  "phoneNonGet": [],
+  "pdfNonGet": [],
+  "pdfExternal": [],
+  "otherExternal": []
+ },
+ "made": "2026-11-28T13:17:33.342Z",
+ "base": "https://red1oon.github.io/bim-ootb/",
+ "ootb": "ccdd4b2ca593c0007c48d89f5bea1dc3a365e089",
+ "ootbShort": "ccdd4b2c",
+ "d": {
+  "cells": 144,
+  "addsUp": true,
+  "cellTargets": 133,
+  "lockedRuns": 46,
+  "writableRuns": 139,
+  "noUpload": true,
+  "gap": 1,
+  "redTotal": true,
+  "greenAgain": true,
+  "wordEdited": true,
+  "fontBox": true,
+  "undoClears": true,
+  "bannerValid": true,
+  "bannerShown": true,
+  "pictureLocked": true,
+  "objectsInOriginal": 40,
+  "objectsIdentical": 38,
+  "objectsChanged": 2,
+  "changedAreCatalogAndPage": true,
+  "objectsAdded": 2,
+  "imageSame": true,
+  "rasterOutside": 0,
+  "rasterInside": 116,
+  "integrity": true,
+  "sumFormulas": 4,
+  "noDoorText": true,
+  "historyInBoth": true,
+  "historyEntries": 2,
+  "xlsxCells": 144,
+  "historyOnSheetPage": true,
+  "storyValues": 2,
+  "storyOk": true,
+  "firstVisitBytes": 261284,
+  "firstVisitMs": 216,
+  "pageOneMs": 222,
+  "rewriteMs": 5,
+  "offlineOk": true,
+  "phoneTapOk": true,
+  "longPages": 2400,
+  "longFirstMs": 2357,
+  "longCanvases": 3,
+  "longOk": true
+ },
+ "liveEqMain": {
+  "files": {
+   "pdf/index.html": "1cd5b274/1cd5b274",
+   "pdf/edit_layer.js": "90b4ea63/90b4ea63",
+   "pdf/pdf_write.js": "a812bc46/a812bc46",
+   "pdf/pdf_open.js": "6372e4a5/6372e4a5",
+   "pdf/pdf_history.js": "2758df8b/2758df8b",
+   "pdf/report_reader.js": "b640561e/b640561e",
+   "erp/sheet_addin/file_it.html": "312ee0c7/312ee0c7"
+  },
+  "differ": [],
+  "minifiedMarkers": {
+   "file_it_draft": true,
+   "report_pill": true,
+   "ninja_pdf": true
+  },
+  "at": "2026-11-28T13:17:35.190Z",
+  "overlayHash": "469dc517/89f189b5/daa35640"
+ },
+ "letterhead": {
+  "maker": "make_letterhead.py (PIL), generated at build time, not committed",
+  "pixels": [
+   1827,
+   216
+  ],
+  "pointsOnPage": [
+   609,
+   72
+  ],
+  "pdfimages": {
+   "images": 1,
+   "width": 1827,
+   "height": 216,
+   "type": "image",
+   "color": "rgb"
+  },
+  "pageSize": "681 x 606.5 pts"
+ },
+ "inputs": {
+  "picture": "a letterhead banner (GardenWorld, 1827 x 216 pixels, 609 x 72 pt) generated for this film and drawn above the corpus trial balance by ghostscript",
+  "pictureExit": 0,
+  "longExit": 0,
+  "longPages": 2400,
+  "longBytes": 19636050,
+  "longSource": "the 12-page corpus report joined 200 times (pdfunite)"
+ },
+ "ink": [
+  {
+   "still": "b1_full",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.04301,
+   "ref": 0.04301,
+   "pngInk": 0.02702,
+   "pngRef": 0.02702,
+   "ok": true,
+   "waitedMs": 817
+  },
+  {
+   "still": "b1_open",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.04301,
+   "ref": 0.04301,
+   "pngInk": 0.03821,
+   "pngRef": 0.03821,
+   "ok": true,
+   "waitedMs": 551
+  },
+  {
+   "still": "b2a_red",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.04301,
+   "ref": 0.04301,
+   "pngInk": 0.05888,
+   "pngRef": 0.05888,
+   "ok": true,
+   "waitedMs": 851
+  },
+  {
+   "still": "b2a_green",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.04301,
+   "ref": 0.04301,
+   "pngInk": 0.05954,
+   "pngRef": 0.05888,
+   "ok": true,
+   "waitedMs": 560
+  },
+  {
+   "still": "b2b_word",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.04288,
+   "ref": 0.04288,
+   "pngInk": 0.05926,
+   "pngRef": 0.05926,
+   "ok": true,
+   "waitedMs": 815
+  },
+  {
+   "still": "b2b_font",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.04282,
+   "ref": 0.04288,
+   "pngInk": 0.05796,
+   "pngRef": 0.05926,
+   "ok": true,
+   "waitedMs": 549
+  },
+  {
+   "still": "b2b_undo",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.04288,
+   "ref": 0.04288,
+   "pngInk": 0.05928,
+   "pngRef": 0.05926,
+   "ok": true,
+   "waitedMs": 556
+  },
+  {
+   "still": "b3_open",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.12599,
+   "ref": 0.12599,
+   "pngInk": 0.03884,
+   "pngRef": 0.03884,
+   "ok": true,
+   "waitedMs": 551
+  },
+  {
+   "still": "b3_locked",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.12599,
+   "ref": 0.12599,
+   "pngInk": 0.03579,
+   "pngRef": 0.03579,
+   "ok": true,
+   "waitedMs": 574
+  },
+  {
+   "still": "b3_edit",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.12589,
+   "ref": 0.12599,
+   "pngInk": 0.0354,
+   "pngRef": 0.03579,
+   "ok": true,
+   "waitedMs": 565
+  },
+  {
+   "still": "b3_dl",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.12589,
+   "ref": 0.12599,
+   "pngInk": 0.03553,
+   "pngRef": 0.03579,
+   "ok": true,
+   "waitedMs": 560
+  },
+  {
+   "still": "b4_xlsx",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.12589,
+   "ref": 0.12599,
+   "pngInk": 0,
+   "pngRef": null,
+   "ok": true,
+   "waitedMs": 557,
+   "pngSkipped": true
+  },
+  {
+   "still": "p0_trial",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.06386,
+   "ref": 0.06386,
+   "pngInk": 0.03138,
+   "pngRef": 0.03138,
+   "ok": true,
+   "waitedMs": 811
+  },
+  {
+   "still": "p1_trial",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.06385,
+   "ref": 0.06386,
+   "pngInk": 0.03299,
+   "pngRef": 0.03138,
+   "ok": true,
+   "waitedMs": 556
+  },
+  {
+   "still": "p2_long",
+   "page": 1,
+   "drawn": true,
+   "ink": 0.00825,
+   "ref": 0.00825,
+   "pngInk": 0.0073,
+   "pngRef": 0.0073,
+   "ok": true,
+   "waitedMs": 810
+  }
+ ],
+ "banner": [
+  {
+   "still": "b3_open",
+   "visible": true,
+   "match": true,
+   "png_match": true,
+   "mean": [
+    61.9,
+    92,
+    84.6
+   ],
+   "ref": [
+    61.9,
+    92,
+    84.6
+   ],
+   "pngMean": [
+    61,
+    92,
+    84
+   ]
+  },
+  {
+   "still": "b3_locked",
+   "visible": true,
+   "match": true,
+   "png_match": true,
+   "mean": [
+    61.9,
+    92,
+    84.6
+   ],
+   "ref": [
+    61.9,
+    92,
+    84.6
+   ],
+   "pngMean": [
+    74,
+    93,
+    72
+   ]
+  },
+  {
+   "still": "b3_edit",
+   "visible": true,
+   "match": true,
+   "png_match": true,
+   "mean": [
+    61.9,
+    92,
+    84.6
+   ],
+   "ref": [
+    61.9,
+    92,
+    84.6
+   ],
+   "pngMean": [
+    61,
+    92,
+    84
+   ]
+  },
+  {
+   "still": "b3_dl",
+   "visible": true,
+   "match": true,
+   "png_match": true,
+   "mean": [
+    61.9,
+    92,
+    84.6
+   ],
+   "ref": [
+    61.9,
+    92,
+    84.6
+   ],
+   "pngMean": [
+    61,
+    92,
+    84
+   ]
+  }
+ ],
+ "b1": {
+  "address": "red1oon.github.io/bim-ootb/pdf",
+  "statBefore": "Nothing is uploaded: the file stays on this device.",
+  "empty": {
+   "drop": [
+    "Open a PDF, or drop one here.",
+    "Change its text right on the page: tables add up as you type.",
+    "Pictures and fonts that cannot be written stay exactly as they are.",
+    "No PDF to hand? Press Try a sample report."
+   ],
+   "openLabel": "Open a PDF",
+   "sampleLabel": "Try a sample report",
+   "q": "Find text"
+  },
+  "chosen": {
+   "name": "trial_balance_th.pdf",
+   "bytes": 74945
+  },
+  "open": "§PDFED-OPEN ok=true file=\"trial_balance_th.pdf\" bytes=74945 pages=1 chars=1017 outline=0 ms=261",
+  "layer": "§EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={\"script-not-supported\":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=24 heapMB=7",
+  "reader": "§SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=5 reason=\"4 totals agree with their rows\"",
+  "stat": "trial_balance_th.pdf: 1 page",
+  "requestsAfterReady": [
+   "GET https://red1oon.github.io/bim-ootb/modeller/lib/pdfjs/pdf.worker.min.js"
+  ],
+  "first": "§PDFED-FIRST page=1 drawn=true ms=222 pages=1 canvasesAlive=1"
+ },
+ "b2a": {
+  "red": {
+   "write": "§PDF_WRITE ok=true edits=1 applied=1 refused=0 bytesIn=74945 bytesOut=74939 ms=5 xref=table objStreams=0 decodedKB=0.0 cells=D10:\"498.09\"->\"499.09\"",
+   "edit": "§EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old=\"498.09\" new=\"499.09\" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74939 edits=1",
+   "stat": "D10 is now \"499.09\". Page 1 does NOT add up: D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16. Ctrl+Z undoes it.",
+   "marks": [
+    {
+     "cell": "C28",
+     "ok": true,
+     "gap": 0,
+     "label": "✓"
+    },
+    {
+     "cell": "D28",
+     "ok": false,
+     "gap": 1,
+     "label": "rows 40,393.44, gap 1.00"
+    },
+    {
+     "cell": "E28",
+     "ok": true,
+     "gap": 0,
+     "label": "✓"
+    },
+    {
+     "cell": "F28",
+     "ok": true,
+     "gap": 0,
+     "label": "✓"
+    },
+    {
+     "cell": "F10",
+     "ok": false,
+     "gap": 1,
+     "label": "F = C + D - E gives 1,019.16, gap 1.00"
+    }
+   ],
+   "reader": "§SHEET_READER verdict=DOES_NOT_ADD_UP ok=false page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=6 ms=1 reason=\"D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16\""
+  },
+  "green": {
+   "edit": "§EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old=\"499.09\" new=\"498.09\" font=LiberationSans sub=none verdict=ADDS_UP entries=3 bytes=74939 edits=2",
+   "stat": "D10 is now \"498.09\". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it.",
+   "marks": [
+    {
+     "cell": "C28",
+     "ok": true,
+     "gap": 0,
+     "label": "✓"
+    },
+    {
+     "cell": "D28",
+     "ok": true,
+     "gap": 0,
+     "label": "✓"
+    },
+    {
+     "cell": "E28",
+     "ok": true,
+     "gap": 0,
+     "label": "✓"
+    },
+    {
+     "cell": "F28",
+     "ok": true,
+     "gap": 0,
+     "label": "✓"
+    }
+   ],
+   "reader": "§SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=1 reason=\"4 totals agree with their rows\""
+  }
+ },
+ "b2b": {
+  "word": {
+   "edit": "§EDSHEET-EDIT id=cB10 cell=B10 kind=cell ok=true old=\"Accounts Receivable - Trade\" new=\"Accounts Receivable\" font=LiberationSans sub=none verdict=ADDS_UP entries=2 bytes=74907 edits=1",
+   "stat": "B10 is now \"Accounts Receivable\". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it."
+  },
+  "font": {
+   "edit": "§EDSHEET-EDIT id=cB12 cell=B12 kind=cell ok=true old=\"Product asset\" new=\"Quiz Zebra\" font=LiberationSans sub=LiberationSans>Helvetica(standard) verdict=ADDS_UP entries=3 bytes=75041 edits=2",
+   "fontLog": "§EDSHEET-FONT cell=B12 page=1 from=LiberationSans to=Helvetica standard=true why=\"no face of LiberationSans in this file holds them; closest standard PDF font: described as sans-serif, old text width 1.00 of the original\"",
+   "stat": "B12 is now \"Quiz Zebra\", in Helvetica (font not same: LiberationSans has no \"Q\" \"z\" \"Z\"). Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it.",
+   "subs": [
+    "font not same: LiberationSans → Helvetica Accept"
+   ],
+   "layer": "§EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={\"script-not-supported\":46} file=writable forms=0 table=ADDS_UP redBoxes=1 ms=36 heapMB=22"
+  },
+  "undo": {
+   "log": "§EDSHEET-UNDO cell=B12 text=\"Product asset\" bytes=74907 undo=1 redo=1 entries=4 verdict=ADDS_UP",
+   "layer": "§EDSHEET-LAYER page=1 runs=185 writableRuns=139 lockedRuns=46 cells=144 cellTargets=133 runTargets=6 locked=46 images=0 reasons={\"script-not-supported\":46} file=writable forms=0 table=ADDS_UP redBoxes=0 ms=21 heapMB=35",
+   "stat": "B12 is \"Product asset\" again (undo). Page 1 adds up: 4 totals agree with their rows.",
+   "subs": 0
+  }
+ },
+ "b3": {
+  "layer": "§EDSHEET-LAYER page=1 runs=158 writableRuns=139 lockedRuns=19 cells=144 cellTargets=133 runTargets=6 locked=20 images=1 reasons={\"script-not-supported\":19,\"image\":1} file=writable forms=1 table=ADDS_UP redBoxes=0 ms=35 heapMB=6",
+  "stat": "report_with_letterhead.pdf: 1 page",
+  "valid": {
+   "pdfimages": {
+    "images": 1,
+    "width": 1827,
+    "height": 216,
+    "type": "image",
+    "color": "rgb"
+   },
+   "reader": "§SHEET_READER verdict=ADDS_UP ok=true page=1 items=152 lines=27 cols=6 cells=144 blankRows=3 edgeSplits=0 bandsMerged=0 boxesTrimmed=18 collisions=0 checks=5 ms=2 reason=\"4 totals agree with their rows\"",
+   "layer": "§EDSHEET-LAYER page=1 runs=158 writableRuns=139 lockedRuns=19 cells=144 cellTargets=133 runTargets=6 locked=20 images=1 reasons={\"script-not-supported\":19,\"image\":1} file=writable forms=1 table=ADDS_UP redBoxes=0 ms=35 heapMB=6",
+   "imageTargets": [
+    {
+     "lock": "image",
+     "title": "Locked: a picture: its pixels are kept e"
+    }
+   ]
+  },
+  "validOk": true,
+  "locked": {
+   "log": "§EDSHEET-LOCKED id=m0 kind=image lock=image why=\"a picture: its pixels are kept exactly as they are (text inside a picture is pixels, not editable)\"",
+   "stat": "Locked: a picture: its pixels are kept exactly as they are (text inside a picture is pixels, not editable)."
+  },
+  "edit": {
+   "log": "§EDSHEET-EDIT id=cB10 cell=B10 kind=cell ok=true old=\"Accounts Receivable - Trade\" new=\"Accounts Receivable\" font=LiberationSans sub=none verdict=ADDS_UP entries=2 bytes=78199 edits=1",
+   "stat": "B10 is now \"Accounts Receivable\". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it."
+  },
+  "h3": {
+   "objectsInOriginal": 40,
+   "identical": 38,
+   "changed": [
+    "1",
+    "5"
+   ],
+   "changedKinds": [
+    "1:catalog",
+    "5:page-content"
+   ],
+   "added": [
+    "41",
+    "42"
+   ],
+   "removed": [],
+   "imageObjects": 1,
+   "imageBytesIdentical": true,
+   "rasterInside": 116,
+   "rasterOutside": 0,
+   "download": "§PDFWR-DOWNLOAD file=\"report_with_letterhead_edited.pdf\" bytes=80339 edits=1 historyEntries=2 verdict= historyInFile=true",
+   "export": "§EDSHEET-EXPORT bytes=80339 edits=1 substituted=0 list=[]",
+   "attachments": [
+    "1: _door_history.jsonl"
+   ]
+  },
+  "dlStat": "B10 is now \"Accounts Receivable\". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it."
+ },
+ "b4": {
+  "xlsxLog": "§PDFED-XLSX file=\"report_with_letterhead_page1.xlsx\" bytes=32555 cells=144 verdict=ADDS_UP",
+  "histLog": "§PDFHIST-XLSX entries=2 sheet=\"_door_history\" rows=2 longestLine=14586 cellLimit=32767",
+  "file": "pic_report_with_letterhead_page1.xlsx",
+  "sheets": [
+   "Report",
+   "_door_source",
+   "_door_history"
+  ],
+  "hidden": [
+   0,
+   1,
+   2
+  ],
+  "sums": [
+   "C28=SUM(C6:C26)",
+   "D28=SUM(D6:D26)",
+   "E28=SUM(E6:E26)",
+   "F28=SUM(F6:F26)"
+  ],
+  "cells": 144,
+  "doorText": false,
+  "stat": "B10 is now \"Accounts Receivable\". Page 1 adds up: 4 totals agree with their rows. Ctrl+Z undoes it.",
+  "pdfHistoryEntries": 2,
+  "pdfAttachment": true,
+  "pressed": {
+   "label": "Download .xlsx",
+   "hover": true
+  },
+  "hempty": {
+   "openLabel": "Open a workbook (.xlsx)",
+   "opened": "No workbook opened yet.",
+   "status": "Open a workbook to see its history.",
+   "url": "/bim-ootb/erp/sheet_addin/history.html"
+  },
+  "hist": {
+   "bind": "§SHIST-PAGE-BIND state=intact entries=2 cells=144 pending=0",
+   "open": "§SHIST-PAGE-OPEN name=pic_report_with_letterhead_page1.xlsx bytes=32555 sheets=1 cells=144 state=intact ms=27 heapMB=4",
+   "status": "History: 2 entries, verified. The sheet matches the last stamp (you, 2026-11-28 13:18 UTC): nothing has changed since.",
+   "state": "intact",
+   "opened": "Opened pic_report_with_letterhead_page1.xlsx (1 sheet, 144 cells)."
+  }
+ },
+ "histErrors": [],
+ "b5": {
+  "log": "§PDFHIST-STORY cell=B10 sheet=\"Report\" values=2 text=\"#1 2026-11-28 13:18 report-reader: (empty) -> Accounts Receivable - Trade | #2 2026-11-28 13:18 you: Accounts Receivable - Trade -> Accounts Receivable\"",
+  "story": "#1 2026-11-28 13:18 report-reader: (empty) -> Accounts Receivable - Trade\n#2 2026-11-28 13:18 you: Accounts Receivable - Trade -> Accounts Receivable",
+  "say": "History: 2 entries, verified. It is kept inside the PDF and the .xlsx you download."
+ },
+ "pdfErrors": [],
+ "light": {
+  "bytesAtUsable": 261284,
+  "requestsAtUsable": 11,
+  "msToUsable": 216,
+  "bytesAfterSettle": 261284,
+  "serviceWorkerActive": true,
+  "line": "§PDFED-OFFLINE ready=true",
+  "note": "fresh context, empty cache, desktop size, no throttling; encoded bytes of every finished request"
+ },
+ "offlineEdit": {
+  "edit": "§EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old=\"498.09\" new=\"499.09\" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74939 edits=1",
+  "write": "§PDF_WRITE ok=true edits=1 applied=1 refused=0 bytesIn=74945 bytesOut=74939 ms=5 xref=table objStreams=0 decodedKB=0.0 cells=D10:\"498.09\"->\"499.09\"",
+  "stat": "D10 is now \"499.09\". Page 1 does NOT add up: D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16. Ctrl+Z undoes it."
+ },
+ "offline": {
+  "reloadOk": true,
+  "openOk": true,
+  "editOk": true,
+  "requestsWhileOffline": 13,
+  "failedWhileOffline": 0,
+  "why": ""
+ },
+ "phone": {
+  "viewport": "390x844, device scale 3, touch, processor 4 times slower (an emulated phone, headless)",
+  "msToUsable": 392,
+  "tap": {
+   "editor": "§EDSHEET-EDITOR id=cD10 cell=D10 kind=cell windowScrolled=0",
+   "edit": "§EDSHEET-EDIT id=cD10 cell=D10 kind=cell ok=true old=\"498.09\" new=\"499.09\" font=LiberationSans sub=none verdict=DOES_NOT_ADD_UP entries=2 bytes=74939 edits=1",
+   "stat": "D10 is now \"499.09\". Page 1 does NOT add up: D28: printed 40392.44 != rows sum 40393.44; F10: printed 1018.16 != F = C + D - E gives 1019.16. Ctrl+Z undoes it.",
+   "docWidth": 390
+  },
+  "long": {
+   "file": "a file made for the film: the corpus report joined 200 times",
+   "pages": 2400,
+   "bytes": 19636050,
+   "runs": [
+    {
+     "run": 1,
+     "firstPagePaintedMs": 2448,
+     "firstLog": "§PDFED-FIRST page=1 drawn=true ms=2231 pages=2400 canvasesAlive=2",
+     "openLog": "§PDFED-OPEN ok=true  bytes=19636050 pages=2400 chars=3368400 outline=0 ms=10811",
+     "canvasesAlive": 3,
+     "stat": "long_report_2400_pages.pdf: 2400 pages",
+     "loadavg1": 6.08,
+     "cpus": 20
+    },
+    {
+     "run": 2,
+     "firstPagePaintedMs": 2403,
+     "firstLog": "§PDFED-FIRST page=1 drawn=true ms=2274 pages=2400 canvasesAlive=2",
+     "openLog": "§PDFED-OPEN ok=true  bytes=19636050 pages=2400 chars=3368400 outline=0 ms=10753",
+     "canvasesAlive": 3,
+     "stat": "long_report_2400_pages.pdf: 2400 pages",
+     "loadavg1": 6.23,
+     "cpus": 20
+    },
+    {
+     "run": 3,
+     "firstPagePaintedMs": 2349,
+     "firstLog": "§PDFED-FIRST page=1 drawn=true ms=2222 pages=2400 canvasesAlive=2",
+     "openLog": "§PDFED-OPEN ok=true  bytes=19636050 pages=2400 chars=3368400 outline=0 ms=11578",
+     "canvasesAlive": 3,
+     "stat": "long_report_2400_pages.pdf: 2400 pages",
+     "loadavg1": 6.41,
+     "cpus": 20
+    },
+    {
+     "run": 4,
+     "firstPagePaintedMs": 2357,
+     "firstLog": "§PDFED-FIRST page=1 drawn=true ms=2211 pages=2400 canvasesAlive=2",
+     "openLog": "§PDFED-OPEN ok=true  bytes=19636050 pages=2400 chars=3368400 outline=0 ms=10601",
+     "canvasesAlive": 3,
+     "stat": "long_report_2400_pages.pdf: 2400 pages",
+     "loadavg1": 6.13,
+     "cpus": 20
+    },
+    {
+     "run": 5,
+     "firstPagePaintedMs": 2065,
+     "firstLog": "§PDFED-FIRST page=1 drawn=true ms=1885 pages=2400 canvasesAlive=2",
+     "openLog": "§PDFED-OPEN ok=true  bytes=19636050 pages=2400 chars=3368400 outline=0 ms=10058",
+     "canvasesAlive": 3,
+     "stat": "long_report_2400_pages.pdf: 2400 pages",
+     "loadavg1": 5.89,
+     "cpus": 20
+    }
+   ],
+   "runsMs": [
+    2065,
+    2349,
+    2357,
+    2403,
+    2448
+   ],
+   "firstPagePaintedMs": 2357,
+   "medianOf": 5,
+   "firstLog": "§PDFED-FIRST page=1 drawn=true ms=2211 pages=2400 canvasesAlive=2",
+   "openLog": "§PDFED-OPEN ok=true  bytes=19636050 pages=2400 chars=3368400 outline=0 ms=10601",
+   "canvasesAlive": 3,
+   "stat": "long_report_2400_pages.pdf: 2400 pages"
+  }
+ },
+ "liveEqMainEnd": {
+  "files": {
+   "pdf/index.html": "1cd5b274/1cd5b274",
+   "pdf/edit_layer.js": "90b4ea63/90b4ea63",
+   "pdf/pdf_write.js": "a812bc46/a812bc46",
+   "pdf/pdf_open.js": "6372e4a5/6372e4a5",
+   "pdf/pdf_history.js": "2758df8b/2758df8b",
+   "pdf/report_reader.js": "b640561e/b640561e",
+   "erp/sheet_addin/file_it.html": "312ee0c7/312ee0c7"
+  },
+  "differ": [],
+  "minifiedMarkers": {
+   "file_it_draft": true,
+   "report_pill": true,
+   "ninja_pdf": true
+  },
+  "at": "2026-11-28T13:22:05.219Z",
+  "overlayHash": "469dc517/89f189b5/daa35640"
+ }
+}

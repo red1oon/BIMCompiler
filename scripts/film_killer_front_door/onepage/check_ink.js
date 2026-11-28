@@ -3,11 +3,17 @@
 // This check re-judges every row from facts.json with its own rule, runs a CONTROL (a blank canvas must be rejected), and says INCONCLUSIVE when no still was judged. Usage: node check_ink.js [out dir]. READ THE LOG.
 'use strict';
 const fs = require('fs'), path = require('path'), OD = path.resolve(process.argv[2] || process.env.OUTD || 'out'), F = JSON.parse(fs.readFileSync(path.join(OD, 'facts.json'), 'utf8'));
-const TOL = 0.25, MIN = 0.0003, okOf = (r) => r.drawn === true && r.ink > MIN && r.ref > MIN && Math.abs(r.ink - r.ref) <= TOL * r.ref;
+const TOL = 0.25, MIN = 0.0003, okOf = (r) => r.drawn === true && r.ink > MIN && r.ref > MIN && Math.abs(r.ink - r.ref) <= TOL * r.ref && (r.pngInk === undefined || r.pngSkipped === true || (r.pngInk > MIN && (r.pngRef == null || r.pngInk >= 0.35 * r.pngRef)));   // the canvas in the page AND the picture taken of it
 let bad = 0; const rows = F.ink || [];
-rows.forEach(r => { const ok = okOf(r) && r.ok === true; if (!ok) bad++; console.log('§INK ' + (ok ? 'OK  ' : 'FAIL') + ' still=' + r.still + ' page=' + r.page + ' drawn=' + r.drawn + ' ink=' + r.ink + ' ref=' + r.ref + ' waitedMs=' + r.waitedMs); });
-const ctl1 = okOf({ drawn: true, ink: 0, ref: 0.043 }), ctl2 = okOf({ drawn: false, ink: 0.043, ref: 0.043 }), ctl3 = okOf({ drawn: true, ink: 0.043, ref: 0.043 });
-const ctlOk = ctl1 === false && ctl2 === false && ctl3 === true; console.log('§INK_CONTROL blank canvas rejected=' + !ctl1 + ' not-drawn rejected=' + !ctl2 + ' good page accepted=' + ctl3 + ' ' + (ctlOk ? '(the check can fail)' : 'FAIL: the check is blind'));
+rows.forEach(r => { const ok = okOf(r) && r.ok === true; if (!ok) bad++; console.log('§INK ' + (ok ? 'OK  ' : 'FAIL') + ' still=' + r.still + ' page=' + r.page + ' drawn=' + r.drawn + ' ink=' + r.ink + ' ref=' + r.ref + ' picture_ink=' + r.pngInk + ' picture_ref=' + r.pngRef + ' waitedMs=' + r.waitedMs); });
+const ctl1 = okOf({ drawn: true, ink: 0, ref: 0.043 }), ctl2 = okOf({ drawn: false, ink: 0.043, ref: 0.043 }), ctl3 = okOf({ drawn: true, ink: 0.043, ref: 0.043, pngInk: 0.02, pngRef: 0.02 }), ctl4 = okOf({ drawn: true, ink: 0.043, ref: 0.043, pngInk: 0.0001, pngRef: 0.02 });   // ctl4: the canvas had ink but the PICTURE is blank
+const ctlOk = ctl1 === false && ctl2 === false && ctl3 === true && ctl4 === false; console.log('§INK_CONTROL blank canvas rejected=' + !ctl1 + ' not-drawn rejected=' + !ctl2 + ' blank picture of a drawn canvas rejected=' + !ctl4 + ' good page accepted=' + ctl3 + ' ' + (ctlOk ? '(the check can fail)' : 'FAIL: the check is blind'));
 const verdict = rows.length === 0 ? 'INCONCLUSIVE' : (bad || !ctlOk) ? 'FAIL' : 'PASS';
 console.log('§INK_VERDICT ' + verdict + ' stills=' + rows.length + ' bad=' + bad + (rows.length === 0 ? ' (no PDF-page still was judged)' : ''));
-process.exit(verdict === 'PASS' ? 0 : verdict === 'INCONCLUSIVE' ? 2 : 1);
+// ---- check BANNER (Film 1: the letterhead beat): every still of that beat must show the banner (inside the frame), the page canvas there must equal the reference taken when the page first drew, and so must the picture
+let bb = 0; const B = F.banner || [], needBanner = !!(F.letterhead), bOk = (r) => r.visible === true && r.match === true && r.png_match === true;
+B.forEach(r => { if (!bOk(r)) bb++; console.log('§BANNER ' + (bOk(r) ? 'OK  ' : 'FAIL') + ' still=' + r.still + ' visible=' + r.visible + ' match=' + r.match + ' png_match=' + r.png_match); });
+const bctl = bOk({ visible: false, match: true, png_match: true }) === false && bOk({ visible: true, match: false, png_match: true }) === false && bOk({ visible: true, match: true, png_match: false }) === false && bOk({ visible: true, match: true, png_match: true }) === true;
+const bverdict = !needBanner ? 'N/A' : B.length === 0 ? 'INCONCLUSIVE' : (bb || !bctl) ? 'FAIL' : 'PASS'; console.log('§BANNER_CONTROL a cropped-out, an undrawn and a blank-picture banner are rejected: ' + bctl);
+console.log('§BANNER_VERDICT ' + bverdict + ' stills=' + B.length + ' bad=' + bb);
+process.exit(verdict === 'PASS' && (bverdict === 'PASS' || bverdict === 'N/A') ? 0 : (verdict === 'INCONCLUSIVE' || bverdict === 'INCONCLUSIVE') ? 2 : 1);

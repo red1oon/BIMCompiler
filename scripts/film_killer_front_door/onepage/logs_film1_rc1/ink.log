@@ -1,0 +1,23 @@
+§INK OK   still=b1_full page=1 drawn=true ink=0.04301 ref=0.04301 picture_ink=0.02702 picture_ref=0.02702 waitedMs=817
+§INK OK   still=b1_open page=1 drawn=true ink=0.04301 ref=0.04301 picture_ink=0.03821 picture_ref=0.03821 waitedMs=551
+§INK OK   still=b2a_red page=1 drawn=true ink=0.04301 ref=0.04301 picture_ink=0.05888 picture_ref=0.05888 waitedMs=851
+§INK OK   still=b2a_green page=1 drawn=true ink=0.04301 ref=0.04301 picture_ink=0.05954 picture_ref=0.05888 waitedMs=560
+§INK OK   still=b2b_word page=1 drawn=true ink=0.04288 ref=0.04288 picture_ink=0.05926 picture_ref=0.05926 waitedMs=815
+§INK OK   still=b2b_font page=1 drawn=true ink=0.04282 ref=0.04288 picture_ink=0.05796 picture_ref=0.05926 waitedMs=549
+§INK OK   still=b2b_undo page=1 drawn=true ink=0.04288 ref=0.04288 picture_ink=0.05928 picture_ref=0.05926 waitedMs=556
+§INK OK   still=b3_open page=1 drawn=true ink=0.12599 ref=0.12599 picture_ink=0.03884 picture_ref=0.03884 waitedMs=551
+§INK OK   still=b3_locked page=1 drawn=true ink=0.12599 ref=0.12599 picture_ink=0.03579 picture_ref=0.03579 waitedMs=574
+§INK OK   still=b3_edit page=1 drawn=true ink=0.12589 ref=0.12599 picture_ink=0.0354 picture_ref=0.03579 waitedMs=565
+§INK OK   still=b3_dl page=1 drawn=true ink=0.12589 ref=0.12599 picture_ink=0.03553 picture_ref=0.03579 waitedMs=560
+§INK OK   still=b4_xlsx page=1 drawn=true ink=0.12589 ref=0.12599 picture_ink=0 picture_ref=null waitedMs=557
+§INK OK   still=p0_trial page=1 drawn=true ink=0.06386 ref=0.06386 picture_ink=0.03138 picture_ref=0.03138 waitedMs=811
+§INK OK   still=p1_trial page=1 drawn=true ink=0.06385 ref=0.06386 picture_ink=0.03299 picture_ref=0.03138 waitedMs=556
+§INK OK   still=p2_long page=1 drawn=true ink=0.00825 ref=0.00825 picture_ink=0.0073 picture_ref=0.0073 waitedMs=810
+§INK_CONTROL blank canvas rejected=true not-drawn rejected=true blank picture of a drawn canvas rejected=true good page accepted=true (the check can fail)
+§INK_VERDICT PASS stills=15 bad=0
+§BANNER OK   still=b3_open visible=true match=true png_match=true
+§BANNER OK   still=b3_locked visible=true match=true png_match=true
+§BANNER OK   still=b3_edit visible=true match=true png_match=true
+§BANNER OK   still=b3_dl visible=true match=true png_match=true
+§BANNER_CONTROL a cropped-out, an undrawn and a blank-picture banner are rejected: true
+§BANNER_VERDICT PASS stills=4 bad=0
