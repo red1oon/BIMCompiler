@@ -2334,3 +2334,47 @@ writes; a default invented in the overlay (a field differs from legacy's); the p
   for layouts that shift); the vendors themselves call it fragile across suppliers (abbyy.com/glossary/what-is-zonal-ocr, docparser.com/blog/zonal-ocr).
 - **What these do not show together (a hypothesis, not a finding):** no upload and no OCR service (the text is read from the PDF itself, on the device);
   the ERP in the same browser, working with the network off; the file's own history sealed inside it; the same checks run on the page and again at the drop.
+
+## 30. A total the page understood is a FORMULA: change a figure and its totals follow, as in Excel (owner 2026-11-28; spec before code)
+Owner, verbatim: *"in film 1, what does it means when change a figure it turns red? How will a user change its contents then?"* · *"What should be the case? Or
+just behave outright similar to Excel?"* · (to the coordinator's rule below) *"Yes, and that be a good feature as it is intelligent in predicting and knowing
+what formulas are behind. SUM() will be something we can easily smell out. What other formulas usually in such tables? I think numbering increment when
+inserting rows/cols"*.
+**Today:** a changed figure leaves its printed totals as they were; they turn red ("rows 40,393.44, gap 1.00") and the user must type each one (four edits for
+one figure on the sample). The film's beat "change it, red, put it back" read as "you cannot change it".
+### 30.1 The rule
+- **A check that HELD when the page was read is a formula.** `ReportReader.read` already finds them: `SUM` (a total = the rows above it) and `ROWCELL` (a row's
+  cell from its neighbours, e.g. `F = C + D − E`). When an edit changes a cell such a formula reads, the formula's cell is rewritten too - in the SAME step,
+  transitively (a figure -> its row's balance -> that column's total; a figure -> its own column's total), each to the value the formula gives.
+- **Exact decimals, no float** (the lane's rule): the new value is the old printed value plus the change, in decimal-string arithmetic, then printed the way
+  its column prints (`formatLike`).
+- **One step:** ONE call of the writer with all the edits (all or nothing): if any followed total cannot be written (does not fit, a refusal of the writer), the
+  whole edit is refused with that reason and nothing changes. A font substitution in a followed total shows its red "font not same" box like any other.
+- **One Undo** takes the figure and every followed cell back (bytes identical); the history gets ONE entry with one op per cell, the followed ones carrying
+  their formula (never flagged "typed over a formula").
+- **A check that did NOT hold when the page was read is never repaired:** that total stays as printed and red. The page keeps a consistent document
+  consistent; it does not fix someone else's arithmetic.
+- **Typing over a total** is allowed as today: it stops being a formula for this page (typed over a formula, flagged in the history) and is red if it
+  disagrees. It does not push a change back into its rows.
+- The grid ("Show grid") follows the same rule through the same code (one owner); the status line says what followed ("D10 is now 499.09; D28, F10 and F28
+  followed.") and the followed cells are lit for a moment.
+### 30.2 Witness (W-EDIT-SHEET E3 re-stated + a node case; spec'd before code)
+E3: on the sample, D10 498.09 -> 499.09 typed on the page: D28, F10 and F28 follow; every mark is green; our reader AND poppler read the four new figures at
+their places and every other cell unchanged; ONE history entry with 4 ops, 3 of them carrying their formula, none typed-over; one Undo -> the original bytes;
+Redo -> the edited bytes. A total made wrong BEFORE (a fixture whose printed total is off by 1.00): an edit above it changes that figure only, the wrong total
+stays as printed and red. A followed total that cannot be written (a fixture where the new total is one digit wider than its clipped box): the edit is refused
+by name, bytes unchanged. Typing over D28: only D28 changes, flagged typed-over, red. The same four through the grid. Exactness: 0.10 + 0.20 style values
+(a fixture of cents that floats get wrong) come out exact. Mutants: follow switched off (the old behaviour); a broken total repaired; float arithmetic;
+the followed cells written in a second step (a refusal leaves a half-updated page).
+### 30.3 Other formulas such tables usually hold (the owner asked; to be SMELLED the same way - a relation is claimed only when it holds exactly on every row)
+In the order they matter for the lane (invoices and statements feed the ERP drop):
+1. **Line amount = quantity × unit price** (invoice lines; the engine already checks it at filing).
+2. **Subtotal, tax, grand total:** tax = rate × subtotal (per line or on the total - the rounding differs and must be read from the document), total = subtotal
+   + tax − discount.
+3. **Running balance** (bank and account statements): each row's balance = the row above + in − out (P2 already names it as the reader's widest gap).
+4. **Group subtotals and a grand total of subtotals** (nested sums), and **cross-footing** (the sum of the row totals = the sum of the column totals).
+5. **Carried forward / brought forward** across pages (a page's total is the next page's first line).
+6. **Sequence numbers** (1, 2, 3 or 10, 20, 30) - the owner's: they matter when a row is INSERTED or removed; inserting a row moves everything below it, which
+   is the designer overlay's work (§23), so this comes with it.
+7. Less often: variance = actual − budget and % of total; averages; a due date = the invoice date + the terms.
+Each is one more relation for `ReportReader` to test and one more formula kind for §30.1 to follow; none needs a different mechanism.
