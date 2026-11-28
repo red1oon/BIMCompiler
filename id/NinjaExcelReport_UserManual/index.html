@@ -3675,7 +3675,7 @@
 <h1 id="ninjaexcel-report-user-manual">NinjaExcel Report — User Manual<a class="headerlink" href="#ninjaexcel-report-user-manual" title="Permanent link">&para;</a></h1>
 <p><em>For accountants and report authors. No programming needed beyond writing a SELECT.</em>
 <em>Two films accompany this manual: film 1 (the Trial Balance) and film 2 (the Sales Register that grows), each in English and Thai, plus one long film joining them.</em>
-<em>Every number and claim below was produced by a gate in <a href="https://github.com/red1oon/BIMCompiler/blob/ninja-xtab2/scripts/ninja_template/run_all.sh"><code>scripts/ninja_template/run_all.sh</code></a> (gate names in brackets; the gate runner lives on the <code>ninja-xtab2</code> branch, not yet on master). Anything not built yet is under </em><em>Planned</em><em>, never stated as fact.</em></p>
+<em>Every number and claim below was produced by a gate in <code>scripts/ninja_template/run_all.sh</code> (gate names in brackets). Anything not built yet is under </em><em>Planned</em><em>, never stated as fact.</em></p>
 <hr />
 <h2 id="1-what-it-is">1. What it is<a class="headerlink" href="#1-what-it-is" title="Permanent link">&para;</a></h2>
 <p>You design a report <strong>in Excel</strong>, exactly the way you want it to look. You tell the sheet where each number comes from with a short SQL query. NinjaExcel runs the queries against the ERP data, paints the results into your layout, makes the formulas follow, and gives you an <code>.xlsx</code> and a one-page PDF.</p>
@@ -4026,7 +4026,7 @@
 <tbody>
 <tr>
 <td><strong>No server needed.</strong> The legacy plugin ran inside a running iDempiere/OSGi server; the default gate run needs no server and no Postgres.</td>
-<td><a href="https://github.com/red1oon/BIMCompiler/blob/ninja-xtab2/scripts/ninja_template/run_all.sh"><code>scripts/ninja_template/run_all.sh</code></a> header (<code>ninja-xtab2</code> branch); all gates run on a local SQLite copy of the data.</td>
+<td><code>scripts/ninja_template/run_all.sh</code> header; all gates run on a local SQLite copy of the data.</td>
 </tr>
 <tr>
 <td><strong>No commercial PDF converter.</strong> The PDF is produced by free code (PDFKit, MIT).</td>
