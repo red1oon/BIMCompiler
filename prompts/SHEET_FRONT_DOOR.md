@@ -2297,3 +2297,40 @@ saved by id alone, the window's Attachment button showed 0 entries.
 run used a temporary copy with its base address changed - add `DOORDROP_BASE`); two drop zones not exercised (the plugin engine's, System Administrator only;
 the kanban's); an unknown partner still reads legacy's raw "Invalid Country, No BPartner" until slice 2b; the stale `poc_erp_picker` waits on a `#pill-migrate`
 that no longer exists. **Next: slice 2b (§29.6, master data at the drop after an OK), then 3 (PDF marks).**
+
+### 29.8 BUILD SPEC, slice 2b (owner 2026-11-28: "Proceed"): missing master data is created at the drop, after an OK - by legacy's own imports
+**Rule:** nothing is invented. A partner is created exactly as legacy's Import Invoice creates one; a product exactly as legacy's Import Product does.
+1. **Port the unported branch of Import Invoice** (`erp/processes/ImportInvoice.js` header (1)-(3) = `ImportInvoice.java:512-626`): the new Business Partner
+   (`new MBPartner` with its constructor / `beforeSave` defaults read from `MBPartner.java` - group, price list, payment rule, the rest - each cited), its
+   Location / BP Location, its Contact. The `§PROC-UNPORTED` lines for these three go; the port is the twin's, usable from the Import menu too, not the drop's.
+2. **Products:** for a product the books do not hold, the drop stages `I_Product` rows and runs legacy's Import Product (`erp/processes/ImportProduct.js`) in the
+   SAME transaction, BEFORE Import Invoice: default product category and unit as `ImportProduct.java:215-226, 307-315` give them. What a product row needs
+   beyond what the file holds (name = the printed description, value = the printed code) is taken from that process's own defaults, never typed in the overlay.
+3. **The dialog (owner: "perhaps a dialog box to OK that").** Before anything is written the drop finds what would be NEW - by the SAME lookups the two
+   processes use (a partner by the keys Import Invoice matches on; a product by Import Product's) - and, if there is any, shows ONE dialog in plain words:
+   "This document needs 1 new Business Partner (<name>) and 2 new Products (<a>, <b>). Create them and draft the invoice?" **OK** -> one transaction: the
+   products, the partner, the draft, the attachment; the result line names what was created. **Cancel** -> nothing at all is written and the line says so.
+   Nothing new -> no dialog (slice 1's behaviour, unchanged). Several files: one dialog per file that needs one, each on its own.
+4. No per-window code; the dialog is the overlay's (the windows stay the twin). Not in this slice: "use existing: <closest name>" in the dialog (next), PDFs.
+**Witness** (W-DOOR-DROP gains D10-D13; W-IMPORT-INVOICE gains the ported branch; each rule cites legacy file:line):
+D10 an unknown partner and two unknown products: the dialog is shown BEFORE any op (0 groups while it is open) and names all three; D11 Cancel: 0 ops, no
+partner, no product, no draft, no attachment, the books' counts and op-log size unchanged, the line says nothing was created; D12 OK: ONE signed group holds
+the products, the partner with its location and contact, the draft and the attachment; each created row's fields equal what legacy gives (the defaults from the
+source, and where the local legacy iDempiere can be driven - `scripts/bridge` / the pilot's WebServices - the same import run THERE and compared field by
+field; if it cannot be driven say INCONCLUSIVE for that comparison, never PASS); the standard windows show the new partner and products; the draft is
+In Progress, not posted; D13 all known: no dialog, slice 1's fingerprint unchanged. Mutants: the dialog skipped (created without asking); Cancel still
+writes; a default invented in the overlay (a field differs from legacy's); the product import skipped. Every step of the CI job run locally before the PR.
+
+### 29.9 Prior art, first look (owner 2026-11-28: "Any prior art on this?") - three searches, NOT the full P8 search; no novelty claim follows from it
+- **"Drop a document on the ERP, get a draft" is established.** Odoo: vendor bills are dragged onto the purchase journal; OCR digitization fills a draft
+  (odoo.com/documentation/18.0/.../invoice_digitization.html). Dynamics 365 Business Central: Incoming Documents send a PDF to an OCR service and convert the
+  result to a purchase invoice, with text-to-account mapping; missing master data comes back as an ERROR, and automatic vendor creation was NOT found in its docs
+  (learn.microsoft.com/.../across-how-use-ocr-pdf-images-files, .../across-income-documents).
+- **"A PDF that carries its own structured data" is a standard:** Factur-X / ZUGFeRD (a PDF with the invoice as embedded XML). Odoo add-ons read it on upload
+  and create a draft bill "for your AP clerk to review and post, with the original file attached", matching the vendor by VAT then name and products by code
+  (OCA `account_invoice_import`; apps.odoo.com `einvoice_inbound_facturx`). **This is the closest prior art to our "qualified file": our marks are an
+  embedded file too. Reading and writing Factur-X is a path to weigh before inventing a format of our own (§29.4 Q1).**
+- **"Teach a layout once by pointing at fields" is zonal OCR / template capture** (Docparser, ABBYY FlexiCapture, Kofax / Tungsten: draw a box per field, anchors
+  for layouts that shift); the vendors themselves call it fragile across suppliers (abbyy.com/glossary/what-is-zonal-ocr, docparser.com/blog/zonal-ocr).
+- **What these do not show together (a hypothesis, not a finding):** no upload and no OCR service (the text is read from the PDF itself, on the device);
+  the ERP in the same browser, working with the network off; the file's own history sealed inside it; the same checks run on the page and again at the drop.
