@@ -2247,3 +2247,7 @@ the home screen rises by one after the drop and falls after Complete (read from 
 does nothing; a second draft per drop; the draft completed by the drop; the attachment skipped; a refusal that commits.
 **Not in this slice:** PDFs (slices 3-4), same-file-again / update / completed-refused (5), the `/pdf` hand-off (6), deleting the File it page (7), the
 Attachment dialog's own drag-and-drop, the Request.
+**Owner, 2026-11-28 (to "does the Excel / WPS menu's File it action go too?" - coordinator: remove it): *"Yes if you agree"*.** So at the deletion slice the menus
+keep HISTORY only; the one way into the ERP is a file dragged onto it. Deleted with the File it page: the menus' File it action, `runner.js`, `ws_kernel_web.js`,
+the `taskpane` filing parts and `host_shim.js`'s fileIt / ledger parts (about 400 lines, on top of the ~1,500 of §29.4's list), and W-SHEET-DOOR D9 (the signed
+ledger line in the workbook) unless the drop keeps a ledger of its own. `sample_invoice.js` stays (it builds the tagged sample).
